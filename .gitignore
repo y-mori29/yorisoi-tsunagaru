@@ -1,0 +1,43 @@
+# 機密
+secure/
+.env
+.env.*
+*.key
+*.pem
+credentials.json
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+.cursor/
+.codex/
+.agent/
+.agents/
+.gemini/
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json.bak
+
+# ビルド成果物
+dist/
+build/
+out/
+.next/
+.cache/
+
+# 一時ファイル
+*.tmp
+*.log
+*.swp
+
+# 画像生成中間物（assets/images/ には完成品だけ置く）
+prompts/_drafts/
+assets/_wip/
