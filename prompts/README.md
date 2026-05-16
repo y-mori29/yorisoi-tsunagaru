@@ -1,4 +1,4 @@
-# CodexCLI 画像生成プロンプト（canvas）
+# CodexCLI 画像生成プロンプト（よりそい つながる）
 
 `/codex-image-gen` スキル（Codex CLI 内蔵 image_gen / GPT-Image-2）で画像生成する際の元プロンプトを置く場所。
 
@@ -13,7 +13,7 @@
 
 | # | アセット | ファイル名 | 用途 |
 |---|---|---|---|
-| 1 | キービジュアル（コンセプトイメージ） | `01-keyvisual-canvas-mood.md` | アプリ紹介・MTG提示・LP用 |
+| 1 | キービジュアル（コンセプトイメージ） | `01-keyvisual-mood.md` | アプリ紹介・MTG提示・LP用 |
 | 2 | キャラクター候補3案 | `02-character-rabbit.md` `03-character-bear.md` `04-character-cat.md` | 水先案内人キャラの方向性議論用 |
 | 3 | アプリアイコン候補3案 | `05-app-icon-a.md` `06-app-icon-b.md` `07-app-icon-c.md` | iOS/Androidアイコン |
 | 4 | ムードボード（朝・夜） | `08-mood-morning.md` `09-mood-night.md` | 世界観確認 |

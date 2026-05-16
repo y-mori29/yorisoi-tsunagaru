@@ -1,7 +1,7 @@
 ---
-title: canvas — Key Visual / Concept Mood
+title: yorisoi-tsunagaru — Key Visual / Concept Mood
 category: keyvisual
-output: assets/images/01-keyvisual-canvas-mood.png
+output: assets/images/01-keyvisual-mood.png
 size: 1792x1024
 style_tags: [warm, watercolor, soft, hand-drawn, pastel, storybook, ghibli-inspired]
 forbidden: [medical, hospital, syringe, white-coat, sharp-lines, neon, red, photorealism, corporate]
@@ -84,7 +84,7 @@ who understand, without forced conversation.
 
 # 日本語End note
 
-**意図**: 5/16(土) 10:00 の MTG で、富澤さん・添田さんに「canvas が目指す世界観」を一発で共有するためのキービジュアル。「優しいSNSを医療版に作る」を言葉で説明する前に、まず1枚見せて空気を揃える。
+**意図**: 5/16(土) 10:00 の MTG で、富澤さん・添田さんに「よりそい つながる」が目指す世界観を一発で共有するためのキービジュアル。「優しいSNSを医療版に作る」を言葉で説明する前に、まず1枚見せて空気を揃える。
 
 **ポイント**:
 - 「孤独だが孤独じゃない」を視覚化する（バラバラに座っているが同じ夜明けを見ている）
