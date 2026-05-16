@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>いろいろ — よりそい つながる</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/components.css">
+<style>
+  .section-head {
+    font: 500 12px/1 var(--font-jp-round);
+    color: var(--text-tertiary);
+    letter-spacing: 0.08em;
+    margin: 20px 4px 10px;
+  }
+  .switch {
+    width: 44px; height: 26px;
+    background: var(--border-medium);
+    border-radius: var(--radius-pill);
+    position: relative;
+    transition: background var(--duration) var(--ease-soft);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .switch::after {
+    content: "";
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 20px; height: 20px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    transition: transform var(--duration) var(--ease-spring);
+  }
+  .switch.is-on {
+    background: linear-gradient(135deg, var(--peach-200), var(--peach-400));
+  }
+  .switch.is-on::after {
+    transform: translateX(18px);
+  }
+
+  /* おまもりレポート */
+  .omamori-card {
+    background: linear-gradient(135deg, var(--matcha-50), var(--peach-50));
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    margin-top: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+  .omamori-card::after {
+    content: "🛡";
+    position: absolute;
+    bottom: -8px; right: -8px;
+    font-size: 72px;
+    opacity: 0.15;
+  }
+  .omamori-card__title { font: 600 16px/1.4 var(--font-jp-round); }
+  .omamori-card__body { font: 400 13px/1.7 var(--font-jp); color: var(--text-secondary); margin-top: 6px; max-width: 280px; }
+  .omamori-card__num { font: 600 22px/1 var(--font-jp-round); color: var(--matcha-600); margin-top: 12px; }
+  .omamori-card__num-label { font: 400 11px/1.4 var(--font-jp); color: var(--text-secondary); }
+</style>
+</head>
+<body>
+
+<div class="app-frame bg-pattern">
+
+  <header class="app-header">
+    <button class="app-header__back" onclick="location.href='profile.html'">
+      <span data-icon="back"></span>
+    </button>
+    <span class="text-h2">いろいろ</span>
+  </header>
+
+  <main class="app-main">
+
+    <!-- おまもりレポート -->
+    <div class="section-head">あなたを まもる ためのこと</div>
+    <div class="omamori-card">
+      <div class="omamori-card__title">5月の おまもりレポート</div>
+      <p class="omamori-card__body">運営が 今月、コミュニティを 安全に たもつために おこなったことを みんなに 報告します。</p>
+      <div class="omamori-card__num">1,284<span style="font-size: 12px; margin-left: 4px;">件</span></div>
+      <div class="omamori-card__num-label">あんしんの ための対応</div>
+    </div>
+
+    <!-- アカウント -->
+    <div class="section-head">アカウント</div>
+    <div class="stack" style="--gap: 8px;">
+      <div class="list-row">
+        <div class="icon-pill"><span data-icon="profile"></span></div>
+        <div class="grow">
+          <div class="list-row__title">プロフィール</div>
+          <div class="list-row__sub">なまえ・アバター・自己紹介</div>
+        </div>
+        <span data-icon="chevronRight" style="color: var(--text-tertiary);"></span>
+      </div>
+      <div class="list-row">
+        <div class="icon-pill icon-pill--matcha"><span data-icon="flower"></span></div>
+        <div class="grow">
+          <div class="list-row__title">あんない（性格・くらしのリズム）</div>
+          <div class="list-row__sub">となりさがしを より ちかく するため</div>
+        </div>
+        <span data-icon="chevronRight" style="color: var(--text-tertiary);"></span>
+      </div>
+    </div>
+
+    <!-- 通知 -->
+    <div class="section-head">おたより</div>
+    <div class="stack" style="--gap: 8px;">
+      <div class="list-row">
+        <div class="icon-pill icon-pill--lavender"><span data-icon="bell"></span></div>
+        <div class="grow">
+          <div class="list-row__title">おたよりを うけとる</div>
+          <div class="list-row__sub">そっと とどく声・反応・となりさん</div>
+        </div>
+        <div class="switch is-on" onclick="this.classList.toggle('is-on')"></div>
+      </div>
+      <div class="list-row">
+        <div class="icon-pill icon-pill--lavender"><span data-icon="moon"></span></div>
+        <div class="grow">
+          <div class="list-row__title">よる、しずかにする</div>
+          <div class="list-row__sub">22:00〜7:00 は おたよりを ためる</div>
+        </div>
+        <div class="switch is-on" onclick="this.classList.toggle('is-on')"></div>
+      </div>
+    </div>
+
+    <!-- プライバシー -->
+    <div class="section-head">あなたを まもる せってい</div>
+    <div class="stack" style="--gap: 8px;">
+      <div class="list-row">
+        <div class="icon-pill"><span data-icon="lock"></span></div>
+        <div class="grow">
+          <div class="list-row__title">こえの デフォルト 公開</div>
+          <div class="list-row__sub">「みんな / となりさんだけ / しずか」</div>
+        </div>
+        <span class="badge badge--peach">みんな</span>
+      </div>
+      <div class="list-row">
+        <div class="icon-pill icon-pill--matcha"><span data-icon="search"></span></div>
+        <div class="grow">
+          <div class="list-row__title">けんさく されない ようにする</div>
+          <div class="list-row__sub">なまえで さがされても、出てこなくなるよ</div>
+        </div>
+        <div class="switch" onclick="this.classList.toggle('is-on')"></div>
+      </div>
+      <div class="list-row">
+        <div class="icon-pill icon-pill--lavender"><span data-icon="shield"></span></div>
+        <div class="grow">
+          <div class="list-row__title">ブロックしている となりさん</div>
+          <div class="list-row__sub">いま 2人</div>
+        </div>
+        <span data-icon="chevronRight" style="color: var(--text-tertiary);"></span>
+      </div>
+    </div>
+
+    <!-- データ -->
+    <div class="section-head">きろくの こと</div>
+    <div class="stack" style="--gap: 8px;">
+      <div class="list-row">
+        <div class="icon-pill icon-pill--matcha"><span data-icon="bookmark"></span></div>
+        <div class="grow">
+          <div class="list-row__title">こえの データを 持ちだす</div>
+          <div class="list-row__sub">じぶんの こえを ダウンロード</div>
+        </div>
+        <span data-icon="chevronRight" style="color: var(--text-tertiary);"></span>
+      </div>
+      <div class="list-row">
+        <div class="icon-pill"><span data-icon="mic"></span></div>
+        <div class="grow">
+          <div class="list-row__title">しんさつの きろく（べんり機能）</div>
+          <div class="list-row__sub">こえで かんたんに 記録できる</div>
+        </div>
+        <span data-icon="chevronRight" style="color: var(--text-tertiary);"></span>
+      </div>
+    </div>
+
+    <!-- お問い合わせ -->
+    <div class="section-head">こまったとき</div>
+    <div class="stack" style="--gap: 8px;">
+      <div class="list-row">
+        <div class="icon-pill icon-pill--lavender"><span data-icon="chat"></span></div>
+        <div class="grow">
+          <div class="list-row__title">ヘルプ・お問い合わせ</div>
+        </div>
+        <span data-icon="chevronRight" style="color: var(--text-tertiary);"></span>
+      </div>
+      <div class="list-row">
+        <div class="icon-pill" style="background: rgba(245, 200, 74, 0.18); color: #A07D1F;"><span data-icon="heart"></span></div>
+        <div class="grow">
+          <div class="list-row__title">いのちを ささえる ホットライン</div>
+          <div class="list-row__sub">よりそいホットライン・いのちの電話 ほか</div>
+        </div>
+        <span data-icon="chevronRight" style="color: var(--text-tertiary);"></span>
+      </div>
+    </div>
+
+    <div class="text-center text-caption mt-32" style="opacity: 0.6;">
+      よりそい つながる v0.1.0<br>
+      © 2026 medicanvas
+    </div>
+
+    <button class="btn btn--ghost btn--full mt-24" style="color: var(--text-tertiary);">いってきます（ログアウト）</button>
+
+  </main>
+
+  <!-- ボトムナビ -->
+  <nav class="bottom-nav">
+    <a class="bottom-nav__item" href="home.html"><span data-icon="home"></span><span>おうち</span></a>
+    <a class="bottom-nav__item" href="stroll.html"><span data-icon="stroll"></span><span>おさんぽ</span></a>
+    <div class="bottom-nav__center"><a class="fab-center" href="post.html"><span data-icon="plus"></span></a></div>
+    <a class="bottom-nav__item" href="notifications.html"><span data-icon="mail"></span><span>おたより</span></a>
+    <a class="bottom-nav__item is-active" href="profile.html"><span data-icon="profile"></span><span>わたし</span></a>
+  </nav>
+
+</div>
+
+<script src="assets/js/icons.js"></script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>

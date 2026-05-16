@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>よりそい つながる — モックインデックス</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/components.css">
+<style>
+  body { display: block; padding: 32px 16px; }
+  .index-wrap { max-width: 920px; margin: 0 auto; }
+  .index-hero {
+    background: linear-gradient(135deg, var(--peach-50) 0%, var(--matcha-50) 50%, var(--lavender-100) 100%);
+    border-radius: var(--radius-xl);
+    padding: 36px 28px;
+    text-align: center;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .index-hero h1 {
+    font: 600 32px/1.4 var(--font-jp-round);
+    color: var(--text-primary);
+    margin-bottom: 8px;
+  }
+  .index-hero p {
+    font: 400 15px/1.7 var(--font-jp);
+    color: var(--text-secondary);
+    max-width: 520px;
+    margin: 0 auto;
+  }
+  .index-emoji-row {
+    font-size: 36px;
+    margin-top: 18px;
+    letter-spacing: 0.2em;
+  }
+  .screen-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 18px;
+  }
+  .screen-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    box-shadow: var(--shadow-card);
+    transition: all var(--duration) var(--ease-spring);
+    border: 1.5px solid transparent;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+  .screen-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-floating);
+    border-color: var(--peach-200);
+  }
+  .screen-card__no {
+    font: 500 11px/1 var(--font-num);
+    color: var(--text-tertiary);
+    letter-spacing: 0.08em;
+  }
+  .screen-card__title {
+    font: 600 17px/1.4 var(--font-jp-round);
+    color: var(--text-primary);
+    margin-top: 6px;
+  }
+  .screen-card__sub {
+    font: 400 13px/1.6 var(--font-jp);
+    color: var(--text-secondary);
+    margin-top: 8px;
+  }
+  .screen-card__emoji {
+    font-size: 32px;
+    margin-top: 14px;
+  }
+  .section-label {
+    font: 600 13px/1 var(--font-jp-round);
+    color: var(--peach-700);
+    letter-spacing: 0.06em;
+    margin: 32px 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-label::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--peach-100);
+  }
+  .meta {
+    margin-top: 48px;
+    padding: 24px;
+    background: var(--bg-soft);
+    border-radius: var(--radius-lg);
+    color: var(--text-secondary);
+    font: 400 13px/1.7 var(--font-jp);
+  }
+  .meta strong { color: var(--text-primary); font-weight: 600; }
+  .meta a { color: var(--peach-700); text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<div class="index-wrap">
+
+  <div class="index-hero">
+    <h1>よりそい つながる</h1>
+    <p>同じ病気を抱える人と、そっとつながれる場所。<br>静的HTMLモックインデックス — 2026-05-16</p>
+    <div class="index-emoji-row">🌸 🌿 ☁️ 🌱 🍵</div>
+  </div>
+
+  <div class="section-label">はじまり</div>
+  <div class="screen-grid">
+    <a class="screen-card" href="onboarding.html">
+      <div class="screen-card__no">01</div>
+      <div class="screen-card__title">オンボーディング</div>
+      <div class="screen-card__sub">3ステップで完了。マスコットが案内、最初のひとことまで導く</div>
+      <div class="screen-card__emoji">🐰</div>
+    </a>
+  </div>
+
+  <div class="section-label">日々の場所</div>
+  <div class="screen-grid">
+    <a class="screen-card" href="home.html">
+      <div class="screen-card__no">02</div>
+      <div class="screen-card__title">おうち（タイムライン）</div>
+      <div class="screen-card__sub">みんなのこえ／となりさんのこえ。きょうのきざしもここ</div>
+      <div class="screen-card__emoji">🏠</div>
+    </a>
+    <a class="screen-card" href="voice-received.html">
+      <div class="screen-card__no">03</div>
+      <div class="screen-card__title">そっと届く声</div>
+      <div class="screen-card__sub">何もしてなくても、誰かから声が届く。24時間で消える</div>
+      <div class="screen-card__emoji">💌</div>
+    </a>
+    <a class="screen-card" href="post.html">
+      <div class="screen-card__no">04</div>
+      <div class="screen-card__title">こえを置く（投稿）</div>
+      <div class="screen-card__sub">公開範囲は3段階。「しずか」モードで自分にだけ残せる</div>
+      <div class="screen-card__emoji">✏️</div>
+    </a>
+    <a class="screen-card" href="stroll.html">
+      <div class="screen-card__no">05</div>
+      <div class="screen-card__title">おさんぽ</div>
+      <div class="screen-card__sub">ランダムにとなりさんのページに迷い込める</div>
+      <div class="screen-card__emoji">🌿</div>
+    </a>
+    <a class="screen-card" href="neighbor-search.html">
+      <div class="screen-card__no">06</div>
+      <div class="screen-card__title">となりさがし</div>
+      <div class="screen-card__sub">考え方の癖が近い人と、そっとつながる</div>
+      <div class="screen-card__emoji">🤝</div>
+    </a>
+  </div>
+
+  <div class="section-label">わたし・おたより</div>
+  <div class="screen-grid">
+    <a class="screen-card" href="profile.html">
+      <div class="screen-card__no">07</div>
+      <div class="screen-card__title">わたし（プロフィール）</div>
+      <div class="screen-card__sub">自分のこえの履歴・性格バッジ・所属ルーム</div>
+      <div class="screen-card__emoji">🌱</div>
+    </a>
+    <a class="screen-card" href="notifications.html">
+      <div class="screen-card__no">08</div>
+      <div class="screen-card__title">おたより（通知）</div>
+      <div class="screen-card__sub">反応・となりさんからの返事をふうが届ける</div>
+      <div class="screen-card__emoji">📮</div>
+    </a>
+    <a class="screen-card" href="settings.html">
+      <div class="screen-card__no">09</div>
+      <div class="screen-card__title">いろいろ（設定）</div>
+      <div class="screen-card__sub">通知・プライバシー・おまもりレポートへの導線</div>
+      <div class="screen-card__emoji">⚙️</div>
+    </a>
+  </div>
+
+  <div class="meta">
+    <p><strong>このモックについて</strong></p>
+    <p>2026-05-18(月) 20:00 の冨澤さんMTG用に作成。GRAVITYの「優しさを生む仕様」と「つながるハードルを下げる仕様」を医療版に翻訳して、ピーチ × 抹茶クリームの世界観に当てはめた静的HTMLモック。</p>
+    <p>各画面は単体で開けますが、ボトムナビ・カードのリンクから相互に行き来できます。実機サイズの幅を想定（max-width: 480px）。</p>
+    <p>設計の元ネタは以下：</p>
+    <ul style="margin: 8px 0 0 18px; list-style: disc;">
+      <li><a href="../docs/design-system-gravity.md">docs/design-system-gravity.md</a> — GRAVITYのデザインシステム言語化</li>
+      <li><a href="../docs/design-system-tsunagaru.md">docs/design-system-tsunagaru.md</a> — 医療版への翻訳（カラー変数・コンポーネント仕様）</li>
+      <li><a href="../docs/gravity-research.md">docs/gravity-research.md</a> — GRAVITY徹底分析</li>
+      <li><a href="../docs/gravity-research.xmind">docs/gravity-research.xmind</a> — 上記のマインドマップ</li>
+    </ul>
+    <p style="margin-top: 14px;">画像生成プロンプトは <code>../prompts/</code> 配下。マスコット4種（もか／ぱお／そら／ふう）はCodexCLIで生成予定。</p>
+  </div>
+
+</div>
+
+<script src="assets/js/icons.js"></script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>

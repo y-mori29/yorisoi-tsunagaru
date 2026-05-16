@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>わたし — よりそい つながる</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/components.css">
+<style>
+  .profile-cover {
+    height: 140px;
+    background: linear-gradient(135deg, var(--peach-100) 0%, var(--matcha-100) 50%, var(--lavender-100) 100%);
+    border-radius: 0 0 32px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .profile-cover::before, .profile-cover::after {
+    content: "🌿";
+    position: absolute;
+    font-size: 24px;
+    opacity: 0.4;
+  }
+  .profile-cover::before { top: 20px; left: 24px; }
+  .profile-cover::after { content: "🌸"; top: 60px; right: 32px; font-size: 28px; }
+
+  .profile-head {
+    padding: 0 20px;
+    position: relative;
+  }
+  .profile-head__avatar {
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--peach-50), var(--peach-100));
+    display: grid; place-items: center;
+    font-size: 52px;
+    border: 4px solid var(--bg-cream);
+    box-shadow: var(--shadow-glow);
+    margin-top: -52px;
+    margin-bottom: 12px;
+  }
+  .profile-head__name { font: 600 20px/1.4 var(--font-jp-round); }
+  .profile-head__handle { font: 400 13px/1 var(--font-jp); color: var(--text-tertiary); margin-top: 2px; }
+  .profile-head__bio { font: 400 14px/1.7 var(--font-jp); color: var(--text-secondary); margin-top: 12px; }
+  .profile-head__chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+
+  .profile-stats {
+    display: flex;
+    gap: 0;
+    background: var(--bg-soft);
+    border-radius: var(--radius-md);
+    padding: 14px;
+    margin: 20px 0;
+  }
+  .profile-stats > div {
+    flex: 1;
+    text-align: center;
+    border-right: 1px solid var(--border-soft);
+  }
+  .profile-stats > div:last-child { border-right: none; }
+  .profile-stats__num {
+    font: 600 20px/1 var(--font-jp-round);
+    color: var(--peach-700);
+    display: block;
+  }
+  .profile-stats__label {
+    font: 400 11px/1 var(--font-jp);
+    color: var(--text-secondary);
+    margin-top: 4px;
+  }
+
+  /* 性格バッジ */
+  .badge-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .trait-badge {
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    padding: 14px 8px;
+    text-align: center;
+    box-shadow: var(--shadow-card);
+  }
+  .trait-badge__emoji { font-size: 28px; }
+  .trait-badge__label { font: 500 12px/1.3 var(--font-jp-round); color: var(--text-primary); margin-top: 6px; }
+
+  /* 投稿リスト（ミニ） */
+  .mini-voice {
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    box-shadow: var(--shadow-card);
+  }
+  .mini-voice__head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .mini-voice__date { font: 500 11px/1 var(--font-num); color: var(--text-tertiary); letter-spacing: 0.06em; }
+  .mini-voice__viz { font: 400 11px/1 var(--font-jp); color: var(--text-secondary); margin-left: auto; }
+  .mini-voice__body { font: 400 14px/1.7 var(--font-jp); color: var(--text-primary); }
+</style>
+</head>
+<body>
+
+<div class="app-frame bg-pattern">
+
+  <!-- ヘッダー -->
+  <header class="app-header">
+    <span class="text-h2">わたし</span>
+    <span class="grow"></span>
+    <button class="app-header__action" onclick="location.href='settings.html'">
+      <span data-icon="settings"></span>
+    </button>
+  </header>
+
+  <!-- カバー -->
+  <div class="profile-cover"></div>
+
+  <!-- ヘッド -->
+  <div class="profile-head">
+    <div class="profile-head__avatar">🐰</div>
+    <div class="profile-head__name">もぐもぐさん</div>
+    <div class="profile-head__handle">@mogu_mogu_29</div>
+    <p class="profile-head__bio">
+ゆっくりだけど、確かに 生きていきたい。<br>朝の おちゃが すきです。
+    </p>
+    <div class="profile-head__chips">
+      <span class="chip chip--peach">🏠 UCのおうち</span>
+      <span class="chip">🌙 夜型</span>
+      <span class="chip chip--lavender">📖 読む派</span>
+    </div>
+  </div>
+
+  <main class="app-main stack" style="--gap: 16px; padding-top: 20px;">
+
+    <!-- スタッツ（数字は表示するが、競争にならない見せ方） -->
+    <div class="profile-stats">
+      <div>
+        <span class="profile-stats__num">42</span>
+        <span class="profile-stats__label">そっと 置いた こえ</span>
+      </div>
+      <div>
+        <span class="profile-stats__num">128</span>
+        <span class="profile-stats__label">そっと 返した</span>
+      </div>
+      <div>
+        <span class="profile-stats__num">2026.04〜</span>
+        <span class="profile-stats__label">いる ようになって</span>
+      </div>
+    </div>
+
+    <p class="text-caption text-center" style="margin-top: -8px;">※ となりさんの 数や、もらった「うん」の 数は<br>あなたにも 他人にも 見えないようにしてあるよ</p>
+
+    <!-- 性格バッジ -->
+    <div class="divider-label">あなたの あんない</div>
+    <div class="badge-grid">
+      <div class="trait-badge">
+        <div class="trait-badge__emoji">🫖</div>
+        <div class="trait-badge__label">しずか派</div>
+      </div>
+      <div class="trait-badge">
+        <div class="trait-badge__emoji">🌙</div>
+        <div class="trait-badge__label">夜型</div>
+      </div>
+      <div class="trait-badge">
+        <div class="trait-badge__emoji">🌿</div>
+        <div class="trait-badge__label">マイペース</div>
+      </div>
+      <div class="trait-badge">
+        <div class="trait-badge__emoji">📖</div>
+        <div class="trait-badge__label">読む派</div>
+      </div>
+      <div class="trait-badge">
+        <div class="trait-badge__emoji">🍵</div>
+        <div class="trait-badge__label">朝おちゃ</div>
+      </div>
+      <div class="trait-badge" style="background: var(--bg-soft); box-shadow: none; border: 1px dashed var(--border-medium);">
+        <div class="trait-badge__emoji" style="opacity: 0.4;">+</div>
+        <div class="trait-badge__label" style="color: var(--text-tertiary);">もっと</div>
+      </div>
+    </div>
+
+    <!-- 投稿履歴 -->
+    <div class="divider-label">わたしの こえ</div>
+    <div class="stack" style="--gap: 10px;">
+      <article class="mini-voice">
+        <div class="mini-voice__head">
+          <span class="mini-voice__date">2026.05.16</span>
+          <span class="mini-voice__viz">🌙 しずか</span>
+        </div>
+        <p class="mini-voice__body">
+きょうは、ベランダで 風に あたって 深い呼吸を してみた。すこし 楽になった。
+        </p>
+      </article>
+
+      <article class="mini-voice">
+        <div class="mini-voice__head">
+          <span class="mini-voice__date">2026.05.14</span>
+          <span class="mini-voice__viz">🌸 みんな</span>
+        </div>
+        <p class="mini-voice__body">
+朝の おちゃ、また のんでしまった。これだけは ゆずれない。
+        </p>
+      </article>
+
+      <article class="mini-voice">
+        <div class="mini-voice__head">
+          <span class="mini-voice__date">2026.05.10</span>
+          <span class="mini-voice__viz">🌿 となりさんだけ</span>
+        </div>
+        <p class="mini-voice__body">
+くすりを 変えてから、夜中に 目が さめる回数が へってきた気がする。きにのせとく。
+        </p>
+      </article>
+    </div>
+
+    <!-- 便利な機能（記録への薄い導線） -->
+    <div class="divider-label">べんりなもの</div>
+    <div class="stack" style="--gap: 8px;">
+      <div class="list-row">
+        <div class="icon-pill icon-pill--matcha"><span data-icon="mic"></span></div>
+        <div class="grow">
+          <div class="list-row__title">しんさつの きろく</div>
+          <div class="list-row__sub">こえで かんたんに のこせるよ</div>
+        </div>
+        <span class="list-row__chevron" data-icon="chevronRight"></span>
+      </div>
+      <div class="list-row">
+        <div class="icon-pill icon-pill--lavender"><span data-icon="bookmark"></span></div>
+        <div class="grow">
+          <div class="list-row__title">おくすりノート</div>
+          <div class="list-row__sub">いま のんでる おくすりを そっと</div>
+        </div>
+        <span class="list-row__chevron" data-icon="chevronRight"></span>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ボトムナビ -->
+  <nav class="bottom-nav">
+    <a class="bottom-nav__item" href="home.html"><span data-icon="home"></span><span>おうち</span></a>
+    <a class="bottom-nav__item" href="stroll.html"><span data-icon="stroll"></span><span>おさんぽ</span></a>
+    <div class="bottom-nav__center"><a class="fab-center" href="post.html"><span data-icon="plus"></span></a></div>
+    <a class="bottom-nav__item" href="notifications.html"><span data-icon="mail"></span><span>おたより</span></a>
+    <a class="bottom-nav__item is-active" href="profile.html"><span data-icon="profile"></span><span>わたし</span></a>
+  </nav>
+
+</div>
+
+<script src="assets/js/icons.js"></script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>はじめまして — よりそい つながる</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/components.css">
+<style>
+  body { background-image:
+    radial-gradient(circle at 30% 10%, rgba(255, 217, 199, 0.5) 0%, transparent 40%),
+    radial-gradient(circle at 70% 90%, rgba(199, 219, 168, 0.4) 0%, transparent 40%);
+  }
+
+  .onb-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 24px 16px;
+    position: relative;
+  }
+  .onb-skip {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    font: 500 13px/1 var(--font-jp-round);
+    color: var(--text-tertiary);
+    padding: 8px 14px;
+    border-radius: var(--radius-pill);
+  }
+
+  /* ステップ表示エリア */
+  .onb-steps {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+    margin: 24px 0 16px;
+    position: relative;
+  }
+  .onb-step {
+    flex: 0 0 100%;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: center;
+    padding: 12px 4px;
+    animation: stepFade 420ms var(--ease-spring);
+  }
+  .onb-step.is-active { display: flex; }
+  @keyframes stepFade {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .onb-mascot {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--peach-50), var(--matcha-50));
+    display: grid; place-items: center;
+    box-shadow: var(--shadow-glow);
+    margin-bottom: 24px;
+    font-size: 90px;
+    position: relative;
+  }
+  .onb-mascot.bg-img {
+    background-size: cover;
+    background-position: center;
+    font-size: 0;
+  }
+  .onb-mascot::before, .onb-mascot::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .onb-mascot::before {
+    inset: -8px;
+    background: radial-gradient(circle, rgba(255,184,154,0.3) 0%, transparent 70%);
+    z-index: -1;
+  }
+  .onb-mascot::after {
+    inset: -16px;
+    border: 2px dashed var(--peach-100);
+    opacity: 0.5;
+    animation: rotate 24s linear infinite;
+  }
+  @keyframes rotate {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
+  .onb-title {
+    font: 600 24px/1.4 var(--font-jp-round);
+    color: var(--text-primary);
+    margin-bottom: 12px;
+  }
+  .onb-desc {
+    font: 400 15px/1.85 var(--font-jp);
+    color: var(--text-secondary);
+    max-width: 320px;
+    margin-bottom: 28px;
+  }
+  .onb-form { width: 100%; max-width: 320px; }
+
+  /* アバター選択 */
+  .animal-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    width: 100%;
+    max-width: 340px;
+  }
+  .animal-btn {
+    aspect-ratio: 1;
+    background: var(--bg-card);
+    border-radius: 50%;
+    border: 2.5px solid transparent;
+    display: grid; place-items: center;
+    font-size: 32px;
+    cursor: pointer;
+    box-shadow: var(--shadow-card);
+    transition: all var(--duration) var(--ease-spring);
+  }
+  .animal-btn:hover { transform: translateY(-2px); }
+  .animal-btn.is-selected {
+    border-color: var(--peach-400);
+    box-shadow: var(--shadow-glow);
+    transform: scale(1.08);
+    background: var(--peach-50);
+  }
+
+  /* 性別年代 */
+  .pill-group { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .pill-btn {
+    padding: 10px 18px;
+    border-radius: var(--radius-pill);
+    background: var(--bg-card);
+    border: 1.5px solid var(--border-soft);
+    font: 500 14px/1 var(--font-jp-round);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--duration) var(--ease-spring);
+  }
+  .pill-btn.is-selected {
+    background: linear-gradient(135deg, var(--peach-100), var(--peach-200));
+    border-color: var(--peach-200);
+    color: var(--peach-700);
+    transform: scale(1.04);
+  }
+
+  /* 最初のひとこと用 例文 */
+  .example-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+    justify-content: center;
+  }
+  .example-chip {
+    padding: 6px 12px;
+    border-radius: var(--radius-pill);
+    background: var(--matcha-50);
+    border: 1px solid var(--matcha-100);
+    color: var(--matcha-600);
+    font: 500 12px/1 var(--font-jp-round);
+    cursor: pointer;
+  }
+  .example-chip:hover { background: var(--matcha-100); }
+
+  /* フッター */
+  .onb-footer {
+    padding: 16px 8px calc(24px + var(--safe-bottom));
+  }
+  .onb-footer__progress {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 18px;
+  }
+  .onb-footer__actions {
+    display: flex;
+    gap: 10px;
+  }
+  .onb-footer__actions .btn { flex: 1; }
+</style>
+</head>
+<body>
+
+<div class="app-frame bg-pattern">
+
+  <button class="onb-skip" onclick="location.href='home.html'">あとで</button>
+
+  <div class="onb-wrap">
+
+    <!-- ステップ -->
+    <div class="onb-steps">
+
+      <!-- Step 1: ようこそ -->
+      <div class="onb-step is-active" data-step="1">
+        <div class="onb-mascot breathing">🐰</div>
+        <h1 class="onb-title">よく きてくれたね</h1>
+        <p class="onb-desc">
+          ここは、おなじしんどさを かかえる<br>
+          となりさんと、そっと つながれる場所。<br><br>
+          話さなくていい。<br>
+          ただ ここに いるだけでも 大丈夫だよ。
+        </p>
+      </div>
+
+      <!-- Step 2: ハンドル名 -->
+      <div class="onb-step" data-step="2">
+        <div class="onb-mascot breathing">🐰</div>
+        <h1 class="onb-title">なんて よばれたい？</h1>
+        <p class="onb-desc">本名じゃなくていいよ。<br>あとから 変えても大丈夫。</p>
+        <div class="onb-form">
+          <input type="text" class="input" placeholder="れい：ふわ、もぐ、なんでも" value="" id="handleInput">
+          <p class="text-caption text-center mt-8">ひらがな・カタカナ・英字、なんでも</p>
+        </div>
+      </div>
+
+      <!-- Step 3: アバター -->
+      <div class="onb-step" data-step="3">
+        <div class="onb-mascot breathing" id="selectedAvatar">🐰</div>
+        <h1 class="onb-title">あなたの すがたを えらんでね</h1>
+        <p class="onb-desc">どの すがたも、あなたの となりさん。</p>
+        <div class="animal-grid" id="animalGrid">
+          <button class="animal-btn is-selected" data-emoji="🐰">🐰</button>
+          <button class="animal-btn" data-emoji="🐻">🐻</button>
+          <button class="animal-btn" data-emoji="🐱">🐱</button>
+          <button class="animal-btn" data-emoji="🐦">🐦</button>
+          <button class="animal-btn" data-emoji="🦔">🦔</button>
+          <button class="animal-btn" data-emoji="🐿️">🐿️</button>
+          <button class="animal-btn" data-emoji="🦊">🦊</button>
+          <button class="animal-btn" data-emoji="🐑">🐑</button>
+          <button class="animal-btn" data-emoji="🦉">🦉</button>
+          <button class="animal-btn" data-emoji="🐢">🐢</button>
+          <button class="animal-btn" data-emoji="🐧">🐧</button>
+          <button class="animal-btn" data-emoji="🐹">🐹</button>
+        </div>
+      </div>
+
+      <!-- Step 4: 性別年代（任意） -->
+      <div class="onb-step" data-step="4">
+        <div class="onb-mascot breathing">🐰</div>
+        <h1 class="onb-title">よかったら すこしだけ おしえて</h1>
+        <p class="onb-desc">
+          にた となりさんを みつけやすく なるよ。<br>
+          ぜんぶ <strong>スキップしても大丈夫</strong>。
+        </p>
+        <div class="onb-form stack" style="--gap: 18px;">
+          <div>
+            <label class="input-label">せいべつ（こたえたいときだけ）</label>
+            <div class="pill-group">
+              <button class="pill-btn">じょせい</button>
+              <button class="pill-btn">だんせい</button>
+              <button class="pill-btn">それいがい</button>
+              <button class="pill-btn">こたえない</button>
+            </div>
+          </div>
+          <div>
+            <label class="input-label">ねんだい</label>
+            <div class="pill-group">
+              <button class="pill-btn">〜10代</button>
+              <button class="pill-btn">20代</button>
+              <button class="pill-btn is-selected">30代</button>
+              <button class="pill-btn">40代</button>
+              <button class="pill-btn">50代〜</button>
+              <button class="pill-btn">こたえない</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 5: 最初のひとこと -->
+      <div class="onb-step" data-step="5">
+        <div class="onb-mascot breathing">🐰</div>
+        <h1 class="onb-title">さいごに、ひとこと だけ</h1>
+        <p class="onb-desc">
+          きょうの きもち、<br>
+          ここに そっと おいてみる？<br>
+          <span class="text-caption">スキップしてもOK。あとで いつでも置けるよ。</span>
+        </p>
+        <div class="onb-form">
+          <textarea class="textarea" placeholder="れい：はじめまして。あんまり 眠れない日が つづいています。" rows="4"></textarea>
+          <div class="example-chips">
+            <button class="example-chip" data-text="はじめまして。よろしくおねがいします">はじめまして</button>
+            <button class="example-chip" data-text="きょうは つかれた…">きょうは つかれた</button>
+            <button class="example-chip" data-text="おなじような ひと いますか？">おなじひと いる？</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 6: 完了 -->
+      <div class="onb-step" data-step="6">
+        <div class="onb-mascot breathing" style="background: linear-gradient(135deg, var(--matcha-100), var(--peach-100));">🌸</div>
+        <h1 class="onb-title">ようこそ、つながるへ</h1>
+        <p class="onb-desc">
+          あなたの こえ、ちゃんと とどいたよ。<br>
+          きっと、だれかが よんでくれるから。<br><br>
+          ゆっくり していってね。
+        </p>
+      </div>
+
+    </div>
+
+    <!-- フッター -->
+    <div class="onb-footer">
+      <div class="onb-footer__progress">
+        <div class="progress-dots" id="progressDots">
+          <span class="progress-dots__dot is-active"></span>
+          <span class="progress-dots__dot"></span>
+          <span class="progress-dots__dot"></span>
+          <span class="progress-dots__dot"></span>
+          <span class="progress-dots__dot"></span>
+          <span class="progress-dots__dot"></span>
+        </div>
+      </div>
+      <div class="onb-footer__actions">
+        <button class="btn btn--ghost" id="prevBtn" style="display: none;">もどる</button>
+        <button class="btn btn--primary btn--full" id="nextBtn">はじめる</button>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script src="assets/js/icons.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+  // ステップ遷移
+  let current = 1;
+  const total = 6;
+  const stepEls = document.querySelectorAll('.onb-step');
+  const dots = document.querySelectorAll('#progressDots .progress-dots__dot');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const labels = ['はじめる', 'つぎへ', 'えらぶ', 'つぎへ', 'そっと おく', 'おうちへ'];
+
+  function render() {
+    stepEls.forEach(el => el.classList.toggle('is-active', +el.dataset.step === current));
+    dots.forEach((d, i) => d.classList.toggle('is-active', i === current - 1));
+    prevBtn.style.display = current === 1 ? 'none' : 'block';
+    nextBtn.textContent = labels[current - 1];
+    if (current === total) {
+      nextBtn.textContent = 'おうちへ';
+    }
+  }
+
+  nextBtn.addEventListener('click', () => {
+    if (current === total) {
+      location.href = 'home.html';
+      return;
+    }
+    current++;
+    render();
+  });
+  prevBtn.addEventListener('click', () => {
+    if (current === 1) return;
+    current--;
+    render();
+  });
+
+  // アバター選択
+  document.querySelectorAll('.animal-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.animal-btn').forEach(b => b.classList.remove('is-selected'));
+      btn.classList.add('is-selected');
+      document.getElementById('selectedAvatar').textContent = btn.dataset.emoji;
+      // 他のステップのマスコットも更新
+      document.querySelectorAll('.onb-mascot').forEach((m, i) => {
+        if (i < 4) m.textContent = btn.dataset.emoji;
+      });
+    });
+  });
+
+  // ピル選択
+  document.querySelectorAll('.pill-group').forEach(group => {
+    group.addEventListener('click', (e) => {
+      const btn = e.target.closest('.pill-btn');
+      if (!btn) return;
+      group.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('is-selected'));
+      btn.classList.add('is-selected');
+    });
+  });
+
+  // 例文チップで入力欄に流し込み
+  document.querySelectorAll('.example-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const ta = document.querySelector('.onb-step[data-step="5"] textarea');
+      ta.value = chip.dataset.text;
+      ta.focus();
+    });
+  });
+
+  render();
+</script>
+</body>
+</html>

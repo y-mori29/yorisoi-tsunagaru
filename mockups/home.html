@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>おうち — よりそい つながる</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/components.css">
+</head>
+<body>
+
+<div class="app-frame bg-pattern">
+
+  <!-- ヘッダー -->
+  <header class="app-header">
+    <span class="text-h2" style="display: flex; align-items: center; gap: 8px;">
+      <span style="font-size: 22px;">🏠</span>
+      <span>おうち</span>
+    </span>
+    <span class="grow"></span>
+    <button class="app-header__action" style="position: relative;" onclick="location.href='notifications.html'">
+      <span data-icon="bell"></span>
+      <span class="dot-badge" style="position: absolute; top: 6px; right: 6px;"></span>
+    </button>
+  </header>
+
+  <main class="app-main stack" style="--gap: 16px;">
+
+    <!-- セグメント -->
+    <div class="segment" style="margin: 4px auto 8px; display: flex;">
+      <button class="segment__item is-active">みんな</button>
+      <button class="segment__item">となりさん</button>
+    </div>
+
+    <!-- きょうのきざし -->
+    <div class="voice-card voice-card--special">
+      <div class="voice-card__header">
+        <div class="avatar avatar--40 avatar-glow" style="background: linear-gradient(135deg, var(--matcha-200), var(--peach-200)); display: grid; place-items: center; font-size: 22px;">🌸</div>
+        <div class="grow">
+          <div class="voice-card__name">きょうのきざし</div>
+          <div class="voice-card__time">きょう・あさ</div>
+        </div>
+      </div>
+      <div class="voice-card__body">
+きょうは、おもいきって ふかぶかと 息を はいてみる日。
+となりさんは、最近 ちゃんと 眠れてるかな？
+      </div>
+      <div class="voice-card__reactions">
+        <button class="reaction-chip"><span class="reaction-chip__emoji">🌸</span><span>うん</span></button>
+        <button class="reaction-chip"><span class="reaction-chip__emoji">🌿</span><span>そっか</span></button>
+        <button class="reaction-chip" style="margin-left: auto;"><span data-icon="chat"></span><span class="reaction-chip__count">4</span></button>
+      </div>
+    </div>
+
+    <!-- 投稿カード 1 -->
+    <article class="voice-card">
+      <div class="voice-card__header">
+        <div class="avatar avatar--40 avatar-glow" style="background: linear-gradient(135deg, var(--peach-50), var(--peach-100)); font-size: 22px;">🐰</div>
+        <div class="grow">
+          <div class="voice-card__name">もぐもぐさん <span class="badge" style="margin-left: 6px;">UCのおうち</span></div>
+          <div class="voice-card__time">3ぷん まえ</div>
+        </div>
+        <button class="voice-card__menu"><span data-icon="more"></span></button>
+      </div>
+      <div class="voice-card__body">
+きょうは 朝から なんだか 落ちつかなくて。
+ベランダで 風に あたって ふかい呼吸を してみました。
+おなじような ひと いますか？
+      </div>
+      <div class="voice-card__reactions">
+        <button class="reaction-chip"><span class="reaction-chip__emoji">🌸</span><span>うん</span><span class="reaction-chip__count">7</span></button>
+        <button class="reaction-chip"><span class="reaction-chip__emoji">🌿</span><span>そっか</span><span class="reaction-chip__count">3</span></button>
+        <button class="reaction-chip"><span class="reaction-chip__emoji">☁️</span><span>きいたよ</span></button>
+        <button class="reaction-chip" style="margin-left: auto;"><span data-icon="chat"></span><span class="reaction-chip__count">2</span></button>
+      </div>
+    </article>
+
+    <!-- 投稿カード 2（画像付き） -->
+    <article class="voice-card">
+      <div class="voice-card__header">
+        <div class="avatar avatar--40 avatar-glow" style="background: linear-gradient(135deg, var(--matcha-50), var(--matcha-100)); font-size: 22px;">🐱</div>
+        <div class="grow">
+          <div class="voice-card__name">ふらりさん <span class="badge badge--lavender" style="margin-left: 6px;">クローンのおうち</span></div>
+          <div class="voice-card__time">15ふん まえ</div>
+        </div>
+        <button class="voice-card__menu"><span data-icon="more"></span></button>
+      </div>
+      <div class="voice-card__body">
+さんぽみち、ちいさな はなが ひらいてました。
+こんな しずかな時間、すきだなあ。
+      </div>
+      <div class="voice-card__image" style="background: linear-gradient(135deg, var(--matcha-100) 0%, var(--peach-100) 60%, var(--lavender-100) 100%); position: relative; overflow: hidden;">
+        <span style="font-size: 56px; opacity: 0.7;">🌼</span>
+        <span style="position: absolute; bottom: 20px; right: 24px; font-size: 32px; opacity: 0.5;">🌿</span>
+        <span style="position: absolute; top: 16px; left: 18px; font-size: 24px; opacity: 0.4;">🌸</span>
+      </div>
+      <div class="voice-card__reactions">
+        <button class="reaction-chip"><span class="reaction-chip__emoji">🌸</span><span>うん</span><span class="reaction-chip__count">14</span></button>
+        <button class="reaction-chip"><span class="reaction-chip__emoji">🍵</span><span>ありがと</span><span class="reaction-chip__count">5</span></button>
+        <button class="reaction-chip" style="margin-left: auto;"><span data-icon="chat"></span><span class="reaction-chip__count">1</span></button>
+      </div>
+    </article>
+
+    <!-- 区切り -->
+    <div class="divider-label">2じかん まえ</div>
+
+    <!-- 投稿カード 3 -->
+    <article class="voice-card">
+      <div class="voice-card__header">
+        <div class="avatar avatar--40 avatar-glow" style="background: linear-gradient(135deg, var(--lavender-100), var(--lavender-200)); font-size: 22px;">🦔</div>
+        <div class="grow">
+          <div class="voice-card__name">こもれびさん <span class="badge badge--peach" style="margin-left: 6px;">SLEのおうち</span></div>
+          <div class="voice-card__time">2じかん まえ</div>
+        </div>
+        <button class="voice-card__menu"><span data-icon="more"></span></button>
+      </div>
+      <div class="voice-card__body">
+さいきん、体の だるさが 続いていて。
+それでも、ここに 来ると ほっと できるんです。
+ありがとう。
+      </div>
+      <div class="voice-card__reactions">
+        <button class="reaction-chip"><span class="reaction-chip__emoji">🌱</span><span>だいじょうぶ？</span><span class="reaction-chip__count">12</span></button>
+        <button class="reaction-chip"><span class="reaction-chip__emoji">🍵</span><span>ありがと</span><span class="reaction-chip__count">8</span></button>
+        <button class="reaction-chip"><span class="reaction-chip__emoji">🌸</span><span>うん</span><span class="reaction-chip__count">22</span></button>
+        <button class="reaction-chip" style="margin-left: auto;"><span data-icon="chat"></span><span class="reaction-chip__count">6</span></button>
+      </div>
+    </article>
+
+    <!-- 投稿カード 4: 医療者監修バッジ付き -->
+    <article class="voice-card" style="border: 1px solid var(--matcha-100);">
+      <div class="voice-card__header">
+        <div class="avatar avatar--40 avatar-glow" style="background: linear-gradient(135deg, var(--matcha-100), var(--matcha-200)); font-size: 22px;">🌿</div>
+        <div class="grow">
+          <div class="voice-card__name">
+            すずきせんせい
+            <span class="badge" style="margin-left: 6px; background: linear-gradient(135deg, var(--matcha-100), var(--matcha-200)); color: var(--matcha-600);">
+              <span data-icon="check" style="display: inline-flex; width: 12px; height: 12px;"></span>
+              いし
+            </span>
+          </div>
+          <div class="voice-card__time">きょう・あさ</div>
+        </div>
+        <button class="voice-card__menu"><span data-icon="more"></span></button>
+      </div>
+      <div class="voice-card__body">
+おはようございます。
+たいちょうの 波は、ある日 ない日 あって当然。
+今日は うまく いかなくても、明日 また 一緒に考えましょう。
+      </div>
+      <div class="text-caption" style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border-soft);">
+        ※ このコメントは いっぱん情報の 共有であり、こべつの 診断・治療方針では ありません。
+      </div>
+      <div class="voice-card__reactions">
+        <button class="reaction-chip"><span class="reaction-chip__emoji">🍵</span><span>ありがと</span><span class="reaction-chip__count">31</span></button>
+        <button class="reaction-chip"><span class="reaction-chip__emoji">🌸</span><span>うん</span><span class="reaction-chip__count">18</span></button>
+      </div>
+    </article>
+
+    <!-- 投稿カード 5 -->
+    <article class="voice-card">
+      <div class="voice-card__header">
+        <div class="avatar avatar--40 avatar-glow" style="background: linear-gradient(135deg, var(--peach-100), var(--peach-200)); font-size: 22px;">🐦</div>
+        <div class="grow">
+          <div class="voice-card__name">そらまめさん</div>
+          <div class="voice-card__time">きのう</div>
+        </div>
+        <button class="voice-card__menu"><span data-icon="more"></span></button>
+      </div>
+      <div class="voice-card__body">
+となりさん、はじめまして🌿
+ぼくも 同じ病気で、ながいこと たたかってきました。
+ここで みなさんの こえ よめて、ほっとしてます。
+      </div>
+      <div class="voice-card__reactions">
+        <button class="reaction-chip"><span class="reaction-chip__emoji">🌸</span><span>うん</span><span class="reaction-chip__count">9</span></button>
+        <button class="reaction-chip" style="margin-left: auto;"><span data-icon="chat"></span></button>
+      </div>
+    </article>
+
+  </main>
+
+  <!-- ボトムナビ -->
+  <nav class="bottom-nav">
+    <a class="bottom-nav__item is-active" href="home.html">
+      <span data-icon="home"></span>
+      <span>おうち</span>
+    </a>
+    <a class="bottom-nav__item" href="stroll.html">
+      <span data-icon="stroll"></span>
+      <span>おさんぽ</span>
+    </a>
+    <div class="bottom-nav__center">
+      <a class="fab-center" href="post.html">
+        <span data-icon="plus"></span>
+      </a>
+    </div>
+    <a class="bottom-nav__item" href="notifications.html">
+      <span data-icon="mail"></span>
+      <span>おたより</span>
+    </a>
+    <a class="bottom-nav__item" href="profile.html">
+      <span data-icon="profile"></span>
+      <span>わたし</span>
+    </a>
+  </nav>
+
+</div>
+
+<script src="assets/js/icons.js"></script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>

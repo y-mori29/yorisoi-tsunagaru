@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>こえを置く — よりそい つながる</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/components.css">
+<style>
+  .post-wrap { display: flex; flex-direction: column; min-height: 100vh; }
+  .post-main {
+    flex: 1;
+    padding: 16px 20px 120px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* 公開範囲セレクタ */
+  .visibility {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 4px 0;
+    margin: 8px 0 16px;
+    scrollbar-width: none;
+  }
+  .visibility::-webkit-scrollbar { display: none; }
+  .visibility__item {
+    flex-shrink: 0;
+    padding: 10px 16px;
+    border-radius: var(--radius-pill);
+    background: var(--bg-card);
+    border: 1.5px solid var(--border-soft);
+    font: 500 13px/1 var(--font-jp-round);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all var(--duration) var(--ease-spring);
+  }
+  .visibility__item .vi-emoji { font-size: 16px; }
+  .visibility__item.is-selected {
+    background: linear-gradient(135deg, var(--peach-50), var(--peach-100));
+    border-color: var(--peach-200);
+    color: var(--peach-700);
+    transform: scale(1.04);
+  }
+
+  /* メイン入力 */
+  .post-textarea {
+    width: 100%;
+    min-height: 220px;
+    background: transparent;
+    border: none;
+    outline: none;
+    resize: none;
+    font: 400 17px/1.85 var(--font-jp);
+    color: var(--text-primary);
+  }
+  .post-textarea::placeholder { color: var(--text-tertiary); }
+
+  /* 補助ツールバー */
+  .post-tools {
+    display: flex;
+    gap: 8px;
+    padding: 12px 0;
+    margin-top: 12px;
+    border-top: 1px solid var(--border-soft);
+    flex-wrap: wrap;
+  }
+  .tool-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 14px;
+    border-radius: var(--radius-pill);
+    background: var(--bg-soft);
+    color: var(--text-secondary);
+    font: 500 13px/1 var(--font-jp-round);
+    cursor: pointer;
+    transition: all var(--duration) var(--ease-spring);
+  }
+  .tool-btn:hover { background: var(--peach-50); color: var(--peach-700); }
+  .tool-btn svg { width: 18px; height: 18px; }
+
+  /* ヒントカード */
+  .hint-card {
+    background: linear-gradient(135deg, var(--lavender-100), var(--peach-50));
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .hint-card__icon {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--bg-card);
+    display: grid; place-items: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .hint-card__title { font: 500 13px/1.4 var(--font-jp-round); color: var(--lavender-600); }
+  .hint-card__body { font: 400 12px/1.6 var(--font-jp); color: var(--text-secondary); margin-top: 2px; }
+
+  /* 固定フッター（送信ボタン） */
+  .post-footer {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: var(--max-width);
+    background: var(--bg-overlay);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid var(--border-soft);
+    padding: 14px 20px calc(14px + var(--safe-bottom));
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 50;
+  }
+  .char-count {
+    font: 500 12px/1 var(--font-num);
+    color: var(--text-tertiary);
+  }
+</style>
+</head>
+<body>
+
+<div class="app-frame bg-pattern">
+
+  <!-- ヘッダー -->
+  <header class="app-header">
+    <button class="app-header__back" onclick="location.href='home.html'">
+      <span data-icon="close"></span>
+    </button>
+    <span class="text-h2">こえを 置く</span>
+    <span class="grow"></span>
+    <button class="app-header__action">
+      <span data-icon="bookmark"></span>
+    </button>
+  </header>
+
+  <main class="post-main">
+
+    <!-- ユーザーヘッダー -->
+    <div class="row" style="margin-bottom: 16px;">
+      <div class="avatar avatar--48 avatar-glow" style="background: linear-gradient(135deg, var(--peach-50), var(--peach-100)); font-size: 28px;">🐰</div>
+      <div>
+        <div class="text-h3">もぐもぐさん</div>
+        <div class="text-caption">UCのおうち に いるよ</div>
+      </div>
+    </div>
+
+    <!-- 公開範囲 -->
+    <label class="input-label">どこに 置く？</label>
+    <div class="visibility">
+      <button class="visibility__item is-selected">
+        <span class="vi-emoji">🌸</span>
+        <span>みんな</span>
+      </button>
+      <button class="visibility__item">
+        <span class="vi-emoji">🌿</span>
+        <span>となりさんだけ</span>
+      </button>
+      <button class="visibility__item">
+        <span class="vi-emoji">🏠</span>
+        <span>UCのおうち</span>
+      </button>
+      <button class="visibility__item">
+        <span class="vi-emoji">🌙</span>
+        <span>しずか（じぶんだけ）</span>
+      </button>
+    </div>
+
+    <!-- メインテキスト -->
+    <textarea
+      class="post-textarea"
+      id="postText"
+      placeholder="いまの きもち、ここに そっと 置いてみる？
+
+ぜんぶ 書かなくていい。
+ひとことでも、ぜったいに 大丈夫。"
+    ></textarea>
+
+    <!-- ツール -->
+    <div class="post-tools">
+      <button class="tool-btn">
+        <span data-icon="image"></span>
+        <span>しゃしん</span>
+      </button>
+      <button class="tool-btn">
+        <span data-icon="mic"></span>
+        <span>こえで</span>
+      </button>
+      <button class="tool-btn">
+        <span data-icon="sparkle"></span>
+        <span>ことば手つだう</span>
+      </button>
+      <button class="tool-btn">
+        <span data-icon="flower"></span>
+        <span>かざり</span>
+      </button>
+    </div>
+
+    <!-- ヒントカード -->
+    <div class="hint-card">
+      <div class="hint-card__icon">🌱</div>
+      <div>
+        <div class="hint-card__title">「しずか」を 選ぶと…</div>
+        <div class="hint-card__body">だれにも 見られない、じぶんだけの 日記に なるよ。</div>
+      </div>
+    </div>
+
+    <div class="hint-card" style="background: linear-gradient(135deg, var(--matcha-50), var(--peach-50));">
+      <div class="hint-card__icon">🌸</div>
+      <div>
+        <div class="hint-card__title">置くと、すこしして…</div>
+        <div class="hint-card__body">きっと、となりさんから 反応が とどくよ。<br>かずは あなたにしか 見えないから 安心してね。</div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- フッター -->
+  <footer class="post-footer">
+    <span class="char-count" id="charCount">0 / 300</span>
+    <span class="grow"></span>
+    <button class="btn btn--ghost btn--sm" onclick="location.href='home.html'">あとで</button>
+    <button class="btn btn--primary btn--sm" onclick="placeVoice()">そっと 置く</button>
+  </footer>
+
+</div>
+
+<script src="assets/js/icons.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+  const textarea = document.getElementById('postText');
+  const charCount = document.getElementById('charCount');
+  textarea.addEventListener('input', () => {
+    const len = textarea.value.length;
+    charCount.textContent = `${len} / 300`;
+    charCount.style.color = len > 300 ? 'var(--peach-600)' : 'var(--text-tertiary)';
+  });
+
+  // 公開範囲
+  document.querySelectorAll('.visibility__item').forEach(item => {
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.visibility__item').forEach(i => i.classList.remove('is-selected'));
+      item.classList.add('is-selected');
+    });
+  });
+
+  function placeVoice() {
+    if (!textarea.value.trim()) {
+      showToast('まだ なにも 書かれてないよ', '🌱');
+      return;
+    }
+    showToast('そっと 置きました', '🌸');
+    setTimeout(() => location.href = 'home.html', 1100);
+  }
+</script>
+</body>
+</html>

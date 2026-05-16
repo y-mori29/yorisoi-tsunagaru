@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>となりさがし — よりそい つながる</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/components.css">
+<style>
+  .quiz-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: 24px 20px;
+    box-shadow: var(--shadow-card);
+    text-align: center;
+    margin-top: 16px;
+  }
+  .quiz-card__num {
+    display: inline-block;
+    font: 500 11px/1 var(--font-num);
+    color: var(--text-tertiary);
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+  }
+  .quiz-card__q {
+    font: 500 17px/1.6 var(--font-jp-round);
+    color: var(--text-primary);
+    margin-bottom: 18px;
+  }
+  .quiz-options { display: flex; flex-direction: column; gap: 10px; }
+  .quiz-option {
+    background: var(--bg-soft);
+    border: 1.5px solid transparent;
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    text-align: left;
+    font: 400 14px/1.6 var(--font-jp);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all var(--duration) var(--ease-spring);
+  }
+  .quiz-option:hover { background: var(--peach-50); border-color: var(--peach-200); transform: translateY(-1px); }
+  .quiz-option.is-selected { background: linear-gradient(135deg, var(--peach-50), var(--matcha-50)); border-color: var(--peach-400); }
+
+  /* マッチ結果 */
+  .match-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: 18px;
+    box-shadow: var(--shadow-card);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .match-score {
+    flex-shrink: 0;
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--peach-100), var(--matcha-100));
+    display: grid; place-items: center;
+    font: 600 18px/1 var(--font-jp-round);
+    color: var(--peach-700);
+  }
+  .match-score__num { font-family: var(--font-num); font-size: 22px; }
+  .match-card__name { font: 500 15px/1.3 var(--font-jp-round); }
+  .match-card__sub { font: 400 12px/1.5 var(--font-jp); color: var(--text-secondary); margin-top: 2px; }
+  .match-card__knock {
+    margin-left: auto;
+    padding: 10px 14px;
+    border-radius: var(--radius-pill);
+    background: linear-gradient(135deg, var(--peach-200), var(--peach-400));
+    color: white;
+    font: 500 12px/1 var(--font-jp-round);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .match-card__knock svg { width: 14px; height: 14px; }
+</style>
+</head>
+<body>
+
+<div class="app-frame bg-pattern">
+
+  <header class="app-header">
+    <button class="app-header__back" onclick="location.href='home.html'">
+      <span data-icon="back"></span>
+    </button>
+    <span class="text-h2">となりさがし</span>
+  </header>
+
+  <main class="app-main stack" style="--gap: 16px;">
+
+    <!-- 説明 -->
+    <div class="card" style="background: linear-gradient(135deg, var(--matcha-50), var(--peach-50)); display: flex; gap: 12px; align-items: center;">
+      <span style="font-size: 36px;">🐰</span>
+      <div>
+        <div class="text-h3">3つの 質問だけ</div>
+        <div class="text-caption">「考えかたの くせ」が ちかい となりさんを そっと さがすよ</div>
+      </div>
+    </div>
+
+    <!-- クイズ 1 -->
+    <article class="quiz-card">
+      <div class="quiz-card__num">1 / 3</div>
+      <h2 class="quiz-card__q">しんどい日は、どう したい？</h2>
+      <div class="quiz-options">
+        <button class="quiz-option is-selected">🫖 誰とも 話さず、しずかに 過ごしたい</button>
+        <button class="quiz-option">📞 だれかと すこし 話したい</button>
+        <button class="quiz-option">📖 おなじ気持ちの ひとを 読みたい</button>
+        <button class="quiz-option">🌿 おさんぽに 出たい</button>
+      </div>
+    </article>
+
+    <!-- クイズ 2 -->
+    <article class="quiz-card">
+      <div class="quiz-card__num">2 / 3</div>
+      <h2 class="quiz-card__q">よく ある 一日は？</h2>
+      <div class="quiz-options">
+        <button class="quiz-option">🌅 朝に 動きやすい</button>
+        <button class="quiz-option is-selected">🌙 夜に 動きやすい</button>
+        <button class="quiz-option">🌥 日に よって 変わる</button>
+      </div>
+    </article>
+
+    <!-- マッチ結果 -->
+    <div class="text-h3 mt-24 mb-8">あなたの となりさん 候補</div>
+    <p class="text-caption" style="margin-top: -8px;">考えかたが ちかい 3人を 見つけました</p>
+
+    <div class="stack" style="--gap: 12px;">
+      <article class="match-card">
+        <div class="avatar avatar--48 avatar-glow" style="background: linear-gradient(135deg, var(--peach-100), var(--peach-200)); font-size: 24px;">🦊</div>
+        <div>
+          <div class="match-card__name">こもれびさん</div>
+          <div class="match-card__sub">SLEのおうち ・ 夜型 ・ しずか派</div>
+        </div>
+        <button class="match-card__knock">
+          <span data-icon="knock"></span>
+          ノック
+        </button>
+      </article>
+
+      <article class="match-card">
+        <div class="avatar avatar--48 avatar-glow" style="background: linear-gradient(135deg, var(--matcha-100), var(--matcha-200)); font-size: 24px;">🐧</div>
+        <div>
+          <div class="match-card__name">そらまめさん</div>
+          <div class="match-card__sub">UCのおうち ・ 朝型 ・ 読む派</div>
+        </div>
+        <button class="match-card__knock">
+          <span data-icon="knock"></span>
+          ノック
+        </button>
+      </article>
+
+      <article class="match-card">
+        <div class="avatar avatar--48 avatar-glow" style="background: linear-gradient(135deg, var(--lavender-100), var(--lavender-200)); font-size: 24px;">🐢</div>
+        <div>
+          <div class="match-card__name">ゆっくりさん</div>
+          <div class="match-card__sub">クローンのおうち ・ ペースちかい</div>
+        </div>
+        <button class="match-card__knock">
+          <span data-icon="knock"></span>
+          ノック
+        </button>
+      </article>
+    </div>
+
+  </main>
+
+  <nav class="bottom-nav">
+    <a class="bottom-nav__item" href="home.html"><span data-icon="home"></span><span>おうち</span></a>
+    <a class="bottom-nav__item" href="stroll.html"><span data-icon="stroll"></span><span>おさんぽ</span></a>
+    <div class="bottom-nav__center"><a class="fab-center" href="post.html"><span data-icon="plus"></span></a></div>
+    <a class="bottom-nav__item" href="notifications.html"><span data-icon="mail"></span><span>おたより</span></a>
+    <a class="bottom-nav__item" href="profile.html"><span data-icon="profile"></span><span>わたし</span></a>
+  </nav>
+
+</div>
+
+<script src="assets/js/icons.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+  document.querySelectorAll('.quiz-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      const opt = e.target.closest('.quiz-option');
+      if (!opt) return;
+      card.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('is-selected'));
+      opt.classList.add('is-selected');
+    });
+  });
+  document.querySelectorAll('.match-card__knock').forEach(btn => {
+    btn.addEventListener('click', () => showToast('そっと ノックしました', '🤝'));
+  });
+</script>
+</body>
+</html>

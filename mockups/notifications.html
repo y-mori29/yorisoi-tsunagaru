@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>おたより — よりそい つながる</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/components.css">
+<style>
+  .otayori-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+    position: relative;
+    transition: all var(--duration) var(--ease-spring);
+    cursor: pointer;
+  }
+  .otayori-row:hover { transform: translateY(-1px); }
+  .otayori-row.is-unread { background: linear-gradient(135deg, var(--peach-50), var(--bg-card) 70%); }
+  .otayori-row.is-unread::before {
+    content: "";
+    position: absolute;
+    top: 14px; right: 14px;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--peach-400);
+  }
+  .otayori-icon {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    display: grid; place-items: center;
+    font-size: 22px;
+    flex-shrink: 0;
+    background: var(--peach-50);
+  }
+  .otayori-icon--matcha { background: var(--matcha-50); }
+  .otayori-icon--lavender { background: var(--lavender-100); }
+  .otayori-icon--mustard { background: rgba(245, 200, 74, 0.2); }
+
+  .otayori-title { font: 500 14px/1.5 var(--font-jp-round); color: var(--text-primary); }
+  .otayori-quote {
+    font: 400 13px/1.6 var(--font-jp);
+    color: var(--text-secondary);
+    margin-top: 4px;
+    background: var(--bg-soft);
+    padding: 8px 10px;
+    border-radius: var(--radius-sm);
+    border-left: 2px solid var(--peach-200);
+  }
+  .otayori-time { font: 400 11px/1 var(--font-num); color: var(--text-tertiary); margin-top: 8px; }
+
+  .otayori-hero {
+    text-align: center;
+    padding: 28px 16px 20px;
+    background: linear-gradient(135deg, var(--lavender-100) 0%, var(--peach-50) 100%);
+    border-radius: var(--radius-lg);
+    margin-bottom: 8px;
+  }
+  .otayori-hero__bird {
+    width: 96px; height: 96px;
+    border-radius: 50%;
+    background: var(--bg-card);
+    display: grid; place-items: center;
+    margin: 0 auto;
+    font-size: 48px;
+    box-shadow: var(--shadow-card);
+    animation: gentle-pulse 3s ease-in-out infinite;
+  }
+  .otayori-hero h1 { font: 600 18px/1.4 var(--font-jp-round); margin-top: 12px; }
+  .otayori-hero p { font: 400 13px/1.6 var(--font-jp); color: var(--text-secondary); margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<div class="app-frame bg-pattern">
+
+  <header class="app-header">
+    <span class="text-h2">おたより</span>
+    <span class="grow"></span>
+    <button class="app-header__action"><span data-icon="settings"></span></button>
+  </header>
+
+  <main class="app-main stack" style="--gap: 12px;">
+
+    <!-- ヒーロー -->
+    <div class="otayori-hero">
+      <div class="otayori-hero__bird">🐦</div>
+      <h1>ふうから、3つの おたより</h1>
+      <p>けさ までに とどいたよ</p>
+    </div>
+
+    <div class="divider-label">きょう</div>
+
+    <!-- 通知 1: そっと届く声 -->
+    <article class="otayori-row is-unread" onclick="location.href='voice-received.html'">
+      <div class="otayori-icon otayori-icon--lavender">💌</div>
+      <div class="grow">
+        <div class="otayori-title">あたらしい こえが、ふうから とどいたよ</div>
+        <div class="otayori-quote">「さいきん、ちゃんと 眠れてる？わたしは あんまり…」</div>
+        <div class="otayori-time">いま から 8ぷん まえ</div>
+      </div>
+    </article>
+
+    <!-- 通知 2: スタンプもらった -->
+    <article class="otayori-row is-unread">
+      <div class="otayori-icon">🌸</div>
+      <div class="grow">
+        <div class="otayori-title">あなたの こえに、5人から「うん」が とどきました</div>
+        <div class="otayori-quote">「きょうは 朝から なんだか 落ちつかなくて…」</div>
+        <div class="otayori-time">35ぷん まえ</div>
+      </div>
+    </article>
+
+    <!-- 通知 3: コメント -->
+    <article class="otayori-row is-unread">
+      <div class="otayori-icon otayori-icon--matcha">💭</div>
+      <div class="grow">
+        <div class="otayori-title">こもれびさん から、ことばが とどきました</div>
+        <div class="otayori-quote">「わたしも 同じです。ベランダの風、わかります 🌿」</div>
+        <div class="otayori-time">1じかん まえ</div>
+      </div>
+    </article>
+
+    <div class="divider-label">きのう</div>
+
+    <!-- 通知 4: となりさんノック -->
+    <article class="otayori-row">
+      <div class="otayori-icon">🤝</div>
+      <div class="grow">
+        <div class="otayori-title">そらまめさんが、となりさんに なりました</div>
+        <div class="otayori-time">きのう・夜</div>
+      </div>
+    </article>
+
+    <!-- 通知 5: 医師コメント -->
+    <article class="otayori-row">
+      <div class="otayori-icon otayori-icon--matcha">🌿</div>
+      <div class="grow">
+        <div class="otayori-title">すずきせんせい（医師）から、ことばが とどきました</div>
+        <div class="otayori-quote">「波が ある日も、ない日も、両方 正解です」</div>
+        <div class="otayori-time">きのう・午後</div>
+      </div>
+    </article>
+
+    <div class="divider-label">おしらせ</div>
+
+    <!-- お守りレポート -->
+    <article class="otayori-row">
+      <div class="otayori-icon otayori-icon--mustard">🛡</div>
+      <div class="grow">
+        <div class="otayori-title">5月の おまもりレポート が とどきました</div>
+        <div class="otayori-quote">運営が 今月 おこなった あんしんの ためのこと、つたえます</div>
+        <div class="otayori-time">5月1日</div>
+      </div>
+    </article>
+
+  </main>
+
+  <!-- ボトムナビ -->
+  <nav class="bottom-nav">
+    <a class="bottom-nav__item" href="home.html"><span data-icon="home"></span><span>おうち</span></a>
+    <a class="bottom-nav__item" href="stroll.html"><span data-icon="stroll"></span><span>おさんぽ</span></a>
+    <div class="bottom-nav__center"><a class="fab-center" href="post.html"><span data-icon="plus"></span></a></div>
+    <a class="bottom-nav__item is-active" href="notifications.html"><span data-icon="mail"></span><span>おたより</span></a>
+    <a class="bottom-nav__item" href="profile.html"><span data-icon="profile"></span><span>わたし</span></a>
+  </nav>
+
+</div>
+
+<script src="assets/js/icons.js"></script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>

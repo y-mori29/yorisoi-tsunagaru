@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>おさんぽ — よりそい つながる</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/components.css">
+<style>
+  .stroll-hero {
+    text-align: center;
+    padding: 24px 16px 16px;
+    background: linear-gradient(135deg, var(--matcha-50) 0%, var(--bg-cream) 70%);
+    border-radius: 0 0 32px 32px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .stroll-hero__cat {
+    width: 130px; height: 130px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--matcha-50), var(--matcha-100));
+    display: grid; place-items: center;
+    margin: 0 auto;
+    box-shadow: var(--shadow-glow);
+    font-size: 72px;
+    animation: gentle-pulse 3s ease-in-out infinite;
+  }
+  .stroll-hero h1 { font: 600 22px/1.4 var(--font-jp-round); margin-top: 14px; }
+  .stroll-hero p { font: 400 14px/1.7 var(--font-jp); color: var(--text-secondary); margin-top: 6px; }
+
+  /* ユーザーカード（おさんぽ先） */
+  .user-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    box-shadow: var(--shadow-card);
+    position: relative;
+    overflow: hidden;
+  }
+  .user-card__cover {
+    height: 80px;
+    background: linear-gradient(135deg, var(--peach-100), var(--lavender-100));
+    border-radius: var(--radius-md);
+    margin: -8px -8px 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .user-card__cover::before, .user-card__cover::after {
+    content: "🌿";
+    position: absolute;
+    font-size: 24px;
+    opacity: 0.4;
+  }
+  .user-card__cover::before { top: 12px; left: 14px; }
+  .user-card__cover::after { bottom: 12px; right: 14px; font-size: 18px; }
+
+  .user-card__head {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  .user-card__head .avatar {
+    margin-top: -42px;
+    border: 3px solid var(--bg-card);
+  }
+  .user-card__bio {
+    font: 400 14px/1.7 var(--font-jp);
+    color: var(--text-primary);
+    margin-bottom: 14px;
+  }
+  .user-card__chips { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  .user-card__voice {
+    background: var(--bg-soft);
+    border-radius: var(--radius-md);
+    padding: 12px 14px;
+    font: 400 14px/1.7 var(--font-jp);
+    color: var(--text-secondary);
+    margin-top: 14px;
+    position: relative;
+  }
+  .user-card__voice::before {
+    content: "そら";
+    font-family: serif;
+    font-size: 38px;
+    position: absolute;
+    top: -6px; left: 8px;
+    color: var(--peach-200);
+    line-height: 1;
+    font-weight: 700;
+    /* opacity */
+    opacity: 0.4;
+  }
+
+  .next-stroll {
+    margin-top: 16px;
+    display: flex;
+    gap: 10px;
+  }
+</style>
+</head>
+<body>
+
+<div class="app-frame bg-pattern">
+
+  <header class="app-header">
+    <span class="text-h2" style="display: flex; align-items: center; gap: 8px;">
+      <span style="font-size: 22px;">🌿</span>
+      <span>おさんぽ</span>
+    </span>
+    <span class="grow"></span>
+    <button class="app-header__action"><span data-icon="search"></span></button>
+  </header>
+
+  <main class="app-main stack" style="--gap: 16px;">
+
+    <!-- ヒーロー -->
+    <div class="stroll-hero">
+      <div class="stroll-hero__cat">🐱</div>
+      <h1>そらと おさんぽ</h1>
+      <p>きまぐれに、となりさんの ところへ。<br>気がねなく、ふらっと よってみよう。</p>
+    </div>
+
+    <!-- ユーザーカード 1 -->
+    <article class="user-card">
+      <div class="user-card__cover"></div>
+      <div class="user-card__head">
+        <div class="avatar avatar--64 avatar-glow" style="background: linear-gradient(135deg, var(--peach-100), var(--peach-200)); font-size: 32px;">🦊</div>
+        <div class="grow" style="margin-top: 6px;">
+          <div class="text-h3">こもれびさん</div>
+          <div class="text-caption">SLEのおうち ・ 30代</div>
+        </div>
+        <button class="icon-btn"><span data-icon="heart"></span></button>
+      </div>
+      <p class="user-card__bio">
+にがてだった おはなしも、ここでなら すこしずつ。<br>音楽と、おちゃの 時間が だいすき。
+      </p>
+      <div class="user-card__chips">
+        <span class="chip chip--peach">おなじ なやみ</span>
+        <span class="chip">考えかた ちかい</span>
+        <span class="chip chip--lavender">夜型 ともだち</span>
+      </div>
+      <div class="user-card__voice">
+        さいきんの こえ：<br>
+        「体が だるい日は、ありさんを みてる。あの 一所けんめいさが すき。」
+      </div>
+      <div class="next-stroll">
+        <button class="btn btn--secondary btn--sm" style="flex: 1;">となりさんに なる</button>
+        <button class="btn btn--matcha btn--sm" onclick="nextWalk()" style="flex: 1;">そらと つぎへ</button>
+      </div>
+    </article>
+
+    <!-- ユーザーカード 2 -->
+    <article class="user-card">
+      <div class="user-card__cover" style="background: linear-gradient(135deg, var(--matcha-100), var(--peach-100));"></div>
+      <div class="user-card__head">
+        <div class="avatar avatar--64 avatar-glow" style="background: linear-gradient(135deg, var(--lavender-100), var(--lavender-200)); font-size: 32px;">🐢</div>
+        <div class="grow" style="margin-top: 6px;">
+          <div class="text-h3">ゆっくりさん</div>
+          <div class="text-caption">クローンのおうち ・ 40代</div>
+        </div>
+        <button class="icon-btn"><span data-icon="heart"></span></button>
+      </div>
+      <p class="user-card__bio">
+ゆっくり あるくのが、しっくりきます。<br>家庭菜園と、はがきを かくこと。
+      </p>
+      <div class="user-card__chips">
+        <span class="chip">ペース ちかい</span>
+        <span class="chip chip--peach">同じ薬</span>
+      </div>
+      <div class="user-card__voice">
+        さいきんの こえ：<br>
+        「朝の おちゃが いちばん 美味しいと きづいた。これだけは、なに があっても 変わらない。」
+      </div>
+      <div class="next-stroll">
+        <button class="btn btn--secondary btn--sm" style="flex: 1;">となりさんに なる</button>
+        <button class="btn btn--matcha btn--sm" onclick="nextWalk()" style="flex: 1;">そらと つぎへ</button>
+      </div>
+    </article>
+
+  </main>
+
+  <nav class="bottom-nav">
+    <a class="bottom-nav__item" href="home.html"><span data-icon="home"></span><span>おうち</span></a>
+    <a class="bottom-nav__item is-active" href="stroll.html"><span data-icon="stroll"></span><span>おさんぽ</span></a>
+    <div class="bottom-nav__center"><a class="fab-center" href="post.html"><span data-icon="plus"></span></a></div>
+    <a class="bottom-nav__item" href="notifications.html"><span data-icon="mail"></span><span>おたより</span></a>
+    <a class="bottom-nav__item" href="profile.html"><span data-icon="profile"></span><span>わたし</span></a>
+  </nav>
+
+</div>
+
+<script src="assets/js/icons.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+  function nextWalk() {
+    showToast('そらが つぎの ともだちへ…', '🐱');
+  }
+</script>
+</body>
+</html>
