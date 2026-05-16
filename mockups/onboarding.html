@@ -54,8 +54,8 @@
   }
 
   .onb-mascot {
-    width: 180px;
-    height: 180px;
+    width: 200px;
+    height: 200px;
     border-radius: 50%;
     background: linear-gradient(135deg, var(--peach-50), var(--matcha-50));
     display: grid; place-items: center;
@@ -63,6 +63,13 @@
     margin-bottom: 24px;
     font-size: 90px;
     position: relative;
+    overflow: hidden;
+  }
+  .onb-mascot img {
+    width: 92%;
+    height: 92%;
+    object-fit: contain;
+    padding: 4px;
   }
   .onb-mascot.bg-img {
     background-size: cover;
@@ -198,7 +205,9 @@
 
       <!-- Step 1: ようこそ -->
       <div class="onb-step is-active" data-step="1">
-        <div class="onb-mascot breathing">🐰</div>
+        <div class="onb-mascot breathing">
+          <img src="../assets/images/mascot-moka.png" alt="もか">
+        </div>
         <h1 class="onb-title">よく きてくれたね</h1>
         <p class="onb-desc">
           ここは、おなじしんどさを かかえる<br>
@@ -210,7 +219,9 @@
 
       <!-- Step 2: ハンドル名 -->
       <div class="onb-step" data-step="2">
-        <div class="onb-mascot breathing">🐰</div>
+        <div class="onb-mascot breathing">
+          <img src="../assets/images/mascot-moka.png" alt="もか">
+        </div>
         <h1 class="onb-title">なんて よばれたい？</h1>
         <p class="onb-desc">本名じゃなくていいよ。<br>あとから 変えても大丈夫。</p>
         <div class="onb-form">
@@ -242,7 +253,9 @@
 
       <!-- Step 4: 性別年代（任意） -->
       <div class="onb-step" data-step="4">
-        <div class="onb-mascot breathing">🐰</div>
+        <div class="onb-mascot breathing">
+          <img src="../assets/images/mascot-moka.png" alt="もか">
+        </div>
         <h1 class="onb-title">よかったら すこしだけ おしえて</h1>
         <p class="onb-desc">
           にた となりさんを みつけやすく なるよ。<br>
@@ -274,7 +287,9 @@
 
       <!-- Step 5: 最初のひとこと -->
       <div class="onb-step" data-step="5">
-        <div class="onb-mascot breathing">🐰</div>
+        <div class="onb-mascot breathing">
+          <img src="../assets/images/mascot-moka.png" alt="もか">
+        </div>
         <h1 class="onb-title">さいごに、ひとこと だけ</h1>
         <p class="onb-desc">
           きょうの きもち、<br>
@@ -362,16 +377,15 @@
     render();
   });
 
-  // アバター選択
+  // アバター選択（ステップ3の中央表示「selectedAvatar」だけ動物に変える。
+  // 他のステップのもかは案内役なので不変。）
   document.querySelectorAll('.animal-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.animal-btn').forEach(b => b.classList.remove('is-selected'));
       btn.classList.add('is-selected');
-      document.getElementById('selectedAvatar').textContent = btn.dataset.emoji;
-      // 他のステップのマスコットも更新
-      document.querySelectorAll('.onb-mascot').forEach((m, i) => {
-        if (i < 4) m.textContent = btn.dataset.emoji;
-      });
+      const target = document.getElementById('selectedAvatar');
+      target.innerHTML = ''; // imgを除去
+      target.textContent = btn.dataset.emoji;
     });
   });
 

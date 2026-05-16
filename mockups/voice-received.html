@@ -14,7 +14,7 @@
     position: relative;
   }
   .vr-hero__bird {
-    width: 120px; height: 120px;
+    width: 150px; height: 150px;
     border-radius: 50%;
     background: linear-gradient(135deg, var(--lavender-100), var(--peach-50));
     display: grid; place-items: center;
@@ -23,7 +23,9 @@
     font-size: 64px;
     position: relative;
     animation: gentle-pulse 2.8s ease-in-out infinite;
+    overflow: hidden;
   }
+  .vr-hero__bird img { width: 92%; height: 92%; object-fit: contain; }
   .vr-hero__bird::after {
     content: "";
     position: absolute;
@@ -191,7 +193,9 @@
 
     <!-- ヒーロー（ふうが運んできた） -->
     <div class="vr-hero">
-      <div class="vr-hero__bird">🐦</div>
+      <div class="vr-hero__bird">
+        <img src="../assets/images/mascot-fuu.png" alt="ふう">
+      </div>
       <h1>ふわっと、こえが とどいたよ</h1>
       <p>ふうが はこんできました</p>
     </div>

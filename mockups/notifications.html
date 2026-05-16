@@ -61,7 +61,7 @@
     margin-bottom: 8px;
   }
   .otayori-hero__bird {
-    width: 96px; height: 96px;
+    width: 120px; height: 120px;
     border-radius: 50%;
     background: var(--bg-card);
     display: grid; place-items: center;
@@ -69,7 +69,9 @@
     font-size: 48px;
     box-shadow: var(--shadow-card);
     animation: gentle-pulse 3s ease-in-out infinite;
+    overflow: hidden;
   }
+  .otayori-hero__bird img { width: 92%; height: 92%; object-fit: contain; }
   .otayori-hero h1 { font: 600 18px/1.4 var(--font-jp-round); margin-top: 12px; }
   .otayori-hero p { font: 400 13px/1.6 var(--font-jp); color: var(--text-secondary); margin-top: 4px; }
 </style>
@@ -88,7 +90,9 @@
 
     <!-- ヒーロー -->
     <div class="otayori-hero">
-      <div class="otayori-hero__bird">🐦</div>
+      <div class="otayori-hero__bird">
+        <img src="../assets/images/mascot-fuu.png" alt="ふう">
+      </div>
       <h1>ふうから、3つの おたより</h1>
       <p>けさ までに とどいたよ</p>
     </div>
