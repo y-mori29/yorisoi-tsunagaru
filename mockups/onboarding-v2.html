@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ようこそ — よりそい つながる</title>
+<link rel="stylesheet" href="assets/css/style-v2.css">
+<link rel="stylesheet" href="assets/css/components-v2.css">
+<style>
+  .onb-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 32px 28px 16px;
+    position: relative;
+  }
+  .onb-skip {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    font: 500 12px/1 var(--font-jp);
+    color: var(--ink-300);
+    padding: 8px 14px;
+    letter-spacing: 0.06em;
+    transition: color var(--duration) var(--ease-soft);
+  }
+  .onb-skip:hover { color: var(--ink-500); }
+
+  /* ヒーロー画像エリア（ステップ1専用） */
+  .onb-hero-image {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    background: var(--bg-soft);
+    margin: 32px 0 24px;
+    box-shadow: var(--shadow-card);
+    position: relative;
+  }
+  .onb-hero-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* ステップ表示 */
+  .onb-steps {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+    margin: 16px 0 16px;
+    position: relative;
+  }
+  .onb-step {
+    flex: 0 0 100%;
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    text-align: left;
+    padding: 0;
+    animation: stepFade 380ms var(--ease-soft);
+  }
+  .onb-step.is-active { display: flex; }
+  @keyframes stepFade {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* タイトル・本文 */
+  .onb-eyebrow {
+    font: 500 11px/1 var(--font-jp);
+    color: var(--terra-700);
+    letter-spacing: 0.18em;
+    margin-bottom: 14px;
+  }
+  .onb-title {
+    font: 500 24px/1.55 var(--font-jp);
+    color: var(--ink-900);
+    letter-spacing: 0.04em;
+    margin-bottom: 16px;
+  }
+  .onb-title--mincho {
+    font: 400 26px/1.65 var(--font-jp-mincho);
+    letter-spacing: 0.08em;
+  }
+  .onb-desc {
+    font: 400 15px/1.95 var(--font-jp);
+    color: var(--ink-700);
+    letter-spacing: 0.03em;
+    margin-bottom: 28px;
+  }
+
+  /* アバター（動物）グリッド */
+  .animal-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-top: 8px;
+  }
+  .animal-btn {
+    aspect-ratio: 1;
+    background: var(--bg-card);
+    border-radius: 50%;
+    border: 1px solid var(--line-soft);
+    display: grid; place-items: center;
+    cursor: pointer;
+    transition: all var(--duration) var(--ease-soft);
+    overflow: hidden;
+    padding: 6px;
+  }
+  .animal-btn:hover { border-color: var(--terra-200); }
+  .animal-btn.is-selected {
+    border-color: var(--terra-500);
+    background: var(--terra-50);
+    box-shadow: 0 0 0 3px var(--terra-50);
+  }
+  .animal-btn svg { width: 60%; height: 60%; color: var(--ink-700); }
+  .animal-btn.is-selected svg { color: var(--terra-700); }
+
+  /* ピル */
+  .pill-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .pill-btn {
+    padding: 10px 18px;
+    border-radius: var(--radius-pill);
+    background: var(--bg-card);
+    border: 1px solid var(--line-soft);
+    font: 500 13px/1 var(--font-jp);
+    color: var(--ink-700);
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: all var(--duration) var(--ease-soft);
+  }
+  .pill-btn:hover { border-color: var(--terra-200); }
+  .pill-btn.is-selected {
+    background: var(--terra-500);
+    border-color: var(--terra-500);
+    color: var(--ink-on-color);
+  }
+
+  /* セクション間隔（複数項目時） */
+  .onb-section + .onb-section { margin-top: 28px; }
+
+  /* 例文チップ */
+  .example-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+  }
+  .example-chip {
+    padding: 6px 12px;
+    border-radius: var(--radius-pill);
+    background: var(--moss-50);
+    border: 1px solid var(--moss-100);
+    color: var(--moss-700);
+    font: 500 12px/1 var(--font-jp);
+    cursor: pointer;
+    letter-spacing: 0.04em;
+  }
+  .example-chip:hover { background: var(--moss-100); }
+
+  /* フッター */
+  .onb-footer {
+    padding: 24px 0 calc(28px + var(--safe-bottom));
+    border-top: 1px solid var(--line-soft);
+    margin-top: 24px;
+  }
+  .onb-footer__progress {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  .onb-footer__actions {
+    display: flex;
+    gap: 10px;
+  }
+  .onb-footer__actions .btn { flex: 1; }
+</style>
+</head>
+<body>
+
+<div class="app-frame">
+
+  <button class="onb-skip" onclick="location.href='home-v2.html'">スキップ</button>
+
+  <div class="onb-wrap">
+
+    <div class="onb-steps">
+
+      <!-- Step 1: ようこそ -->
+      <div class="onb-step is-active" data-step="1">
+        <div class="onb-hero-image">
+          <img src="../assets/images/mascot-moka.png" alt="" id="heroImage" style="object-fit: contain; padding: 40px; background: linear-gradient(180deg, var(--terra-50) 0%, var(--bg-soft) 100%);">
+        </div>
+        <div class="onb-eyebrow">ようこそ</div>
+        <h1 class="onb-title onb-title--mincho">よりそい つながる</h1>
+        <p class="onb-desc">
+ここは、同じしんどさを抱える人と、<br>
+そっと、つながれる場所です。<br><br>
+話さなくても、構いません。<br>
+ただ、ここに居るだけで、大丈夫です。
+        </p>
+      </div>
+
+      <!-- Step 2: ハンドル名 -->
+      <div class="onb-step" data-step="2">
+        <div class="onb-eyebrow">1 / 4</div>
+        <h1 class="onb-title">どのように<br>呼ばれたいですか？</h1>
+        <p class="onb-desc">
+本名でなくて、構いません。<br>
+あとから変更できます。
+        </p>
+        <div>
+          <label class="input-label">ニックネーム</label>
+          <input type="text" class="input" placeholder="例：もり、しずか、なんでも" value="">
+          <p class="text-caption mt-8">ひらがな・カタカナ・漢字・英字、どれでも</p>
+        </div>
+      </div>
+
+      <!-- Step 3: アバター（動物プリセット） -->
+      <div class="onb-step" data-step="3">
+        <div class="onb-eyebrow">2 / 4</div>
+        <h1 class="onb-title">あなたの姿を、<br>選んでください。</h1>
+        <p class="onb-desc">
+顔写真は使いません。<br>
+どの姿でも、あなたの「となり」です。
+        </p>
+        <div class="animal-grid" id="animalGrid">
+          <button class="animal-btn is-selected" data-animal="rabbit"><span data-icon="rabbit"></span></button>
+          <button class="animal-btn" data-animal="bear"><span data-icon="bear"></span></button>
+          <button class="animal-btn" data-animal="cat"><span data-icon="cat"></span></button>
+          <button class="animal-btn" data-animal="bird"><span data-icon="bird"></span></button>
+          <button class="animal-btn" data-animal="hedgehog"><span data-icon="hedgehog"></span></button>
+          <button class="animal-btn" data-animal="fox"><span data-icon="fox"></span></button>
+          <button class="animal-btn" data-animal="owl"><span data-icon="owl"></span></button>
+          <button class="animal-btn" data-animal="turtle"><span data-icon="turtle"></span></button>
+        </div>
+        <p class="text-caption mt-16">あとから、いつでも変えられます</p>
+      </div>
+
+      <!-- Step 4: 性別年代（任意） -->
+      <div class="onb-step" data-step="4">
+        <div class="onb-eyebrow">3 / 4</div>
+        <h1 class="onb-title">よかったら、<br>少しだけ教えてください。</h1>
+        <p class="onb-desc">
+近い人を見つけやすくなります。<br>
+すべてスキップしても、問題ありません。
+        </p>
+        <div class="onb-section">
+          <label class="input-label">性別（任意）</label>
+          <div class="pill-group">
+            <button class="pill-btn">女性</button>
+            <button class="pill-btn">男性</button>
+            <button class="pill-btn">それ以外</button>
+            <button class="pill-btn">答えない</button>
+          </div>
+        </div>
+        <div class="onb-section">
+          <label class="input-label">年代（任意）</label>
+          <div class="pill-group">
+            <button class="pill-btn">〜10代</button>
+            <button class="pill-btn">20代</button>
+            <button class="pill-btn is-selected">30代</button>
+            <button class="pill-btn">40代</button>
+            <button class="pill-btn">50代</button>
+            <button class="pill-btn">60代〜</button>
+            <button class="pill-btn">答えない</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 5: 最初のひとこと -->
+      <div class="onb-step" data-step="5">
+        <div class="onb-eyebrow">4 / 4</div>
+        <h1 class="onb-title">最後に、<br>ひとことだけ。</h1>
+        <p class="onb-desc">
+今日の声を、ここに、そっと残せます。<br>
+すぐでなくても構いません。
+        </p>
+        <textarea class="textarea" placeholder="例：はじめまして。最近、あまり眠れない日が続いています。" rows="5"></textarea>
+        <div class="example-row">
+          <button class="example-chip" data-text="はじめまして。よろしくお願いします。">はじめまして</button>
+          <button class="example-chip" data-text="今日は、少し疲れました。">今日は、疲れた</button>
+          <button class="example-chip" data-text="同じような方は、いますか？">同じ方、いますか？</button>
+        </div>
+      </div>
+
+      <!-- Step 6: 完了 -->
+      <div class="onb-step" data-step="6">
+        <div class="onb-hero-image" style="aspect-ratio: 16 / 10;">
+          <img src="../assets/images/mascot-moka.png" alt="" style="object-fit: contain; padding: 28px; background: linear-gradient(180deg, var(--moss-50) 0%, var(--terra-50) 100%);">
+        </div>
+        <div class="onb-eyebrow">準備、できました</div>
+        <h1 class="onb-title onb-title--mincho">ようこそ、つながるへ。</h1>
+        <p class="onb-desc">
+あなたの声は、届いています。<br>
+きっと、誰かが、読んでくれます。<br><br>
+ゆっくり、過ごしてください。
+        </p>
+      </div>
+
+    </div>
+
+    <!-- フッター -->
+    <div class="onb-footer">
+      <div class="onb-footer__progress">
+        <div class="progress-dots" id="progressDots">
+          <span class="progress-dots__dot is-active"></span>
+          <span class="progress-dots__dot"></span>
+          <span class="progress-dots__dot"></span>
+          <span class="progress-dots__dot"></span>
+          <span class="progress-dots__dot"></span>
+          <span class="progress-dots__dot"></span>
+        </div>
+      </div>
+      <div class="onb-footer__actions">
+        <button class="btn btn--ghost" id="prevBtn" style="display: none;">もどる</button>
+        <button class="btn btn--primary btn--full" id="nextBtn">はじめる</button>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script src="assets/js/icons-v2.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+  // ステップ遷移
+  let current = 1;
+  const total = 6;
+  const stepEls = document.querySelectorAll('.onb-step');
+  const dots = document.querySelectorAll('#progressDots .progress-dots__dot');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const labels = ['はじめる', '次へ', '選ぶ', '次へ', '残す', 'はじめる'];
+
+  function render() {
+    stepEls.forEach(el => el.classList.toggle('is-active', +el.dataset.step === current));
+    dots.forEach((d, i) => d.classList.toggle('is-active', i === current - 1));
+    prevBtn.style.display = current === 1 ? 'none' : 'block';
+    nextBtn.textContent = labels[current - 1];
+  }
+
+  nextBtn.addEventListener('click', () => {
+    if (current === total) {
+      location.href = 'home-v2.html';
+      return;
+    }
+    current++;
+    render();
+  });
+  prevBtn.addEventListener('click', () => {
+    if (current === 1) return;
+    current--;
+    render();
+  });
+
+  // アバター選択
+  document.querySelectorAll('.animal-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.animal-btn').forEach(b => b.classList.remove('is-selected'));
+      btn.classList.add('is-selected');
+    });
+  });
+
+  // ピル選択
+  document.querySelectorAll('.pill-group').forEach(group => {
+    group.addEventListener('click', (e) => {
+      const btn = e.target.closest('.pill-btn');
+      if (!btn) return;
+      group.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('is-selected'));
+      btn.classList.add('is-selected');
+    });
+  });
+
+  // 例文
+  document.querySelectorAll('.example-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const ta = document.querySelector('.onb-step[data-step="5"] textarea');
+      ta.value = chip.dataset.text;
+      ta.focus();
+    });
+  });
+
+  render();
+</script>
+</body>
+</html>

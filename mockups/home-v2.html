@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ホーム — よりそい つながる</title>
+<link rel="stylesheet" href="assets/css/style-v2.css">
+<link rel="stylesheet" href="assets/css/components-v2.css">
+<style>
+  /* ホームヒーロー */
+  .home-hero {
+    margin-bottom: 24px;
+    padding: 20px 0 4px;
+  }
+  .home-hero__date {
+    font: 400 11px/1 var(--font-num);
+    color: var(--ink-300);
+    letter-spacing: 0.15em;
+    margin-bottom: 6px;
+  }
+  .home-hero__greeting {
+    font: 400 22px/1.5 var(--font-jp-mincho);
+    color: var(--ink-900);
+    letter-spacing: 0.06em;
+  }
+
+  /* セグメント中央寄せ */
+  .segment-center {
+    display: flex;
+    justify-content: center;
+    margin: 0 0 24px;
+  }
+
+  /* 今日のひとことカード（v2） */
+  .today-card {
+    background: linear-gradient(180deg, var(--terra-50) 0%, var(--bg-card) 100%);
+    border: 1px solid var(--terra-100);
+    border-radius: var(--radius-lg);
+    padding: 24px 26px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .today-card__mark {
+    font: 500 10px/1 var(--font-jp);
+    color: var(--terra-700);
+    letter-spacing: 0.18em;
+    margin-bottom: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .today-card__mark::before {
+    content: "";
+    width: 16px; height: 1px;
+    background: var(--terra-300);
+  }
+  .today-card__body {
+    font: 400 17px/1.95 var(--font-jp-mincho);
+    color: var(--ink-900);
+    letter-spacing: 0.05em;
+  }
+  .today-card__footer {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--line-soft);
+    color: var(--ink-500);
+    font-size: 12px;
+  }
+
+  /* アバター（動物アイコンを背景に） */
+  .av-rabbit, .av-bear, .av-cat, .av-bird, .av-fox, .av-hedgehog, .av-owl, .av-turtle {
+    display: grid;
+    place-items: center;
+    background: var(--bg-soft);
+  }
+  .av-rabbit { background: var(--terra-50); color: var(--terra-700); }
+  .av-bear   { background: var(--moss-50); color: var(--moss-700); }
+  .av-cat    { background: var(--plum-50); color: var(--plum-600); }
+  .av-bird   { background: rgba(201, 169, 97, 0.12); color: var(--gold-600); }
+  .av-fox    { background: var(--terra-100); color: var(--terra-700); }
+  .av-hedgehog { background: var(--moss-100); color: var(--moss-700); }
+  .av-owl    { background: var(--plum-100); color: var(--plum-600); }
+  .av-turtle { background: var(--bg-soft); color: var(--ink-700); }
+
+  .avatar svg { width: 60%; height: 60%; }
+
+  /* 医師バッジ */
+  .doctor-mark {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
+    background: var(--moss-100);
+    color: var(--moss-700);
+    font: 500 10px/1.4 var(--font-jp);
+    letter-spacing: 0.06em;
+    margin-left: 6px;
+  }
+  .doctor-mark svg { width: 10px; height: 10px; }
+
+  /* 投稿カードの画像 */
+  .voice-card__image-placeholder {
+    background: linear-gradient(135deg, var(--moss-50) 0%, var(--terra-50) 60%, var(--plum-50) 100%);
+    aspect-ratio: 16 / 10;
+    border-radius: var(--radius-md);
+    margin-top: 16px;
+    display: grid;
+    place-items: center;
+    color: var(--ink-300);
+    position: relative;
+    overflow: hidden;
+  }
+  .voice-card__image-placeholder::before {
+    content: "";
+    position: absolute;
+    width: 60%;
+    height: 60%;
+    background: radial-gradient(circle at 30% 40%, rgba(160, 120, 90, 0.06) 0%, transparent 50%),
+                radial-gradient(circle at 70% 60%, rgba(116, 127, 85, 0.06) 0%, transparent 50%);
+  }
+  .voice-card__image-placeholder svg {
+    width: 32px; height: 32px;
+    opacity: 0.3;
+    position: relative;
+  }
+
+  /* 医師カードのdisclaimer */
+  .voice-card__disclaimer {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--line-soft);
+    font: 400 11px/1.6 var(--font-jp);
+    color: var(--ink-500);
+    letter-spacing: 0.04em;
+  }
+</style>
+</head>
+<body>
+
+<div class="app-frame">
+
+  <header class="app-header">
+    <span class="app-header__title">ホーム</span>
+    <button class="app-header__action" style="position: relative;" onclick="location.href='notifications.html'">
+      <span data-icon="bell"></span>
+      <span class="dot-badge" style="position: absolute; top: 8px; right: 8px;"></span>
+    </button>
+  </header>
+
+  <main class="app-main">
+
+    <!-- 朝の挨拶 -->
+    <div class="home-hero">
+      <div class="home-hero__date">2026 . 05 . 16</div>
+      <div class="home-hero__greeting">おはようございます、もり さん。</div>
+    </div>
+
+    <!-- セグメント -->
+    <div class="segment-center">
+      <div class="segment">
+        <button class="segment__item is-active">みんな</button>
+        <button class="segment__item">となり</button>
+      </div>
+    </div>
+
+    <!-- 今日のひとこと -->
+    <article class="today-card">
+      <div class="today-card__mark">今日のひとこと</div>
+      <p class="today-card__body">
+今日は、ふかぶかと、息をはいてみる日。<br>
+あなたは、ちゃんと眠れていますか。
+      </p>
+      <div class="today-card__footer">
+        <div class="avatar avatar--28 av-rabbit"><span data-icon="rabbit"></span></div>
+        <span>もか（公式）から</span>
+      </div>
+    </article>
+
+    <!-- 投稿カード 1 -->
+    <article class="voice-card">
+      <div class="voice-card__header">
+        <div class="avatar avatar--36 av-rabbit"><span data-icon="rabbit"></span></div>
+        <div class="grow">
+          <div class="voice-card__name">しずか <span class="badge badge--terra" style="margin-left: 6px;">UC ルーム</span></div>
+          <div class="voice-card__time">3分前</div>
+        </div>
+        <button class="voice-card__menu"><span data-icon="more"></span></button>
+      </div>
+      <div class="voice-card__body">
+今日は朝から、なんだか落ち着かなくて。
+ベランダで風に当たって、深く呼吸をしてみました。
+同じような方、いますか。
+      </div>
+      <div class="voice-card__reactions">
+        <button class="reaction-chip is-active"><span data-icon="acknowledge"></span><span>そう</span></button>
+        <button class="reaction-chip"><span data-icon="understand"></span><span>わかる</span></button>
+        <button class="reaction-chip"><span data-icon="leaf"></span><span>読んだよ</span></button>
+        <button class="reaction-chip" style="margin-left: auto;"><span data-icon="chat"></span></button>
+      </div>
+    </article>
+
+    <!-- 投稿カード 2（画像付き） -->
+    <article class="voice-card mt-16">
+      <div class="voice-card__header">
+        <div class="avatar avatar--36 av-cat"><span data-icon="cat"></span></div>
+        <div class="grow">
+          <div class="voice-card__name">ふらり <span class="badge badge--plum" style="margin-left: 6px;">クローン ルーム</span></div>
+          <div class="voice-card__time">15分前</div>
+        </div>
+        <button class="voice-card__menu"><span data-icon="more"></span></button>
+      </div>
+      <div class="voice-card__body">
+散歩道で、小さな花が、開いていました。
+こういう、静かな時間が、いちばん好きです。
+      </div>
+      <div class="voice-card__image-placeholder">
+        <span data-icon="flower"></span>
+      </div>
+      <div class="voice-card__reactions">
+        <button class="reaction-chip"><span data-icon="thanks"></span><span>ありがとう</span></button>
+        <button class="reaction-chip"><span data-icon="understand"></span><span>わかる</span></button>
+        <button class="reaction-chip" style="margin-left: auto;"><span data-icon="chat"></span></button>
+      </div>
+    </article>
+
+    <div class="divider-label">2時間前</div>
+
+    <!-- 投稿カード 3 -->
+    <article class="voice-card">
+      <div class="voice-card__header">
+        <div class="avatar avatar--36 av-hedgehog"><span data-icon="hedgehog"></span></div>
+        <div class="grow">
+          <div class="voice-card__name">こもれび <span class="badge badge--terra" style="margin-left: 6px;">SLE ルーム</span></div>
+          <div class="voice-card__time">2時間前</div>
+        </div>
+        <button class="voice-card__menu"><span data-icon="more"></span></button>
+      </div>
+      <div class="voice-card__body">
+最近、体のだるさが続いていて、ふと不安になります。
+それでも、ここに来ると、ほっとできます。
+ありがとう。
+      </div>
+      <div class="voice-card__reactions">
+        <button class="reaction-chip is-active"><span data-icon="hand"></span><span>気にかけてる</span></button>
+        <button class="reaction-chip"><span data-icon="thanks"></span><span>ありがとう</span></button>
+        <button class="reaction-chip"><span data-icon="acknowledge"></span><span>そう</span></button>
+        <button class="reaction-chip" style="margin-left: auto;"><span data-icon="chat"></span></button>
+      </div>
+    </article>
+
+    <!-- 投稿カード 4: 医師（v2バッジ） -->
+    <article class="voice-card mt-16" style="border-left: 3px solid var(--moss-300);">
+      <div class="voice-card__header">
+        <div class="avatar avatar--36 av-owl"><span data-icon="owl"></span></div>
+        <div class="grow">
+          <div class="voice-card__name">
+            鈴木 医師
+            <span class="doctor-mark"><span data-icon="check"></span>医師</span>
+          </div>
+          <div class="voice-card__time">今朝</div>
+        </div>
+        <button class="voice-card__menu"><span data-icon="more"></span></button>
+      </div>
+      <div class="voice-card__body">
+おはようございます。
+体調の波には、ある日と、ない日があります。それで、自然です。
+今日うまくいかなくても、明日また、いっしょに考えましょう。
+      </div>
+      <div class="voice-card__disclaimer">
+※ こちらは一般的な情報共有であり、個別の診断・治療方針ではありません。判断は主治医にご相談ください。
+      </div>
+      <div class="voice-card__reactions">
+        <button class="reaction-chip"><span data-icon="thanks"></span><span>ありがとう</span></button>
+        <button class="reaction-chip"><span data-icon="acknowledge"></span><span>そう</span></button>
+        <button class="reaction-chip" style="margin-left: auto;"><span data-icon="chat"></span></button>
+      </div>
+    </article>
+
+    <!-- 投稿カード 5 -->
+    <article class="voice-card mt-16">
+      <div class="voice-card__header">
+        <div class="avatar avatar--36 av-bird"><span data-icon="bird"></span></div>
+        <div class="grow">
+          <div class="voice-card__name">そらまめ</div>
+          <div class="voice-card__time">きのう</div>
+        </div>
+        <button class="voice-card__menu"><span data-icon="more"></span></button>
+      </div>
+      <div class="voice-card__body">
+となりの皆さま、はじめまして。
+ぼくも同じ病気で、長く付き合ってきました。
+ここで皆さんの声が読めて、すこし安心しました。
+      </div>
+      <div class="voice-card__reactions">
+        <button class="reaction-chip"><span data-icon="acknowledge"></span><span>そう</span></button>
+        <button class="reaction-chip" style="margin-left: auto;"><span data-icon="chat"></span></button>
+      </div>
+    </article>
+
+  </main>
+
+  <!-- ボトムナビ -->
+  <nav class="bottom-nav">
+    <a class="bottom-nav__item is-active" href="home-v2.html">
+      <span data-icon="home"></span>
+      <span>ホーム</span>
+    </a>
+    <a class="bottom-nav__item" href="stroll.html">
+      <span data-icon="stroll"></span>
+      <span>めぐる</span>
+    </a>
+    <div class="bottom-nav__center">
+      <a class="fab-center" href="post.html">
+        <span data-icon="plus"></span>
+      </a>
+    </div>
+    <a class="bottom-nav__item" href="notifications.html">
+      <span data-icon="mail"></span>
+      <span>お知らせ</span>
+    </a>
+    <a class="bottom-nav__item" href="profile.html">
+      <span data-icon="profile"></span>
+      <span>プロフィール</span>
+    </a>
+  </nav>
+
+</div>
+
+<script src="assets/js/icons-v2.js"></script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>

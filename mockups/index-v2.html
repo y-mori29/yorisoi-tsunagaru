@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>よりそい つながる — モック v2</title>
+<link rel="stylesheet" href="assets/css/style-v2.css">
+<link rel="stylesheet" href="assets/css/components-v2.css">
+<style>
+  body { display: block; padding: 48px 24px; }
+  .index-wrap { max-width: 960px; margin: 0 auto; }
+
+  .index-hero {
+    border-radius: var(--radius-xl);
+    padding: 56px 48px 48px;
+    text-align: center;
+    margin-bottom: 48px;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-soft) 100%);
+    border: 1px solid var(--line-soft);
+  }
+  .index-hero__eyebrow {
+    font: 500 11px/1 var(--font-jp);
+    color: var(--terra-700);
+    letter-spacing: 0.24em;
+    margin-bottom: 18px;
+  }
+  .index-hero__title {
+    font: 400 36px/1.5 var(--font-jp-mincho);
+    color: var(--ink-900);
+    letter-spacing: 0.08em;
+    margin-bottom: 14px;
+  }
+  .index-hero__sub {
+    font: 400 14px/1.85 var(--font-jp);
+    color: var(--ink-500);
+    max-width: 520px;
+    margin: 0 auto;
+    letter-spacing: 0.04em;
+  }
+
+  .index-meta {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 28px;
+    flex-wrap: wrap;
+  }
+  .index-meta .chip {
+    font-size: 11px;
+    padding: 6px 14px;
+  }
+
+  .section-label {
+    font: 500 11px/1 var(--font-jp);
+    color: var(--terra-700);
+    letter-spacing: 0.24em;
+    margin: 40px 0 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .section-label::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--line-soft);
+  }
+
+  .screen-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  .screen-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: 22px 24px;
+    border: 1px solid var(--line-soft);
+    transition: all var(--duration) var(--ease-soft);
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    position: relative;
+  }
+  .screen-card:hover {
+    border-color: var(--terra-200);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-card);
+  }
+  .screen-card__no {
+    font: 500 10px/1 var(--font-num);
+    color: var(--ink-300);
+    letter-spacing: 0.18em;
+  }
+  .screen-card__title {
+    font: 500 16px/1.5 var(--font-jp);
+    color: var(--ink-900);
+    margin-top: 6px;
+    letter-spacing: 0.03em;
+  }
+  .screen-card__sub {
+    font: 400 12px/1.7 var(--font-jp);
+    color: var(--ink-500);
+    margin-top: 8px;
+    letter-spacing: 0.02em;
+  }
+  .screen-card__v2 {
+    position: absolute;
+    top: 14px; right: 14px;
+    font: 500 9px/1 var(--font-num);
+    color: var(--terra-700);
+    background: var(--terra-50);
+    padding: 3px 7px;
+    border-radius: 4px;
+    letter-spacing: 0.1em;
+  }
+
+  .info-block {
+    background: var(--bg-card);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius-lg);
+    padding: 28px 32px;
+    margin-top: 56px;
+    color: var(--ink-700);
+    font: 400 14px/1.85 var(--font-jp);
+    letter-spacing: 0.02em;
+  }
+  .info-block h3 {
+    font: 500 14px/1 var(--font-jp);
+    color: var(--ink-900);
+    letter-spacing: 0.06em;
+    margin-bottom: 10px;
+  }
+  .info-block + .info-block { margin-top: 18px; }
+  .info-block a { color: var(--terra-700); border-bottom: 1px solid var(--terra-200); }
+  .info-block ul { margin: 10px 0 0 22px; }
+  .info-block li { margin-top: 6px; }
+  .info-block code {
+    background: var(--bg-soft);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: var(--font-num);
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+
+<div class="index-wrap">
+
+  <div class="index-hero">
+    <div class="index-hero__eyebrow">m e d i c a n v a s</div>
+    <h1 class="index-hero__title">よりそい つながる</h1>
+    <p class="index-hero__sub">
+      同じ病を抱える人と、そっと、つながれる場所。<br>
+      静的HTMLモック / v2（大人版）
+    </p>
+    <div class="index-meta">
+      <span class="chip chip--terra">v2 デザイン適用済</span>
+      <span class="chip chip--moss">ハイブリッド文言</span>
+      <span class="chip chip--plum">2026 . 05 . 16</span>
+    </div>
+  </div>
+
+  <div class="section-label">v 2  代表画面</div>
+  <div class="screen-grid">
+    <a class="screen-card" href="onboarding-v2.html">
+      <span class="screen-card__v2">v2</span>
+      <div class="screen-card__no">0 1</div>
+      <div class="screen-card__title">オンボーディング</div>
+      <div class="screen-card__sub">ようこそから、最初のひとことまで。<br>静かなヒーロー画像から始まる。</div>
+    </a>
+    <a class="screen-card" href="home-v2.html">
+      <span class="screen-card__v2">v2</span>
+      <div class="screen-card__no">0 2</div>
+      <div class="screen-card__title">ホーム</div>
+      <div class="screen-card__sub">今日のひとこと、声、医師のことば。<br>動物アバターは線画アイコンに統一。</div>
+    </a>
+  </div>
+
+  <div class="section-label">v 1（参考・旧版）</div>
+  <div class="screen-grid">
+    <a class="screen-card" href="onboarding.html" style="opacity: 0.6;">
+      <div class="screen-card__no">0 1</div>
+      <div class="screen-card__title">オンボーディング（v1）</div>
+      <div class="screen-card__sub">ひらがな多用版・絵本マスコット</div>
+    </a>
+    <a class="screen-card" href="home.html" style="opacity: 0.6;">
+      <div class="screen-card__no">0 2</div>
+      <div class="screen-card__title">ホーム（v1）</div>
+      <div class="screen-card__sub">「おうち」「きょうのきざし」</div>
+    </a>
+    <a class="screen-card" href="post.html" style="opacity: 0.6;">
+      <div class="screen-card__no">0 3</div>
+      <div class="screen-card__title">こえを置く（v1）</div>
+    </a>
+    <a class="screen-card" href="voice-received.html" style="opacity: 0.6;">
+      <div class="screen-card__no">0 4</div>
+      <div class="screen-card__title">そっと届く声（v1）</div>
+    </a>
+    <a class="screen-card" href="stroll.html" style="opacity: 0.6;">
+      <div class="screen-card__no">0 5</div>
+      <div class="screen-card__title">おさんぽ（v1）</div>
+    </a>
+    <a class="screen-card" href="neighbor-search.html" style="opacity: 0.6;">
+      <div class="screen-card__no">0 6</div>
+      <div class="screen-card__title">となりさがし（v1）</div>
+    </a>
+    <a class="screen-card" href="profile.html" style="opacity: 0.6;">
+      <div class="screen-card__no">0 7</div>
+      <div class="screen-card__title">わたし（v1）</div>
+    </a>
+    <a class="screen-card" href="notifications.html" style="opacity: 0.6;">
+      <div class="screen-card__no">0 8</div>
+      <div class="screen-card__title">おたより（v1）</div>
+    </a>
+    <a class="screen-card" href="settings.html" style="opacity: 0.6;">
+      <div class="screen-card__no">0 9</div>
+      <div class="screen-card__title">いろいろ（v1）</div>
+    </a>
+  </div>
+
+  <div class="info-block">
+    <h3>v2 で何が変わったか</h3>
+    <ul>
+      <li>文言：ナビ・標準操作は標準語へ（「おうち」→「ホーム」、「いろいろ」→「設定」）。コア体験語のみ独自語を残す（「声」「そっと届く声」「しずか」など）。</li>
+      <li>マスコット：絵本タッチを廃止。編集系イラストのトーンで作り直し中（Codex CLI で v2 を生成中）。</li>
+      <li>カラー：パステル高彩度 → くすみテラコッタ × モスグリーン × グレイッシュパープルへ。</li>
+      <li>アイコン：絵文字を全廃。線画SVGに統一（<code>assets/js/icons-v2.js</code>）。動物アバターも線画アイコン化。</li>
+      <li>タイポ：游ゴシック基調。見出しは游明朝も選択肢に。丸ゴシック太字は不使用。</li>
+      <li>レイアウト：角丸を控え、余白を広げ、装飾アニメ（脈打つ・葉っぱ浮遊）を撤去。</li>
+    </ul>
+  </div>
+
+  <div class="info-block">
+    <h3>設計ドキュメント</h3>
+    <ul>
+      <li><a href="../docs/design-system-v2.md">design-system-v2.md</a> — v2 デザインシステム（CSS変数・コンポーネント仕様）</li>
+      <li><a href="../docs/design-system-gravity.md">design-system-gravity.md</a> — GRAVITYの仕様分解（v1から継承）</li>
+      <li><a href="../docs/design-system-tsunagaru.md">design-system-tsunagaru.md</a> — v1 デザイン翻訳（参考）</li>
+      <li><a href="../docs/20260516MTG.md">20260516MTG.md</a> — 5/16 MTG議事録</li>
+    </ul>
+  </div>
+
+</div>
+
+<script src="assets/js/icons-v2.js"></script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>
