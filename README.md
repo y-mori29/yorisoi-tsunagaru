@@ -1,129 +1,96 @@
 # よりそい つながる
 
-メディキャンバス案件の新規プロダクト。よりそいブランドの新サービス。
-**病気を抱える方が安心して使い、続けたいと思える優しいSNS** を目指す、コミュニティ × 患者記録ハイブリッドアプリ。
+メディキャンバス案件の新規プロダクト。「**ただ、いていい**」場をつくる、病気を抱える方のための静かなコミュニティアプリ。
 
-> 「よりそい」ブランドを継承しつつ、人と人がゆるく「つながる」場、という意味の名称。既存PHRとは別プロダクト。
+> 既存の `medicanvas/yorisoi/patient/yorisoi-phr/` とは別プロダクト。コードベース・GitHub リポジトリも分けています。
 
 ---
 
-## クイックスタート
+## クイックスタート（他の方が動かす場合）
 
-### モックを見る（推奨）
+前提：**Node.js 22 系**、**pnpm 10 系** が入っていること。
 
+```bash
+git clone https://github.com/y-mori29/yorisoi-tsunagaru.git
+cd yorisoi-tsunagaru/frontend
+pnpm install
+pnpm dev
 ```
-mockups/index.html を ブラウザで開く
-```
 
-→ 全画面（オンボ・おうち・こえを置く・そっと届く声・おさんぽ・となりさがし・わたし・おたより・いろいろ）に遷移できます。
-スマホ実機サイズ（max-width 480px）想定です。
+→ ブラウザで `http://localhost:3000` を開く。
+モバイル幅（max-width 480px）想定なので、Chrome DevTools の **iPhone 14 Pro モード** で見るのが推奨です。
 
-### 設計ドキュメントを読む
+### 確認できる画面（10 ルート）
 
-| ファイル | 内容 |
+| Route | 画面 |
 |---|---|
-| `docs/concept.md` | コンセプト・ミーティング要旨 |
-| `docs/value-proposition.md` | 価値の言語化（3層の受益者・課題・解） |
-| `docs/community-design.md` | コミュニティ機能の機能設計（画面・データモデル・モデレーション） |
-| `docs/visual-direction.md` | ビジュアル方針（色・トーン・キャラ） |
-| `docs/design-system-gravity.md` | **GRAVITY のデザインシステム言語化**（モックの設計の元ネタ） |
-| `docs/design-system-tsunagaru.md` | **「よりそい つながる」へのデザイン翻訳**（CSS変数・コンポーネント仕様まで） |
-| `docs/gravity-research.md` | GRAVITY 徹底分析（約6000字） |
-| `docs/gravity-research.xmind` | 上記のマインドマップ |
-| `docs/20260516MTG.md` | 5/16(土) 10:00 MTG 議事録（冨澤・森） |
+| `/onboarding` | ようこそ → 目的選択 → 病気/症状 → 暮らしのリズム → 考え方の癖 → 姿（アバター）→ 準備完了（全 7 ステップ）|
+| `/home` | ホーム（「今日のひとこと」+ タイムライン）|
+| `/post` | ことばを置く（公開範囲・ルーム選択あり）|
+| `/find` | お隣さがし（3 つの質問に答えて候補表示）|
+| `/stroll` | めぐる（今日 散歩中の お隣さん）|
+| `/voice/[id]` | そっと届く声（手紙形式・例: `/voice/nt-001`）|
+| `/notifications` | お便り（24時間で消える通知）|
+| `/me` | プロフィール（姿・タグ・暮らしの傾向・置いたことば）|
+| `/settings` | 設定（おまもりのしくみ・通知・記録 など）|
+| `/` | `/onboarding` と同じ（welcome）|
 
 ---
 
-## このリポジトリの位置づけ
-
-- 既存の `medicanvas/yorisoi/patient/yorisoi-phr/` とは **別プロダクト**。コードベース・GitHubリポジトリも分けています。
-- ゼロベースで設計し直し、UI/UX・ビジュアル（イラスト・キャラクター）・コミュニティ体験を中心に据える。
-- 既存PHRが「医療パスポート（医師×患者の記録）」だったのに対し、本プロダクトは「**患者×患者のコミュニティ＋自然に貯まる記録**」が起点。
-
-## コンセプト（一行）
-
-> グラビティのような優しいSNSで、同じ病気の人と気軽につながりながら、診察記録・薬・体調を「気づけば残っている」状態にする
-
-## 2軸の核
-
-1. **コミュニティ（前面）** — グラビティ風の匿名性・優しさ・気軽さ。患者会連携が一次集客導線。
-2. **記録（裏でビジネスを支える）** — 製薬企業に提供できる「リアルな患者体験＋診察対話」を、ユーザーの負担を最小化して集める。
-
-5/16 MTGでの合意：**まずコミュニティの最低限の価値を担保するのが先**。記録連携は後フェーズ。
-
-## キャラクター・世界観
-
-| キャラ | 動物 | 役割 | カラー |
-|---|---|---|---|
-| **もか** | うさぎ 🐰 | メイン・聞き役・案内役 | ピーチクリーム |
-| **ぱお** | くま 🐻 | 静かに隣にいる・空状態 | ベージュ |
-| **そら** | 猫 🐱 | 「おさんぽ」案内 | マッチャ |
-| **ふう** | 小鳥 🐦 | おたより運び | ラベンダー |
-
-世界観：**やわらかな庭・木漏れ日・小さな森の住人たち**。
-医療っぽさ（白衣・聴診器・冷たい青）を徹底排除し、ピーチ × 抹茶クリーム × ラベンダーの暖色パレットで「家のすぐそばの安心できる場所」を演出。
-
----
-
-## ディレクトリ構成
+## リポジトリ構成
 
 ```
 yorisoi-tsunagaru/
-├── README.md                         ← このファイル
-├── docs/                             ← 企画・設計・調査ドキュメント
-│   ├── concept.md
-│   ├── value-proposition.md
-│   ├── community-design.md
-│   ├── visual-direction.md
-│   ├── design-system-gravity.md      ← GRAVITYのデザインシステム言語化
-│   ├── design-system-tsunagaru.md    ← 医療版への翻訳（CSS変数・コンポーネント仕様）
-│   ├── gravity-research.md
-│   ├── gravity-research.xmind
-│   └── 20260516MTG.md                ← 5/16 MTG 議事録
-├── mockups/                          ← 静的HTMLモック（10画面）
-│   ├── index.html                    ← モックインデックス
-│   ├── onboarding.html
-│   ├── home.html
-│   ├── post.html
-│   ├── voice-received.html
-│   ├── stroll.html
-│   ├── neighbor-search.html
-│   ├── profile.html
-│   ├── notifications.html
-│   ├── settings.html
-│   └── assets/
-│       ├── css/style.css
-│       ├── css/components.css
-│       ├── js/icons.js
-│       └── js/main.js
-├── prompts/                          ← CodexCLI（GPT-Image-2）用画像生成プロンプトmd
-│   ├── README.md
-│   ├── 01-keyvisual-mood.md
-│   ├── 02-mascot-moka-rabbit.md      ← もか（うさぎ）
-│   ├── 03-mascot-pao-bear.md         ← ぱお（くま）
-│   ├── 04-mascot-sora-cat.md         ← そら（猫）
-│   └── 05-mascot-fuu-bird.md         ← ふう（小鳥）
-└── assets/
-    ├── mood/                         ← ムードボード・参考画像
-    └── images/                       ← 生成済みキービジュアル・キャラ素材
+├── frontend/        ← 本実装（Next.js 16 + React 19 + TS + Tailwind v4）
+│                       他の方が動かすのは ここだけ で OK
+├── archive/         ← 設計・モック・画像生成プロンプトなど 経緯資料
+│   ├── docs/        ← コンセプト・デザインシステム・MTG議事録・トーン規範
+│   ├── mockups/     ← v1/v2 の HTML モック（実装の参考）
+│   ├── prompts/     ← 画像生成プロンプトと出力（output_v02/ が 9 画面の視覚スペック）
+│   ├── assets/      ← 初期のマスコット・ヒーロー画像
+│   ├── frontend-codex-prompts/    ← frontend 用に生成した動物アバター・ヒーロー線画のプロンプト
+│   └── frontend-reference-images/ ← output_v02 を frontend に焼き直す際の参照画像
+└── README.md        ← このファイル
 ```
 
----
-
-## 次の打ち合わせ
-
-- **2026-05-18(月) 20:00** — 冨澤さんと「記録との連携をどうするか」を主軸に議論。森側がこのモックを持参。
-- 詳細は `.plans/active/2026-05-18-mtg-prep.md`（親リポジトリ側）
+`archive/` 配下は **過去の検討経緯** であり、現在の実装は `frontend/` だけで完結します。
+frontend の詳細（ディレクトリ構成・設計トークン・トーン規範）は [`frontend/README.md`](frontend/README.md) を参照。
 
 ---
 
-## 関係者
+## コンセプト
 
-- 森 祐哉（モリ）— 企画・デザイン方針・開発・全体ディレクション
-- 冨澤 健心（トミザワ）— プロダクト企画設計・方向性壁打ち
-- Soeda Kei — メディキャンバス側ビジネスサイド・薬剤師
+- **コミュニティ × 患者記録のハイブリッド**：グラビティ風の優しい SNS で気軽につながりながら、診察・薬・体調が「気づけば残っている」状態をつくる
+- **「ただ、いていい」**：入り口で症状を語らせない／患者を「しんどい人」とラベリングしない／カウンセラー型の迎え方
+- **24 時間で消えるお便り**：通知に追われない、静かな滞在感
+- **動物アバターと手書き線画**：MUJI／暮しの手帖トーン、セピア線画＋水彩のにじみ
 
-## 関連プロダクト
+設計の背景は `archive/docs/concept.md`・`archive/docs/value-proposition.md`・`archive/docs/tone-reset-2026-05-17.md` を参照。
 
-- `medicanvas/yorisoi/patient/yorisoi-phr/` — 既存PHR（医療パスポート）。本プロダクトとは別建てだが、将来的にデータ・導線で連携の余地。
-- `medicanvas/uchiake/` — 既存「うちあけ」（患者体験談1.5万件・1.5万名）。コミュニティ立ち上げ初期のシード資産になり得る。
+---
+
+## 技術スタック
+
+| 項目 | 採用 |
+|---|---|
+| フレームワーク | Next.js 16.2.6（App Router・Turbopack） |
+| UI | React 19.2 + TypeScript 5.9（strict） |
+| スタイル | Tailwind CSS v4（`@theme` ベース）+ CSS 変数 |
+| 状態管理 | React Context（オンボーディングのみ） |
+| フォント | システムフォント（Yu Gothic / Yu Mincho）— Web フォント未使用 |
+| アイコン | インライン SVG 辞書（`lib/icons.ts`） |
+| パッケージ管理 | pnpm 10 |
+| API | モック実装のみ（`lib/mock/` 配下）— 将来 REST/GraphQL に差し替え可能な型契約 |
+
+---
+
+## 注意事項
+
+- このリポジトリは UI/UX のモックアップ段階で、**実バックエンドや認証は未実装**です
+- ユーザーデータはすべてモック（`lib/mock/`）。実患者データは含みません
+- 動物アバター・ヒーロー線画は Codex CLI（GPT-Image-2）で生成した素材
+- 商用利用・転載・二次配布は行わないでください
+
+---
+
+担当: 森 祐哉（@y-mori29）／ medicanvas

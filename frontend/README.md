@@ -2,10 +2,10 @@
 
 Next.js 16 (App Router) + React 19.2 + TypeScript + Tailwind v4 で構築した、「よりそい つながる」アプリのフロントエンド。
 
-設計起点ドキュメント:
-- `../docs/tone-reset-2026-05-17.md` — トーン・原理（必読）
-- `../docs/design-system-v2.md` — デザインシステム
-- `../prompts/v2/screens/output_v02/*.png` — 全画面の視覚スペック
+設計起点ドキュメント（リポジトリ整理に伴い `archive/` 配下に移動済み）:
+- `../archive/docs/tone-reset-2026-05-17.md` — トーン・原理（必読）
+- `../archive/docs/design-system-v2.md` — デザインシステム
+- `../archive/prompts/v2/screens/output_v02/*.png` — 全画面の視覚スペック（参考画像）
 
 ## 起動方法
 
@@ -44,8 +44,8 @@ frontend/
 │   └── design-tokens.ts       TypeScript化したトークン
 ├── public/
 │   └── assets/
-│       ├── heroes/            ヒーロー線画（output_v02 からクロップ）
-│       └── reference/         output_v02 の元画像（実装中の比較用）
+│       ├── animals/           動物アバター 8 種（Codex CLI で生成）
+│       └── heroes/            ヒーロー線画 3 種（onboarding/voice/stroll）
 └── package.json
 ```
 
@@ -73,7 +73,7 @@ frontend/
 
 ## トーンの絶対 NG
 
-入り口・空状態・通知の文言で **以下の語は使わない**（`docs/tone-reset-2026-05-17.md` 参照）：
+入り口・空状態・通知の文言で **以下の語は使わない**（`../archive/docs/tone-reset-2026-05-17.md` 参照）：
 
 しんどい / つらい / 苦しい / 悲しい / 病気 / 病人 / 闘病 / 戦う / 戦士 / 弱い / 落ち込んだ / 「悩みを抱える」
 
@@ -82,13 +82,11 @@ frontend/
 ## Phase 進捗
 
 - [x] **Phase 0**: プロジェクト初期化、トークン適用、開発サーバー起動確認
-- [ ] **Phase 1**: レイアウト土台 + UI プリミティブ
-- [ ] **Phase 2**: ホーム画面で精度確認
-- [ ] **Phase 3**: 残り 8 画面実装
-- [ ] **Phase 4**: ナビゲーション + ルーティング
-- [ ] **Phase 5**: API スタブ整備
-
-詳細プラン: `~/.claude/plans/sprightly-noodling-deer.md`
+- [x] **Phase 1**: レイアウト土台 + UI プリミティブ（18 種）
+- [x] **Phase 2**: ホーム画面で精度確認
+- [x] **Phase 3**: 残り 8 画面 + オンボーディング 7 画面実装
+- [ ] **Phase 4**: ナビゲーション + ルーティング（一部済み）
+- [ ] **Phase 5**: API スタブ整備（モックのみ・実 API 未接続）
 
 ## Next.js 16 補足
 
