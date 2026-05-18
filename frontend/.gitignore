@@ -43,3 +43,7 @@ next-env.d.ts
 # local dev artifacts (not for git)
 /logs
 /tmp
+
+# AI assistant local guides (Claude Code / Codex CLI) — keep local, don't commit
+CLAUDE.md
+AGENTS.md
