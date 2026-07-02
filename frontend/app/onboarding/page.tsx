@@ -40,7 +40,7 @@ export default function OnboardingWelcomePage() {
       </p>
 
       <div className="onboarding-footer">
-        <Link href="/onboarding/purpose" className="btn btn--primary btn--full">
+        <Link href="/onboarding/condition" className="btn btn--primary btn--full">
           そっと、開く
         </Link>
       </div>

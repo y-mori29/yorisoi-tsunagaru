@@ -1,16 +1,12 @@
 import type { PurposeId } from "./types";
 
 /**
- * オンボーディングの全ステップ（最大ルート）。
- * purpose の選択結果に応じて、不要なステップはスキップする。
+ * オンボーディングの全ステップ（2026-07-03 3ステップ化）。
+ * ようこそ → 病気・症状・不安（任意）→ ニックネーム＋アバター → complete
  */
 export const ALL_STEPS = [
   "/onboarding",
-  "/onboarding/purpose",
   "/onboarding/condition",
-  "/onboarding/rhythm",
-  "/onboarding/preference",
-  "/onboarding/avatar",
   "/onboarding/profile",
   "/onboarding/complete",
 ] as const;
@@ -18,37 +14,20 @@ export const ALL_STEPS = [
 export type Step = (typeof ALL_STEPS)[number];
 
 /**
- * purpose の選択から、実際に通る画面のリストを返す。
- *
- * - condition: 「same-condition」「consult」を選んだとき
- * - rhythm:    「same-rhythm」を選んだとき
- * - preference:「same-thinking」「consult」を選んだとき
- * - profile / complete は必ず通る
+ * 実際に通る画面のリストを返す。
+ * purposes 引数はシグネチャ互換のため残す（未使用）。
  */
-export function buildPath(purposes: PurposeId[]): Step[] {
-  const path: Step[] = ["/onboarding", "/onboarding/purpose"];
-
-  const has = (id: PurposeId) => purposes.includes(id);
-
-  if (has("same-condition") || has("consult-self") || has("consult-others"))
-    path.push("/onboarding/condition");
-  if (has("same-rhythm")) path.push("/onboarding/rhythm");
-  if (has("same-thinking") || has("consult-self") || has("consult-others"))
-    path.push("/onboarding/preference");
-
-  path.push("/onboarding/avatar");
-  path.push("/onboarding/profile");
-  path.push("/onboarding/complete");
-
-  return path;
+export function buildPath(_purposes?: PurposeId[]): Step[] {
+  return [...ALL_STEPS];
 }
 
 /**
- * 現在の Step と purposes から、次に行くべき URL を返す。
+ * 現在の Step から、次に行くべき URL を返す。
  * 末尾の場合は /home へ。
+ * purposes 引数はシグネチャ互換のため残す（未使用）。
  */
-export function nextStep(current: Step, purposes: PurposeId[]): string {
-  const path = buildPath(purposes);
+export function nextStep(current: Step, _purposes?: PurposeId[]): string {
+  const path = buildPath();
   const idx = path.indexOf(current);
   if (idx < 0 || idx === path.length - 1) return "/home";
   return path[idx + 1];
@@ -56,9 +35,10 @@ export function nextStep(current: Step, purposes: PurposeId[]): string {
 
 /**
  * 進行率（0-1）。プログレスバー用。
+ * purposes 引数はシグネチャ互換のため残す（未使用）。
  */
-export function progressRatio(current: Step, purposes: PurposeId[]): number {
-  const path = buildPath(purposes);
+export function progressRatio(current: Step, _purposes?: PurposeId[]): number {
+  const path = buildPath();
   const idx = path.indexOf(current);
   if (idx < 0) return 0;
   return (idx + 1) / path.length;

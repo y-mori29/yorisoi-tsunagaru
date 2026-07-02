@@ -4,7 +4,6 @@ import { use, useMemo } from "react";
 import Link from "next/link";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { BackButton } from "@/components/ui/BackButton";
-import { Icon } from "@/components/ui/Icon";
 import { VoiceCard } from "@/components/ui/VoiceCard";
 import { ConditionCard } from "@/components/ui/ConditionCard";
 import { getMyVoices } from "@/lib/api/me";
@@ -110,58 +109,6 @@ export default function MyVoicesPage() {
             ))}
           </div>
         )}
-
-        <Link
-          href="/reflect"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 12,
-            margin: "30px 16px 8px",
-            padding: "14px 16px",
-            background: "var(--color-plum-50, #F1EBF1)",
-            border: "1px solid var(--color-plum-200, #D3C5DE)",
-            borderRadius: 14,
-            textDecoration: "none",
-            color: "var(--color-ink-900)",
-          }}
-        >
-          <span
-            aria-hidden="true"
-            style={{
-              display: "grid",
-              placeItems: "center",
-              width: 36,
-              height: 36,
-              borderRadius: 12,
-              background: "var(--color-card, #FFFDF8)",
-              color: "var(--color-plum-600, #6F5587)",
-              flexShrink: 0,
-            }}
-          >
-            <Icon name="moon" size={20} />
-          </span>
-          <span style={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
-            <span
-              style={{
-                font: "500 13px/1.3 var(--font-jp)",
-                letterSpacing: "0.06em",
-              }}
-            >
-              病気を 見つめなおす
-            </span>
-            <span
-              style={{
-                font: "400 11px/1.4 var(--font-jp)",
-                color: "var(--color-ink-500)",
-                letterSpacing: "0.04em",
-              }}
-            >
-              ゆっくりと、自分に 問いかける 時間
-            </span>
-          </span>
-          <Icon name="chevronRight" size={18} />
-        </Link>
 
         <p
           style={{

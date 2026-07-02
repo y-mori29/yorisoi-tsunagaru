@@ -38,7 +38,7 @@ export default function ConditionPage() {
 
 function ConditionFallback() {
   return (
-    <OnboardingShell current="/onboarding/condition" showBack backHref="/onboarding/purpose">
+    <OnboardingShell current="/onboarding/condition" showBack backHref="/onboarding">
       <h2 className="onboarding-section-title">あなたに近い声を届けるために</h2>
       <p className="onboarding-section-sub">病気・症状・不安を選ぶ準備をしています。</p>
     </OnboardingShell>
@@ -173,7 +173,7 @@ function ConditionContent() {
   };
 
   return (
-    <OnboardingShell current="/onboarding/condition" showBack backHref="/onboarding/purpose">
+    <OnboardingShell current="/onboarding/condition" showBack backHref="/onboarding">
       <h2 className="onboarding-section-title">あなたに近い声を届けるために</h2>
       <p className="onboarding-section-sub">
         病気・症状・不安を選んでください。

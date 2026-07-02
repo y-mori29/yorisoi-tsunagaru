@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { INITIAL_STATE, type OnboardingState } from "./types";
 import { clearOnboardingState, readOnboardingState, writeOnboardingState } from "./storage";
 
@@ -14,7 +14,13 @@ type Ctx = {
 const OnboardingContext = createContext<Ctx | null>(null);
 
 export function OnboardingProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<OnboardingState>(() => readOnboardingState());
+  // SSRとの hydration 不一致を避けるため、初期値は固定の INITIAL_STATE にして
+  // localStorage からの復元はマウント後に行う。
+  const [state, setState] = useState<OnboardingState>(INITIAL_STATE);
+
+  useEffect(() => {
+    setState(readOnboardingState());
+  }, []);
 
   const update = (patch: Partial<OnboardingState>) => {
     setState((prev) => {
