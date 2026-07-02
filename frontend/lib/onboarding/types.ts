@@ -1,4 +1,5 @@
 import type { AnimalName } from "@/lib/icons";
+import type { PatientDiseaseSelection, TemplateKey } from "@/lib/mock/explore";
 
 /**
  * オンボーディングで尋ねる「ここで何をしたいか」の選択肢。
@@ -25,6 +26,34 @@ export type RhythmId = "morning" | "night" | "varies";
 export type ConditionEntry = {
   id: string;
   label: string;
+  kana?: string;
+};
+
+export type HealthTopicKind = "symptom" | "concern";
+
+export type PatientTopicSelection = {
+  topicName: string;
+  topicId: string | null;
+  kind: HealthTopicKind;
+  selectionMethod: "catalog" | "free_text";
+  rawInput?: string;
+};
+
+export type MemberHealthContext = {
+  userId: string;
+  primaryDisease: PatientDiseaseSelection | null;
+  secondaryDiseases: PatientDiseaseSelection[];
+  symptoms: PatientTopicSelection[];
+  concerns: PatientTopicSelection[];
+  diagnosisStatus: "diagnosed" | "suspected" | "pending" | "unknown";
+  visibility: "private" | "room_members" | "matched_members";
+  updatedAt: string;
+};
+
+export type HealthTopicCatalogEntry = {
+  id: string;
+  label: string;
+  kind: HealthTopicKind;
   kana?: string;
 };
 
@@ -59,17 +88,109 @@ export const CONDITION_CATALOG: ConditionEntry[] = [
   { id: "diagnosis-pending", label: "確定診断 待ち", kana: "かくていしんだんまち" },
 ];
 
+export const SYMPTOM_CATALOG: HealthTopicCatalogEntry[] = [
+  { id: "abdominal-pain", label: "腹痛", kind: "symptom", kana: "ふくつう" },
+  { id: "diarrhea", label: "下痢・便のトラブル", kind: "symptom", kana: "げり べん といれ" },
+  { id: "fatigue", label: "強い疲れ・倦怠感", kind: "symptom", kana: "つよいつかれ けんたいかん" },
+  { id: "pain", label: "痛み", kind: "symptom", kana: "いたみ" },
+  { id: "numbness", label: "しびれ", kind: "symptom", kana: "しびれ" },
+  { id: "insomnia", label: "眠れない夜", kind: "symptom", kana: "ねむれない よる" },
+  { id: "skin", label: "皮膚症状", kind: "symptom", kana: "ひふしょうじょう" },
+  { id: "breathless", label: "息切れ・息苦しさ", kind: "symptom", kana: "いきぎれ いきぐるしさ" },
+  { id: "nausea", label: "吐き気", kind: "symptom", kana: "はきけ" },
+  { id: "dizziness", label: "めまい", kind: "symptom", kana: "めまい" },
+];
+
+export const CONCERN_CATALOG: HealthTopicCatalogEntry[] = [
+  { id: "before-diagnosis", label: "診断前・検査待ち", kind: "concern", kana: "しんだんまえ けんさまち" },
+  { id: "treatment", label: "治療の不安", kind: "concern", kana: "ちりょう ふあん" },
+  { id: "money", label: "医療費のこと", kind: "concern", kana: "いりょうひ おかね" },
+  { id: "work", label: "仕事との両立", kind: "concern", kana: "しごと りょうりつ" },
+  { id: "school", label: "学校・勉強との両立", kind: "concern", kana: "がっこう べんきょう" },
+  { id: "family", label: "家族に話す", kind: "concern", kana: "かぞく はなす" },
+  { id: "future", label: "将来のこと", kind: "concern", kana: "しょうらい" },
+  { id: "lonely", label: "孤独・ひとりの時間", kind: "concern", kana: "こどく ひとり" },
+  { id: "patient-group", label: "患者会に行く前", kind: "concern", kana: "かんじゃかい" },
+];
+
+export const createCatalogDiseaseSelection = (
+  disease: {
+    id: string;
+    displayName: string;
+    templateKey: TemplateKey;
+  },
+  diagnosisStatus: MemberHealthContext["diagnosisStatus"] = "diagnosed",
+): PatientDiseaseSelection => ({
+  selectedDiseaseName: disease.displayName,
+  selectedDiseaseId: disease.id,
+  selectionMethod: "catalog",
+  templateKey: disease.templateKey,
+  diagnosisStatus,
+});
+
+export const createFreeTextDiseaseSelection = (
+  diseaseName: string,
+  diagnosisStatus: MemberHealthContext["diagnosisStatus"] = "diagnosed",
+): PatientDiseaseSelection => ({
+  selectedDiseaseName: diseaseName,
+  selectedDiseaseId: null,
+  selectionMethod: "free_text",
+  templateKey: "general",
+  diagnosisStatus,
+  rawInput: diseaseName,
+});
+
+export const createPendingDiseaseSelection = (): PatientDiseaseSelection => ({
+  selectedDiseaseName: null,
+  selectedDiseaseId: "diagnosis_pending",
+  selectionMethod: "status",
+  templateKey: "general",
+  diagnosisStatus: "pending",
+});
+
+export const createTopicSelection = (topic: HealthTopicCatalogEntry): PatientTopicSelection => ({
+  topicName: topic.label,
+  topicId: topic.id,
+  kind: topic.kind,
+  selectionMethod: "catalog",
+});
+
+export const createInitialHealthContext = (): MemberHealthContext => ({
+  userId: "local-onboarding",
+  primaryDisease: null,
+  secondaryDiseases: [],
+  symptoms: [],
+  concerns: [],
+  diagnosisStatus: "unknown",
+  visibility: "matched_members",
+  updatedAt: new Date(0).toISOString(),
+});
+
+export const touchHealthContext = (context: MemberHealthContext): MemberHealthContext => ({
+  ...context,
+  updatedAt: new Date().toISOString(),
+});
+
 export type OnboardingState = {
   purposes: PurposeId[];
   conditions: string[];
   /** 病気・症状の質問に「答えたくない」と回答したかどうか */
   conditionDeclined: boolean;
+  healthContext: MemberHealthContext;
   rhythm?: RhythmId;
   /** 質問キー(string) -> 選択肢 index */
   preferences: Record<string, number>;
   profile: {
     animal?: AnimalName;
+    /** アバター背景色（terra/moss/plum/gold/default） */
+    avatarTone?: "terra" | "moss" | "plum" | "gold" | "default";
     displayName?: string;
+    /** 性別。冨澤指針：「答えたくない」は出さない。男/女/その他 の 3 択 */
+    gender?: "male" | "female" | "other";
+    /** 生年月日（西暦・1〜12・1〜31）。年齢ではなく生年月日でハードルを下げる */
+    birthYear?: number;
+    birthMonth?: number;
+    birthDay?: number;
     rooms?: string[];
   };
 };
@@ -78,6 +199,7 @@ export const INITIAL_STATE: OnboardingState = {
   purposes: [],
   conditions: [],
   conditionDeclined: false,
+  healthContext: createInitialHealthContext(),
   preferences: {},
   profile: {},
 };

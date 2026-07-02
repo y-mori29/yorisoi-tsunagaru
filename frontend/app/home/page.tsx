@@ -1,96 +1,350 @@
 "use client";
 
-import { useState } from "react";
-import { AppHeader } from "@/components/layout/AppHeader";
+import { useMemo, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { BottomNav } from "@/components/layout/BottomNav";
-import { IconButton } from "@/components/ui/IconButton";
-import { DotBadge } from "@/components/ui/DotBadge";
-import { Segment } from "@/components/ui/Segment";
-import { VoiceCard, SpecialVoiceCard } from "@/components/ui/VoiceCard";
-import { GreetingBlock } from "@/components/screens/home/GreetingBlock";
-import { mockVoices, todayVoice } from "@/lib/mock/voices";
+import { Avatar } from "@/components/ui/Avatar";
+import { Icon } from "@/components/ui/Icon";
+import { explorePosts } from "@/lib/mock/explore";
+import { getCurrentSession } from "@/lib/auth/local-auth";
+import { getHealthRecommendation } from "@/lib/onboarding/recommendations";
+import { useStoredHealthContext } from "@/lib/onboarding/useStoredHealthContext";
+import type { ExplorePost, ExploreTopicKind } from "@/lib/mock/explore";
 
-/**
- * ホーム画面 — output_v02/02-home.png を忠実に再現。
- * - ステータスバー
- * - AppHeader（タイトル「ホーム」+ bell + dot badge）
- * - 挨拶ブロック（日付 + 「おはようございます、もりさん。」）
- * - セグメント（みんな / お隣）
- * - 「今日のひとこと」特別カード
- * - 投稿カード ×2
- * - ボトムナビ（ホーム active）
- * - home indicator
- */
+const tabs: Array<{ value: "latest" | "near" | ExploreTopicKind; label: string }> = [
+  { value: "latest", label: "最新" },
+  { value: "near", label: "近い声" },
+  { value: "condition", label: "病気" },
+  { value: "symptom", label: "症状" },
+  { value: "concern", label: "悩み" },
+];
+
+const nearTopics = new Set([
+  "潰瘍性大腸炎",
+  "強い疲れ",
+  "診断前・検査待ち",
+  "眠れない夜",
+  "仕事との両立",
+  "通院前の不安",
+  "夜に不安が強い",
+  "家族に話す",
+]);
+
+const communityAssetRoot = "/assets/community-designs/cutouts";
+
 export default function HomePage() {
-  const [tab, setTab] = useState<"all" | "neighbor">("all");
+  const router = useRouter();
+  const [tab, setTab] = useState<(typeof tabs)[number]["value"]>("latest");
+  const [visibleCount, setVisibleCount] = useState(12);
+  const [isSignedIn] = useState(() => Boolean(getCurrentSession()));
+  const { healthContext } = useStoredHealthContext();
+  const healthRecommendation = useMemo(() => getHealthRecommendation(healthContext), [healthContext]);
+
+  const filteredPosts = useMemo(() => {
+    if (tab === "latest") return explorePosts;
+    if (tab === "near") {
+      const personalTopicSet = new Set(healthRecommendation.topicLabels);
+      const personalPosts = healthRecommendation.hasContext
+        ? explorePosts.filter((post) => personalTopicSet.has(post.topic))
+        : [];
+      return personalPosts.length > 0 ? personalPosts : explorePosts.filter((post) => nearTopics.has(post.topic));
+    }
+    // 体験談データは病名がカタログ外のことも多いため、ラベル一致でなく種別で絞る
+    return explorePosts.filter((post) => post.topicKind === tab);
+  }, [healthRecommendation, tab]);
+
+  const visiblePosts = filteredPosts.slice(0, visibleCount);
+  const canLoadMore = visibleCount < filteredPosts.length;
+  const requireSignIn = () => router.push("/auth/register?next=/home");
+
+  const handleTab = (value: (typeof tabs)[number]["value"]) => {
+    setTab(value);
+    setVisibleCount(12);
+  };
 
   return (
     <>
-      <AppHeader
-        title="ホーム"
-        titleAlign="left"
-        right={
-          <span style={{ position: "relative" }}>
-            <IconButton icon="bell" label="お知らせ" />
-            <span style={{ position: "absolute", top: 4, right: 4, pointerEvents: "none" }}>
-              <DotBadge />
+      <main className="explore-shell">
+        <header className="explore-header" aria-label="よりそい">
+          <Link href="/home" className="explore-brand" aria-label="よりそい ホーム">
+            <span className="explore-brand__leaf" aria-hidden="true">
+              <Icon name="leaf" size={24} />
             </span>
-          </span>
-        }
-      />
-
-      <main className="app-main">
-        <GreetingBlock date="2026 . 05 . 16" greeting="おはようございます、もりさん。" />
-
-        <div style={{ display: "flex", justifyContent: "center", marginBottom: 20 }}>
-          <Segment
-            options={[
-              { value: "all", label: "みんな" },
-              { value: "neighbor", label: "お隣" },
-            ]}
-            value={tab}
-            onChange={setTab}
-          />
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          <SpecialVoiceCard
-            eyebrow={todayVoice.eyebrow}
-            body={todayVoice.body}
-            authorName={todayVoice.authorName}
-            authorAvatar={todayVoice.authorAvatar}
-            authorAvatarSrc={todayVoice.authorAvatarSrc}
-            authorTone={todayVoice.authorTone}
-          />
-
-          {mockVoices.map((v) => (
-            <VoiceCard
-              key={v.id}
-              author={{
-                name: v.authorName,
-                avatar: v.authorAvatar,
-                avatarSrc: v.authorAvatarSrc,
-                tone: v.authorAvatarTone,
-              }}
-              roomName={v.roomName}
-              roomTone={v.roomTone}
-              time={v.timeLabel}
-              body={v.body}
-              photoSrc={v.photoSrc}
-              photoAlt={v.photoAlt}
-              reactions={v.reactions.map((r) => ({
-                icon: r.kind,
-                label: r.label,
-                active: r.mine,
-                count: r.count,
-              }))}
-              showChat
+            <span>よりそい</span>
+          </Link>
+          <Link href="/find" className="explore-icon-btn" aria-label="探す">
+            <Icon name="search" size={19} />
+          </Link>
+          <Link href="/notifications" className="explore-icon-btn" aria-label="お知らせ">
+            <Icon name="bell" size={19} />
+          </Link>
+          <Link
+            href={isSignedIn ? "/me" : "/auth/login?next=/home"}
+            className="explore-user-dot"
+            aria-label={isSignedIn ? "マイページ" : "ログイン"}
+          >
+            <Image
+              src={`${communityAssetRoot}/avatars/anonymous-avatar-01.png`}
+              alt=""
+              width={36}
+              height={36}
             />
+            {!isSignedIn && <span aria-hidden="true" />}
+          </Link>
+        </header>
+
+        <nav className="explore-tabs explore-tabs--home" aria-label="タイムライン表示">
+          {tabs.map((item) => (
+            <button
+              key={item.value}
+              type="button"
+              className={`explore-tab ${tab === item.value ? "is-active" : ""}`.trim()}
+              onClick={() => handleTab(item.value)}
+            >
+              {item.label}
+            </button>
           ))}
-        </div>
+        </nav>
+
+        <HomeComposer signedIn={isSignedIn} />
+
+        <HomeNearContextPanel recommendation={healthRecommendation} onOpenNear={() => handleTab("near")} />
+
+        <section className="explore-feed" id="feed" aria-label="体験談タイムライン">
+          {visiblePosts.map((post, index) => (
+            <div key={post.id}>
+              {index === 5 && !isSignedIn && <SignInPanel />}
+              <ExplorePostCard post={post} signedIn={isSignedIn} onRequireSignIn={requireSignIn} />
+            </div>
+          ))}
+
+          {canLoadMore ? (
+            <button
+              type="button"
+              className="explore-load-more"
+              onClick={() => setVisibleCount((current) => current + 12)}
+            >
+              もっと読む
+            </button>
+          ) : (
+            <section className="explore-end-note" aria-label="読み終わり">
+              <p>ここまで読みました</p>
+              <span>探す画面から、病気・症状・悩みに近いテーマを見つけられます。</span>
+              <Link href="/find">探しにいく</Link>
+            </section>
+          )}
+
+          <section className="explore-safety-note" aria-label="注意書き">
+            <Icon name="leaf" size={19} />
+            <div>
+              <p>医療判断ではなく、体験談を読む場所です</p>
+              <span>つらさを比べず、言える範囲でそっと置ける場所を目指しています。</span>
+            </div>
+          </section>
+        </section>
       </main>
 
       <BottomNav active="home" />
     </>
+  );
+}
+
+function HomeNearContextPanel({
+  recommendation,
+  onOpenNear,
+}: {
+  recommendation: ReturnType<typeof getHealthRecommendation>;
+  onOpenNear: () => void;
+}) {
+  if (!recommendation.hasContext) {
+    return (
+      <section className="home-near-context" aria-label="近い声の案内">
+        <Icon name="leaf" size={17} />
+        <div>
+          <p>近い声を増やせます</p>
+          <span>病気・症状・不安を選ぶと、あなたに近い体験談を先に読めます。</span>
+        </div>
+        <Link href="/onboarding/condition">選ぶ</Link>
+      </section>
+    );
+  }
+
+  return (
+    <section className="home-near-context" aria-label="あなたに近い声">
+      <Icon name="leaf" size={17} />
+      <div>
+        <p>あなたに近い声</p>
+        <span>{recommendation.homeLead}</span>
+      </div>
+      <button type="button" onClick={onOpenNear}>
+        見る
+      </button>
+    </section>
+  );
+}
+
+function HomeComposer({ signedIn }: { signedIn: boolean }) {
+  const href = signedIn ? "/post" : "/auth/register?next=/post";
+
+  return (
+    <section className="home-composer" aria-label="今の気持ちを書く">
+      <Avatar
+        animal="rabbit"
+        src={`${communityAssetRoot}/avatars/anonymous-avatar-01.png`}
+        alt=""
+        tone="moss"
+        size={44}
+      />
+      <div>
+        <p>今の気持ちを、ひとことだけ</p>
+        <Link href={href}>つらい日も、うれしい日も、ここでつながれます</Link>
+        <div className="home-composer__tools" aria-label="投稿の補助">
+          <Link href={href}>
+            <Icon name="image" size={15} />
+            画像を追加
+          </Link>
+          <Link href={href}>
+            <Icon name="heart" size={15} />
+            気持ちスタンプ
+          </Link>
+          <Link href={href} className="home-composer__submit">
+            投稿する
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function SignInPanel() {
+  return (
+    <section className="explore-signin-panel" aria-label="登録案内">
+      <Image
+        className="explore-signin-panel__art"
+        src="/assets/community/shared-notes.png"
+        alt=""
+        aria-hidden="true"
+        width={144}
+        height={144}
+      />
+      <div>
+        <p className="explore-signin-panel__title">反応や投稿には登録が必要です</p>
+        <p className="explore-signin-panel__body">
+          読むだけならこのままで大丈夫です。書きたい時だけ、安心できる名前で始められます。
+        </p>
+      </div>
+      <Link href="/auth/register?next=/home" className="explore-primary-btn">
+        そっと登録
+      </Link>
+    </section>
+  );
+}
+
+function ExplorePostCard({
+  post,
+  signedIn,
+  onRequireSignIn,
+}: {
+  post: ExplorePost;
+  signedIn: boolean;
+  onRequireSignIn: () => void;
+}) {
+  const [saved, setSaved] = useState(post.saved ?? false);
+  const [picked, setPicked] = useState<string | null>(null);
+
+  const handleReaction = (label: string) => {
+    if (!signedIn) {
+      onRequireSignIn();
+      return;
+    }
+    setPicked((current) => (current === label ? null : label));
+  };
+
+  const handleSave = () => {
+    if (!signedIn) {
+      onRequireSignIn();
+      return;
+    }
+    setSaved((current) => !current);
+  };
+
+  const isUchiake = post.id.startsWith("uchiake-");
+
+  return (
+    <article className="explore-post">
+      <header className="explore-post__header">
+        <Avatar
+          animal={post.authorAvatar}
+          src={post.authorAvatarSrc}
+          alt={post.authorName}
+          tone={post.authorAvatarTone}
+          size={44}
+        />
+        <div className="explore-post__meta">
+          <div>
+            <span className="explore-post__name">{post.authorName}</span>
+            <span className={`explore-post__topic explore-topic-pill--${post.topicTone}`}>{post.topic}</span>
+          </div>
+          {post.mood && <p>{post.mood}</p>}
+        </div>
+        <time className="explore-post__time">{post.timeLabel}</time>
+      </header>
+
+      <p className="explore-post__body">
+        {isUchiake ? (
+          <Link href={`/voice/${post.id}`} style={{ color: "inherit", textDecoration: "none" }}>
+            {post.body}
+          </Link>
+        ) : (
+          post.body
+        )}
+      </p>
+
+      <div className="explore-post__footer">
+        {isUchiake && (
+          <Link href={`/voice/${post.id}`} className="explore-room-link">
+            続きを読む
+            <Icon name="chevronRight" size={14} />
+          </Link>
+        )}
+        {post.roomHref && (
+          <Link href={post.roomHref} className="explore-room-link">
+            {post.roomLabel ?? "同じテーマの声を読む"}
+            <Icon name="chevronRight" size={14} />
+          </Link>
+        )}
+        <button
+          type="button"
+          className={`explore-save ${saved ? "is-active" : ""}`.trim()}
+          aria-label="保存"
+          onClick={handleSave}
+        >
+          <Icon name="bookmark" size={18} />
+        </button>
+      </div>
+
+      <div className="explore-post__actions" aria-label="反応">
+        {post.reactions.map((reaction) => (
+          <button
+            key={reaction.label}
+            type="button"
+            className={`explore-reaction ${picked === reaction.label ? "is-active" : ""}`.trim()}
+            onClick={() => handleReaction(reaction.label)}
+          >
+            <Icon
+              name={reaction.label === "共感" ? "hand" : reaction.label === "応援" ? "heart" : "thanks"}
+              size={15}
+            />
+            {reaction.label}
+          </button>
+        ))}
+        <span className="explore-view-count" aria-label={`${post.viewCount ?? "0"}回表示`}>
+          <Icon name="understand" size={15} />
+          {post.viewCount ?? "0"}
+        </span>
+      </div>
+    </article>
   );
 }

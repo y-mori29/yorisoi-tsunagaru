@@ -1,11 +1,13 @@
 "use client";
 
 import { AppHeader } from "@/components/layout/AppHeader";
-import { IconButton } from "@/components/ui/IconButton";
+import { BackButton } from "@/components/ui/BackButton";
 
 type StubScreenProps = {
   title: string;
   summary?: string;
+  /** 直リンクで開かれた場合に戻る先（デフォルト：/settings） */
+  fallbackHref?: string;
 };
 
 /**
@@ -13,10 +15,10 @@ type StubScreenProps = {
  * Phase 3 で UX を本実装するまでのプレースホルダ。
  * 戻る矢印 + 「これから整えます」メッセージ。
  */
-export function StubScreen({ title, summary }: StubScreenProps) {
+export function StubScreen({ title, summary, fallbackHref = "/settings" }: StubScreenProps) {
   return (
     <>
-      <AppHeader title={title} left={<IconButton icon="back" label="戻る" />} />
+      <AppHeader title={title} left={<BackButton fallbackHref={fallbackHref} />} />
       <main
         className="app-main"
         style={{

@@ -1,8 +1,16 @@
+"use client";
+
+import Link from "next/link";
+import { useState, type MouseEvent } from "react";
 import { Avatar, type AvatarTone } from "./Avatar";
 import { Badge } from "./Badge";
 import { Icon } from "./Icon";
 import { ReactionChip } from "./ReactionChip";
 import type { AnimalName, IconName } from "@/lib/icons";
+import {
+  getReactionSuggestions,
+  type SuggestedReaction,
+} from "@/lib/api/reactions";
 
 export type ReactionItem = {
   icon: IconName;
@@ -12,6 +20,8 @@ export type ReactionItem = {
 };
 
 type VoiceCardProps = {
+  /** AI リアクション候補取得用の投稿 ID。指定すると「✦」ボタンが出る。 */
+  voiceId?: string;
   author: {
     name: string;
     avatar: AnimalName;
@@ -29,15 +39,19 @@ type VoiceCardProps = {
   reactions?: ReactionItem[];
   /** チャットアイコン（コメント数）を右端に */
   showChat?: boolean;
+  /** カード全体のクリックで遷移する先（指定時は Link でラップ） */
+  href?: string;
   className?: string;
 };
 
-/**
- * 投稿カード（みんな のタイムラインで使用）。
- * voice-card / voice-card__header / voice-card__body /
- * voice-card__image / voice-card__reactions の構造を踏襲。
- */
+/** Link 内のボタンクリックで遷移しないようイベントを止める */
+const stopNav = (e: MouseEvent<HTMLButtonElement>) => {
+  e.preventDefault();
+  e.stopPropagation();
+};
+
 export function VoiceCard({
+  voiceId,
   author,
   roomName,
   roomTone = "default",
@@ -47,9 +61,49 @@ export function VoiceCard({
   photoAlt = "",
   reactions,
   showChat,
+  href,
   className = "",
 }: VoiceCardProps) {
-  return (
+  // AI リアクション候補のローカル状態
+  const [aiOpen, setAiOpen] = useState(false);
+  const [aiList, setAiList] = useState<SuggestedReaction[]>([]);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
+
+  /** ラベル単位で「自分が押したか」を持つ。既存 active と OR で合成。 */
+  const [pickedLabels, setPickedLabels] = useState<Set<string>>(new Set());
+
+  const handleToggleAI = async (e: MouseEvent<HTMLButtonElement>) => {
+    stopNav(e);
+    if (!voiceId) return;
+    const next = !aiOpen;
+    setAiOpen(next);
+    if (next && aiList.length === 0 && !aiLoading) {
+      setAiLoading(true);
+      setAiError(null);
+      try {
+        const list = await getReactionSuggestions(voiceId);
+        setAiList(list);
+        if (list.length === 0) setAiError("候補を 出せませんでした。");
+      } catch (e) {
+        setAiError(e instanceof Error ? e.message : "エラーが 起きました。");
+      } finally {
+        setAiLoading(false);
+      }
+    }
+  };
+
+  const handlePick = (e: MouseEvent<HTMLButtonElement>, label: string) => {
+    stopNav(e);
+    setPickedLabels((prev) => {
+      const next = new Set(prev);
+      if (next.has(label)) next.delete(label);
+      else next.add(label);
+      return next;
+    });
+  };
+
+  const card = (
     <article className={`voice-card ${className}`.trim()}>
       <header className="voice-card__header">
         <Avatar
@@ -62,7 +116,7 @@ export function VoiceCard({
         <span className="voice-card__name">{author.name}</span>
         {roomName && <Badge tone={roomTone}>{roomName}</Badge>}
         <span className="voice-card__time">{time}</span>
-        <button type="button" className="voice-card__menu" aria-label="メニュー">
+        <button type="button" className="voice-card__menu" aria-label="メニュー" onClick={stopNav}>
           <Icon name="more" size={18} />
         </button>
       </header>
@@ -75,17 +129,105 @@ export function VoiceCard({
         </div>
       )}
 
-      {(reactions || showChat) && (
+      {(reactions || showChat || voiceId) && (
         <div className="voice-card__reactions">
-          {reactions?.map((r) => (
-            <ReactionChip key={r.label} icon={r.icon} label={r.label} active={r.active} count={r.count} />
-          ))}
+          {reactions?.map((r) => {
+            const isActive = (r.active ?? false) || pickedLabels.has(r.label);
+            return (
+              <ReactionChip
+                key={r.label}
+                icon={r.icon}
+                label={r.label}
+                active={isActive}
+                count={r.count}
+                onClick={(e) => handlePick(e, r.label)}
+              />
+            );
+          })}
+
+          {/* AI 候補表示中の追加チップ */}
+          {aiOpen &&
+            aiList.map((s) => {
+              const isActive = pickedLabels.has(s.label);
+              return (
+                <ReactionChip
+                  key={s.id}
+                  icon={s.icon}
+                  label={s.label}
+                  active={isActive}
+                  accent
+                  onClick={(e) => handlePick(e, s.label)}
+                />
+              );
+            })}
+
+          {aiOpen && aiLoading && (
+            <span
+              style={{
+                font: "400 11px/1 var(--font-jp)",
+                color: "var(--color-ink-300)",
+                letterSpacing: "0.04em",
+                alignSelf: "center",
+                marginLeft: 4,
+              }}
+            >
+              ✦ 考えています…
+            </span>
+          )}
+
+          {aiOpen && !aiLoading && aiError && (
+            <span
+              style={{
+                font: "400 11px/1 var(--font-jp)",
+                color: "var(--color-ink-500)",
+                letterSpacing: "0.04em",
+                alignSelf: "center",
+                marginLeft: 4,
+              }}
+            >
+              {aiError}
+            </span>
+          )}
+
+          {/* AI 候補トグルボタン */}
+          {voiceId && (
+            <button
+              type="button"
+              onClick={handleToggleAI}
+              aria-label={aiOpen ? "AI 候補を 閉じる" : "AI 候補を 出す"}
+              aria-pressed={aiOpen}
+              style={{
+                marginLeft: showChat ? 0 : "auto",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 4,
+                padding: "4px 10px",
+                borderRadius: 999,
+                background: aiOpen ? "var(--color-plum-50)" : "transparent",
+                border: `1px solid ${
+                  aiOpen
+                    ? "var(--color-plum-500, var(--color-plum-600))"
+                    : "var(--color-line-soft)"
+                }`,
+                color: "var(--color-plum-600)",
+                cursor: "pointer",
+                font: "400 11px/1 var(--font-jp)",
+                letterSpacing: "0.06em",
+                height: 26,
+              }}
+            >
+              <span aria-hidden="true">✦</span>
+              {aiOpen ? "閉じる" : "もう ひとつ"}
+            </button>
+          )}
+
           {showChat && (
             <button
               type="button"
               aria-label="コメントを見る"
+              onClick={stopNav}
               style={{
-                marginLeft: "auto",
+                marginLeft: voiceId ? 0 : "auto",
                 display: "grid",
                 placeItems: "center",
                 width: 28,
@@ -101,8 +243,18 @@ export function VoiceCard({
           )}
         </div>
       )}
+
     </article>
   );
+
+  if (href) {
+    return (
+      <Link href={href} className="voice-card-link" aria-label={`${author.name}の ことばを 開く`}>
+        {card}
+      </Link>
+    );
+  }
+  return card;
 }
 
 /**

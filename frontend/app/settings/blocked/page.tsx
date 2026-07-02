@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { AppHeader } from "@/components/layout/AppHeader";
-import { IconButton } from "@/components/ui/IconButton";
+import { BackButton } from "@/components/ui/BackButton";
 
 /**
  * ブロック詳細画面。
@@ -23,7 +23,7 @@ export default function BlockedPage() {
     <>
       <AppHeader
         title="ブロックしている お隣さん"
-        left={<IconButton icon="back" label="戻る" />}
+        left={<BackButton fallbackHref="/settings" />}
       />
       <main className="app-main" style={{ maxWidth: 360, margin: "0 auto" }}>
         <p

@@ -32,8 +32,41 @@ for (const f of chunkFiles) {
   }
 }
 
-const personaMap = assignPersonaNames([...merged.values()].map((r) => r.workerId));
-const out = [...merged.values()].map((r) => ({ ...r, personaName: personaMap.get(r.workerId) }));
+// 人物キーは作業者ページURL由来の personKey（同一人物の複数投稿に同じ名前を付ける）。
+// ただし多投稿者は1名に見せると不自然（最多88件・多疾患）なので、
+// 上限 MAX_POSTS_PER_PERSONA 件ごとに仮想ペルソナへ分割する（2026-07-03 森さん承認・案1）。
+// 分割時は疾患→ジャンル→id順に並べてから区切ることで、同じ病気の投稿が同じ名前にまとまりやすくする。
+const MAX_POSTS_PER_PERSONA = 6;
+const keyOf = (r) => r.personKey || r.workerId;
+
+const byPerson = new Map();
+for (const r of merged.values()) {
+  const k = keyOf(r);
+  if (!byPerson.has(k)) byPerson.set(k, []);
+  byPerson.get(k).push(r);
+}
+const virtualKeyById = new Map();
+for (const [k, posts] of byPerson) {
+  posts.sort((a, b) => {
+    const da = a.extracted?.primaryDisease ?? "";
+    const db = b.extracted?.primaryDisease ?? "";
+    if (da !== db) return da < db ? -1 : 1;
+    const ga = a.genre ?? "";
+    const gb = b.genre ?? "";
+    if (ga !== gb) return ga < gb ? -1 : 1;
+    return a.id < b.id ? -1 : 1;
+  });
+  posts.forEach((r, i) => {
+    const part = Math.floor(i / MAX_POSTS_PER_PERSONA);
+    virtualKeyById.set(r.id, part === 0 ? k : `${k}#${part}`);
+  });
+}
+
+const personaMap = assignPersonaNames([...virtualKeyById.values()]);
+const out = [...merged.values()].map((r) => ({
+  ...r,
+  personaName: personaMap.get(virtualKeyById.get(r.id)),
+}));
 
 fs.writeFileSync(
   path.join(dataDir, "extracted-full.jsonl"),

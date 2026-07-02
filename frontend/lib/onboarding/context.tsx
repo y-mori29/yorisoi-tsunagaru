@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, type ReactNode } from "react";
 import { INITIAL_STATE, type OnboardingState } from "./types";
+import { clearOnboardingState, readOnboardingState, writeOnboardingState } from "./storage";
 
 type Ctx = {
   state: OnboardingState;
@@ -13,17 +14,28 @@ type Ctx = {
 const OnboardingContext = createContext<Ctx | null>(null);
 
 export function OnboardingProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<OnboardingState>(INITIAL_STATE);
+  const [state, setState] = useState<OnboardingState>(() => readOnboardingState());
 
   const update = (patch: Partial<OnboardingState>) => {
-    setState((prev) => ({ ...prev, ...patch }));
+    setState((prev) => {
+      const next = { ...prev, ...patch };
+      writeOnboardingState(next);
+      return next;
+    });
   };
 
   const patchProfile = (patch: Partial<OnboardingState["profile"]>) => {
-    setState((prev) => ({ ...prev, profile: { ...prev.profile, ...patch } }));
+    setState((prev) => {
+      const next = { ...prev, profile: { ...prev.profile, ...patch } };
+      writeOnboardingState(next);
+      return next;
+    });
   };
 
-  const reset = () => setState(INITIAL_STATE);
+  const reset = () => {
+    clearOnboardingState();
+    setState(INITIAL_STATE);
+  };
 
   return (
     <OnboardingContext.Provider value={{ state, update, patchProfile, reset }}>

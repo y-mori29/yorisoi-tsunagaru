@@ -6,7 +6,6 @@ import { BottomNav } from "@/components/layout/BottomNav";
 import { DividerLabel } from "@/components/layout/DividerLabel";
 import { Button } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
-import { Card } from "@/components/ui/Card";
 import { Chip } from "@/components/ui/Chip";
 import { Badge } from "@/components/ui/Badge";
 import { Segment } from "@/components/ui/Segment";
@@ -95,14 +94,14 @@ export default function ShowcasePage() {
         <DividerLabel>Chips & Badges</DividerLabel>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
           <Chip>default</Chip>
-          <Chip tone="terra">UC ルーム</Chip>
+          <Chip tone="terra">潰瘍性大腸炎</Chip>
           <Chip tone="moss">朝型</Chip>
           <Chip tone="plum">読む派</Chip>
-          <Chip tone="cream">クローン ルーム</Chip>
+          <Chip tone="cream">クローン病</Chip>
         </div>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", marginTop: 8 }}>
           <Badge>moss badge</Badge>
-          <Badge tone="terra">UC ルーム</Badge>
+          <Badge tone="terra">潰瘍性大腸炎</Badge>
           <Badge tone="plum">プラム</Badge>
           <Badge tone="gold">公式</Badge>
           <span style={{ position: "relative" }}>
@@ -150,7 +149,7 @@ export default function ShowcasePage() {
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <VoiceCard
             author={{ name: "しずか", avatar: "rabbit", tone: "terra" }}
-            roomName="UC ルーム"
+            roomName="潰瘍性大腸炎"
             roomTone="terra"
             time="3分前"
             body={
@@ -165,7 +164,7 @@ export default function ShowcasePage() {
           />
           <VoiceCard
             author={{ name: "ふらり", avatar: "cat", tone: "moss" }}
-            roomName="クローン ルーム"
+            roomName="クローン病"
             roomTone="plum"
             time="15分前"
             body={"散歩道で、小さな花が、開いていました。\nこういう、静かな時間が、いちばん好きです。"}

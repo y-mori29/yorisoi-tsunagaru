@@ -1,0 +1,39 @@
+# gcloud run deploy --source . でアップロードしない対象
+# Dockerfile はアップロードに含める必要があるので除外しない
+
+.gcloudignore
+.git
+.gitignore
+.dockerignore
+
+# Node
+node_modules
+.next
+.turbo
+
+# IDE
+.vscode
+.idea
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# OS
+**/.DS_Store
+**/Thumbs.db
+
+# Env（Secret Manager から渡すので絶対に同梱しない）
+.env
+.env.local
+.env.development
+.env.production
+
+# Test / build artifacts
+coverage
+out
+dist
+build

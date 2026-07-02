@@ -1,17 +1,17 @@
 import type { User, Voice } from "@/lib/api/types";
 
 /**
- * 現在ログイン中のユーザー（モック）— 森さん想定。
+ * 現在ログイン中のユーザー（モック）。
  */
 export const currentUser: User = {
-  id: "u-mori",
-  name: "もりさん",
-  handle: "mori",
+  id: "u-local",
+  name: "よりそいユーザー",
+  handle: "local",
   avatar: "bear",
   avatarSrc: "/assets/animals/bear.png",
   avatarTone: "moss",
   bio: "ゆっくり 歩きながら、ことばを 拾っています。",
-  roomName: "UC ルーム",
+  roomName: "潰瘍性大腸炎",
   roomTone: "terra",
   tags: [
     { label: "夜型", tone: "plum" },
@@ -28,12 +28,12 @@ export const currentUser: User = {
 export const myVoices: Voice[] = [
   {
     id: "mv-001",
-    authorId: "u-mori",
-    authorName: "もりさん",
+    authorId: "u-local",
+    authorName: "よりそいユーザー",
     authorAvatar: "bear",
     authorAvatarSrc: "/assets/animals/bear.png",
     authorAvatarTone: "moss",
-    roomName: "UC ルーム",
+    roomName: "潰瘍性大腸炎",
     roomTone: "terra",
     body: "今朝は、薬を 飲み忘れずに 起きられました。\nそれだけで、なんだか 嬉しい。",
     visibility: "neighbors",
@@ -47,12 +47,12 @@ export const myVoices: Voice[] = [
   },
   {
     id: "mv-002",
-    authorId: "u-mori",
-    authorName: "もりさん",
+    authorId: "u-local",
+    authorName: "よりそいユーザー",
     authorAvatar: "bear",
     authorAvatarSrc: "/assets/animals/bear.png",
     authorAvatarTone: "moss",
-    roomName: "UC ルーム",
+    roomName: "潰瘍性大腸炎",
     roomTone: "terra",
     body: "雨の音を 聞きながら、お茶を いれました。\n静かな 夜です。",
     visibility: "all",

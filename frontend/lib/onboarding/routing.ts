@@ -10,6 +10,7 @@ export const ALL_STEPS = [
   "/onboarding/condition",
   "/onboarding/rhythm",
   "/onboarding/preference",
+  "/onboarding/avatar",
   "/onboarding/profile",
   "/onboarding/complete",
 ] as const;
@@ -35,6 +36,7 @@ export function buildPath(purposes: PurposeId[]): Step[] {
   if (has("same-thinking") || has("consult-self") || has("consult-others"))
     path.push("/onboarding/preference");
 
+  path.push("/onboarding/avatar");
   path.push("/onboarding/profile");
   path.push("/onboarding/complete");
 

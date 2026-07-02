@@ -1,8 +1,13 @@
 import type { NextConfig } from "next";
 import path from "node:path";
+import { config as loadEnv } from "dotenv";
+
+if (process.env.NODE_ENV !== "production") {
+  loadEnv({ path: path.resolve(process.cwd(), "../secure/.env") });
+}
 
 const nextConfig: NextConfig = {
-  // Workspace root を明示（上位ディレクトリの package-lock.json 検出による警告を抑制）
+  output: "standalone",
   turbopack: {
     root: path.join(__dirname),
   },

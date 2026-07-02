@@ -22,9 +22,11 @@ const header = records[0];
 const rows = records.slice(1);
 
 // ヘッダー内容 → 論理列名
-// 注: 先頭列はヘッダーが壊れている（「 のみ）が、データは数値の作業者ID。
+// 注: 先頭列はヘッダーが壊れている（「 のみ）が、データは投稿ごとの通し番号（人物IDではない）。
+//     人物の識別子は「作業者ページURL」（employees/xxxx）。同一人物の複数投稿はURLが同じ。
 //     [1]の「作業者」はCrowdWorksユーザー名のため匿名化の観点で取り込まない。
 const columnMatchers = [
+  ["workerUrl", (h) => /作業者ページ\s*URL/i.test(h)],
   ["approvedAt", (h) => /承認日時/.test(h)],
   ["title", (h) => /タイトル/.test(h)],
   ["q1_overview", (h) => /^1\./.test(h.trim()) || /あなたの症状/.test(h)],
@@ -85,9 +87,13 @@ for (const row of rows) {
     skipped++;
     continue;
   }
+  // 人物キー: 作業者ページURLの employees/番号（同一人物の複数投稿を束ねる）
+  const urlRaw = mapping.workerUrl !== undefined ? clean(row[mapping.workerUrl]) : "";
+  const personKey = urlRaw.match(/employees\/(\d+)/)?.[1] ?? clean(row[mapping.workerId]);
   const rec = {
     id: `uchiake-${String(rowIndex).padStart(4, "0")}`,
     workerId: clean(row[mapping.workerId]),
+    personKey,
     approvedAt: mapping.approvedAt !== undefined ? clean(row[mapping.approvedAt]) : "",
     title: clean(row[mapping.title]),
     q1_overview: clean(row[mapping.q1_overview]),
