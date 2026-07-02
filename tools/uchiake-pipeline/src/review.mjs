@@ -66,7 +66,9 @@ for (const r of ok) {
   if (!byWorker.has(r.workerId)) byWorker.set(r.workerId, []);
   byWorker.get(r.workerId).push(r);
 }
-const pairs = [...byWorker.values()].filter((v) => v.length >= 2);
+const pairs = [...byWorker.entries()]
+  .filter(([workerId, posts]) => workerId && posts.length >= 2)
+  .map(([, posts]) => posts);
 
 let md = `# うちあけ→つながる 抽出バッチ レビュー（100件試作）
 
