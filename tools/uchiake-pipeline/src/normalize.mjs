@@ -74,7 +74,10 @@ const out = fs.createWriteStream(OUT_PATH, { encoding: "utf8" });
 let n = 0;
 let skipped = 0;
 const clean = (s) => String(s ?? "").replace(/\r\n/g, "\n").trim();
+// idは「元CSVの行番号」基準で採番する（空行スキップで番号がずれると既処理データと不整合になるため）
+let rowIndex = 0;
 for (const row of rows) {
+  rowIndex++;
   // 設問回答がすべて空（未記入行）はスキップ
   const answers = [mapping.q1_overview, mapping.q2_complaint, mapping.q3_course, mapping.q4_treatment, mapping.q5_issue]
     .map((i) => clean(row[i]));
@@ -83,7 +86,7 @@ for (const row of rows) {
     continue;
   }
   const rec = {
-    id: `uchiake-${String(n + 1).padStart(4, "0")}`,
+    id: `uchiake-${String(rowIndex).padStart(4, "0")}`,
     workerId: clean(row[mapping.workerId]),
     approvedAt: mapping.approvedAt !== undefined ? clean(row[mapping.approvedAt]) : "",
     title: clean(row[mapping.title]),
