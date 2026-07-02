@@ -1,0 +1,19 @@
+{
+  "name": "uchiake-pipeline",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "うちあけ体験談CSVを つながる 用の声・体験談データへ変換するバッチ",
+  "scripts": {
+    "normalize": "node src/normalize.mjs",
+    "sample": "node src/sample.mjs",
+    "extract": "node src/extract.mjs",
+    "validate": "node src/validate.mjs",
+    "merge": "node src/merge.mjs",
+    "review": "node src/review.mjs"
+  },
+  "dependencies": {
+    "@google/genai": "^1.16.0",
+    "csv-parse": "^5.6.0"
+  }
+}
