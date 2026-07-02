@@ -189,13 +189,6 @@ export default function SettingsPage() {
         <section aria-labelledby="settings-safety-heading" style={{ display: "grid", gap: 10 }}>
           <SectionHeading label="安心設定" title="声の届き方と距離を調整する" id="settings-safety-heading" />
           <div style={{ display: "grid", gap: 9 }}>
-            <SettingCard
-              href="/settings/voice-visibility"
-              icon="lock"
-              title="声のデフォルト公開"
-              body="全体に置く、近いテーマだけ、自分だけを選べます"
-              badge="読む人にも届く"
-            />
             <SettingSwitch
               icon="search"
               title="名前で探されないようにする"
@@ -229,24 +222,6 @@ export default function SettingsPage() {
               body="22:00から7:00までは通知を控えます"
               checked={quietNight}
               onChange={setQuietNight}
-            />
-          </div>
-        </section>
-
-        <section aria-labelledby="settings-help-heading" style={{ display: "grid", gap: 10 }}>
-          <SectionHeading label="困った時" title="迷った時の連絡先" id="settings-help-heading" />
-          <div style={{ display: "grid", gap: 9 }}>
-            <SettingCard
-              href="/settings/help"
-              icon="chat"
-              title="ヘルプ・お問い合わせ"
-              body="使い方や不安な投稿について相談できます"
-            />
-            <SettingCard
-              href="/hotline"
-              icon="heart"
-              title="今すぐ誰かに話したい時"
-              body="緊急時や強い不安がある時の相談先を確認します"
             />
           </div>
         </section>

@@ -46,21 +46,21 @@ const TONE = {
 
 const BUTTONS: Btn[] = [
   {
-    href: "/record",
+    href: "/home",
     label: "記録する",
     caption: "そっと 残す",
     icon: "flower",
     surface: TONE.terra,
   },
   {
-    href: "/look-back",
+    href: "/home",
     label: "ふりかえる",
     caption: "これまでの 自分",
     icon: "moon",
     surface: TONE.plum,
   },
   {
-    href: "/share",
+    href: "/home",
     label: "見せる",
     caption: "家族や 主治医に",
     icon: "mail",
@@ -92,7 +92,7 @@ export function FourButtons() {
     >
       {BUTTONS.map((b) => (
         <Link
-          key={b.href}
+          key={b.label}
           href={b.href}
           style={{
             display: "flex",
