@@ -5485,3 +5485,205 @@ input, textarea {
   font: 700 12px/1 var(--font-jp);
   text-decoration: none;
 }
+
+/* =====================================================================
+   Uchiake Story Article — 体験談詳細（セクションカード）
+   ===================================================================== */
+
+.story-article {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+
+.story-article__title {
+  margin: 2px 4px 4px;
+  font: 500 19px/1.65 var(--font-mincho);
+  color: var(--color-ink-800, var(--color-ink-900));
+  letter-spacing: 0.02em;
+}
+
+.story-article__close {
+  margin-top: 16px;
+  padding-bottom: 8px;
+}
+
+.story-article__close-icon {
+  background: transparent;
+  border: none;
+  color: var(--color-ink-500);
+  cursor: pointer;
+}
+
+.story-card {
+  border: 1px solid rgba(214, 200, 178, 0.76);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 253, 248, 0.86);
+  box-shadow: 0 10px 24px rgba(74, 56, 38, 0.045);
+}
+
+.story-card--profile {
+  padding: 18px;
+}
+
+.story-card--section {
+  padding: 0 0 16px;
+  overflow: hidden;
+}
+
+.story-card--reactions {
+  padding: 20px 18px;
+  text-align: center;
+}
+
+.story-card--comments {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.story-card__profile {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.story-card__profile-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.story-card__profile-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+}
+
+.story-card__profile-name {
+  font: 500 14px/1.4 var(--font-jp);
+  color: var(--color-ink-800, var(--color-ink-900));
+}
+
+.story-card__profile-demo {
+  margin: 6px 0 0;
+  font: 400 11px/1.5 var(--font-jp);
+  color: var(--color-ink-400, var(--color-ink-500));
+  letter-spacing: 0.04em;
+}
+
+.story-card__profile-time {
+  font: 400 11px/1.4 var(--font-jp);
+  color: var(--color-ink-300);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.story-card__label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 16px;
+  font: 500 11px/1.4 var(--font-jp);
+  letter-spacing: 0.1em;
+  border-bottom: 1px solid rgba(214, 200, 178, 0.45);
+}
+
+.story-card__label--moss {
+  background: rgba(239, 241, 230, 0.72);
+  color: var(--color-moss-700);
+}
+
+.story-card__label--plum {
+  background: rgba(236, 231, 236, 0.72);
+  color: var(--color-plum-600);
+}
+
+.story-card__label--terra {
+  background: rgba(248, 239, 231, 0.78);
+  color: var(--color-terra-700);
+}
+
+.story-card__label--gold {
+  background: rgba(201, 169, 97, 0.12);
+  color: var(--color-gold-600);
+}
+
+.story-card__body {
+  margin: 0;
+  padding: 14px 18px 0;
+  font: 400 14px/1.9 var(--font-jp);
+  color: var(--color-ink-700);
+  white-space: pre-wrap;
+}
+
+.story-clamp {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 6;
+  overflow: hidden;
+}
+
+.story-card__expand {
+  display: block;
+  margin: 10px 18px 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font: 500 12px/1.5 var(--font-jp);
+  color: var(--color-terra-700);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.story-card__expand:hover {
+  color: var(--color-terra-500);
+}
+
+.story-card__collapse {
+  display: block;
+  margin: 12px 18px 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font: 400 11px/1.5 var(--font-jp);
+  color: var(--color-ink-400, var(--color-ink-500));
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.story-card__reactions-heading {
+  font: 400 12px/1 var(--font-jp);
+  color: var(--color-ink-500);
+  letter-spacing: 0.14em;
+  margin-bottom: 12px;
+}
+
+.story-card__reactions {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.story-card__reaction-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.story-card__reactions-note {
+  font: 400 11px/1.6 var(--font-jp);
+  color: var(--color-ink-300);
+  margin-top: 14px;
+  letter-spacing: 0.04em;
+}
+
+.story-card__comments-heading {
+  font: 500 12px/1 var(--font-jp);
+  color: var(--color-ink-700);
+  letter-spacing: 0.14em;
+  margin: 0;
+}
