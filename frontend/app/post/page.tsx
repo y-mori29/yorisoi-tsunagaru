@@ -4,12 +4,15 @@ import { Suspense, use, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { signInGateHref } from "@/lib/auth/require-sign-in";
+import { getCurrentSession } from "@/lib/auth/local-auth";
 import { BackButton } from "@/components/ui/BackButton";
+import { Avatar, type AvatarTone } from "@/components/ui/Avatar";
 import { Icon } from "@/components/ui/Icon";
 import { getRooms } from "@/lib/api/rooms";
 import { getHealthRecommendation } from "@/lib/onboarding/recommendations";
+import { readOnboardingState } from "@/lib/onboarding/storage";
 import { useStoredHealthContext } from "@/lib/onboarding/useStoredHealthContext";
-import type { IconName } from "@/lib/icons";
+import type { AnimalName, IconName } from "@/lib/icons";
 
 type WriteKind = "short" | "story" | "question" | "memo";
 type Visibility = "public" | "near" | "room" | "quiet";
@@ -29,7 +32,7 @@ type WriteKindConfig = {
 const WRITE_KINDS: WriteKindConfig[] = [
   {
     value: "short",
-    title: "ひとこと吐き出す",
+    title: "ひとこと吐き出す（短い投稿）",
     body: "いまの気持ちを短く置きます",
     icon: "whisper",
     label: "ひとこと",
@@ -121,6 +124,15 @@ function PostComposer() {
   const [selectedRoomId, setSelectedRoomId] = useState(roomId ?? "room-before-diagnosis");
   const [body, setBody] = useState("");
   const [placed, setPlaced] = useState(false);
+  const [previewAuthor, setPreviewAuthor] = useState<{
+    name: string;
+    animal: AnimalName;
+    avatarTone: AvatarTone;
+  }>({
+    name: "あなた（ニックネーム）",
+    animal: "rabbit",
+    avatarTone: "moss",
+  });
 
   const allRooms = use(rooms);
   const selectedRoom = allRooms.find((room) => room.id === selectedRoomId) ?? allRooms[0];
@@ -147,6 +159,17 @@ function PostComposer() {
     selectedRoomId: selectedRoom?.id,
     contextSummary,
   });
+
+  useEffect(() => {
+    const onboarding = readOnboardingState();
+    const session = getCurrentSession();
+    const displayName = onboarding.profile.displayName?.trim() || session?.name?.trim();
+    setPreviewAuthor({
+      name: displayName && displayName !== "ななし" ? displayName : "あなた（ニックネーム）",
+      animal: onboarding.profile.animal ?? "rabbit",
+      avatarTone: (onboarding.profile.avatarTone as AvatarTone | undefined) ?? "moss",
+    });
+  }, []);
 
   useEffect(() => {
     const query = searchParams.toString();
@@ -341,10 +364,20 @@ function PostComposer() {
           </section>
         )}
 
+        <PostPreviewCard
+          authorName={previewAuthor.name}
+          authorAnimal={previewAuthor.animal}
+          authorAvatarTone={previewAuthor.avatarTone}
+          body={body}
+          contextLabels={contextLabels}
+          visibilityLine={getPreviewVisibilityLine(visibility, selectedRoom?.name)}
+          lookbackHint={getPreviewLookbackHint(visibility, selectedRoom?.name)}
+        />
+
         <SummaryCard
           icon={destination.icon}
           title={destination.title}
-          body={`${writeConfig.title}を、${destination.body}`}
+          body={`${writeConfig.label}を、${destination.body}`}
           contextSummary={contextSummary}
           placed={placed}
         />
@@ -368,12 +401,93 @@ function PostComposer() {
               <Link href={roomId ? `/rooms/${roomId}` : "/home"}>あとで</Link>
               <button type="button" onClick={onSubmit} disabled={body.trim().length === 0 && !selectedFeeling}>
                 {destination.submitLabel}
+                {visibility === "quiet" ? "（公開しない）" : "（投稿する）"}
               </button>
             </>
           )}
         </footer>
       </main>
     </>
+  );
+}
+
+function getPreviewVisibilityLine(visibility: Visibility, selectedRoomName?: string) {
+  if (visibility === "room") {
+    return selectedRoomName
+      ? `テーマ「${selectedRoomName}」を見ている人に届きます`
+      : "テーマを見ている人に届きます";
+  }
+  if (visibility === "quiet") return "公開されません（自分だけ）";
+  if (visibility === "near") return "病気・症状が近い人に届きます";
+  return "全体のタイムラインに流れます";
+}
+
+function getPreviewLookbackHint(visibility: Visibility, selectedRoomName?: string) {
+  if (visibility === "quiet") return "保存するとマイページの置いた声から見返せます";
+  if (visibility === "room") {
+    return selectedRoomName
+      ? `投稿すると「${selectedRoomName}」テーマから見返せます`
+      : "投稿するとテーマページから見返せます";
+  }
+  return "投稿するとホームのタイムラインから見返せます";
+}
+
+function PostPreviewCard({
+  authorName,
+  authorAnimal,
+  authorAvatarTone,
+  body,
+  contextLabels,
+  visibilityLine,
+  lookbackHint,
+}: {
+  authorName: string;
+  authorAnimal: AnimalName;
+  authorAvatarTone: AvatarTone;
+  body: string;
+  contextLabels: string[];
+  visibilityLine: string;
+  lookbackHint: string;
+}) {
+  const trimmedBody = body.trim();
+  const previewLabels = contextLabels.length > 0 ? contextLabels : ["未設定"];
+
+  return (
+    <section className="post-preview-section" aria-label="投稿プレビュー">
+      <div className="post-preview-section__head">
+        <h3>この声は、こう見えます</h3>
+        <span>他の人からは、このように見えます</span>
+      </div>
+      <article className="post-preview-card">
+        <header className="post-preview-card__header">
+          <Avatar
+            animal={authorAnimal}
+            src={`/assets/animals/${authorAnimal}.png`}
+            alt={authorName}
+            tone={authorAvatarTone}
+            size={44}
+          />
+          <div className="post-preview-card__meta">
+            <span className="post-preview-card__name">{authorName}</span>
+            <p className="post-preview-card__visibility">{visibilityLine}</p>
+          </div>
+          <time className="post-preview-card__time" aria-hidden="true">
+            いま
+          </time>
+        </header>
+        <p className={`post-preview-card__body${trimmedBody ? "" : " is-empty"}`}>
+          {trimmedBody || "（ここに本文が入ります）"}
+        </p>
+        <div className="post-preview-card__context">
+          {previewLabels.map((label) => (
+            <span key={label} className="explore-topic-pill explore-topic-pill--soft">
+              {label}
+            </span>
+          ))}
+        </div>
+        <p className="post-preview-card__hint">{lookbackHint}</p>
+      </article>
+    </section>
   );
 }
 

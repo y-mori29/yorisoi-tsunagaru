@@ -35,7 +35,7 @@ export function BottomNav({ active }: BottomNavProps = {}) {
       ))}
 
       <div className="bottom-nav__center">
-        <Link href="/post" className="fab-center" aria-label="声を置く">
+        <Link href="/post" className="fab-center" aria-label="声を置く（投稿）">
           <Icon name="plus" />
         </Link>
       </div>

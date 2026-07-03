@@ -177,7 +177,7 @@ function HomeNearContextPanel({
             <p>登録すると、あなたに近い声が届きます</p>
             <span>病気・症状・不安に合わせて、近い体験談を先に読めるようになります。</span>
           </div>
-          <Link href="/auth/register?next=/home">そっと登録</Link>
+          <Link href="/auth/register?next=/home">そっと登録（無料・メールだけ）</Link>
         </section>
       );
     }
@@ -259,7 +259,7 @@ function SignInPanel() {
         </p>
       </div>
       <Link href="/auth/register?next=/home" className="explore-primary-btn">
-        そっと登録
+        そっと登録（無料・メールだけ）
       </Link>
     </section>
   );
