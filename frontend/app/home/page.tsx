@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -38,7 +38,11 @@ export default function HomePage() {
   const router = useRouter();
   const [tab, setTab] = useState<(typeof tabs)[number]["value"]>("latest");
   const [visibleCount, setVisibleCount] = useState(12);
-  const [isSignedIn] = useState(() => Boolean(getCurrentSession()));
+  // SSRとの hydration 不一致を避けるため、セッション判定はマウント後に行う
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  useEffect(() => {
+    setIsSignedIn(Boolean(getCurrentSession()));
+  }, []);
   const { healthContext } = useStoredHealthContext();
   const healthRecommendation = useMemo(() => getHealthRecommendation(healthContext), [healthContext]);
 
@@ -110,7 +114,11 @@ export default function HomePage() {
 
         <HomeComposer signedIn={isSignedIn} />
 
-        <HomeNearContextPanel recommendation={healthRecommendation} onOpenNear={() => handleTab("near")} />
+        <HomeNearContextPanel
+          recommendation={healthRecommendation}
+          signedIn={isSignedIn}
+          onOpenNear={() => handleTab("near")}
+        />
 
         <section className="explore-feed" id="feed" aria-label="体験談タイムライン">
           {visiblePosts.map((post, index) => (
@@ -153,12 +161,27 @@ export default function HomePage() {
 
 function HomeNearContextPanel({
   recommendation,
+  signedIn,
   onOpenNear,
 }: {
   recommendation: ReturnType<typeof getHealthRecommendation>;
+  signedIn: boolean;
   onOpenNear: () => void;
 }) {
   if (!recommendation.hasContext) {
+    if (!signedIn) {
+      return (
+        <section className="home-near-context" aria-label="近い声の案内">
+          <Icon name="leaf" size={17} />
+          <div>
+            <p>登録すると、あなたに近い声が届きます</p>
+            <span>病気・症状・不安に合わせて、近い体験談を先に読めるようになります。</span>
+          </div>
+          <Link href="/auth/register?next=/home">そっと登録</Link>
+        </section>
+      );
+    }
+
     return (
       <section className="home-near-context" aria-label="近い声の案内">
         <Icon name="leaf" size={17} />

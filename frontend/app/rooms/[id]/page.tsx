@@ -2,6 +2,8 @@
 
 import { use, useMemo, useState } from "react";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { signInGateHref } from "@/lib/auth/require-sign-in";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { BackButton } from "@/components/ui/BackButton";
 import { Avatar } from "@/components/ui/Avatar";
@@ -164,8 +166,19 @@ export default function RoomDetailPage({ params }: { params: Promise<{ id: strin
 }
 
 function RoomPost({ post }: { post: ExplorePost }) {
+  const router = useRouter();
+  const pathname = usePathname();
   const [picked, setPicked] = useState<string | null>(null);
   const isUchiake = post.id.startsWith("uchiake-");
+
+  const handleReaction = (label: string) => {
+    const gate = signInGateHref(pathname);
+    if (gate) {
+      router.push(gate);
+      return;
+    }
+    setPicked((current) => (current === label ? null : label));
+  };
 
   return (
     <article className="room-post-card">
@@ -198,7 +211,7 @@ function RoomPost({ post }: { post: ExplorePost }) {
             key={reaction.label}
             type="button"
             className={picked === reaction.label ? "is-active" : ""}
-            onClick={() => setPicked((current) => (current === reaction.label ? null : reaction.label))}
+            onClick={() => handleReaction(reaction.label)}
           >
             <Icon name={reaction.label === "共感" ? "hand" : reaction.label === "応援" ? "heart" : "thanks"} size={14} />
             {reaction.label}

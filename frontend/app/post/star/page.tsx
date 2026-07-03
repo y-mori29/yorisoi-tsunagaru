@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { signInGateHref } from "@/lib/auth/require-sign-in";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { IconButton } from "@/components/ui/IconButton";
 import { StarTopicChips } from "@/components/screens/star/StarTopicChips";
@@ -23,10 +24,16 @@ import type { StarTopic } from "@/lib/api/types";
  */
 export default function StarPostPage() {
   const router = useRouter();
+  const pathname = usePathname();
   const [topic, setTopic] = useState<StarTopic | null>(null);
   const [body, setBody] = useState("");
   const [sending, setSending] = useState(false);
   const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    const gate = signInGateHref(pathname);
+    if (gate) router.replace(gate);
+  }, [pathname, router]);
 
   const handleSelectTopic = (next: StarTopic) => {
     setTopic(next);

@@ -1,6 +1,8 @@
 "use client";
 
 import { use, useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { signInGateHref } from "@/lib/auth/require-sign-in";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { Avatar } from "@/components/ui/Avatar";
 import { BackButton } from "@/components/ui/BackButton";
@@ -23,6 +25,8 @@ import type { Message, ReplySuggestion } from "@/lib/api/types";
 const MY_ID = "u-mori";
 
 export default function MessageThreadPage({ params }: { params: Promise<{ id: string }> }) {
+  const router = useRouter();
+  const pathname = usePathname();
   const { id } = use(params);
   const conversation = use(getConversationById(id));
   const initialMessages = use(getMessages(id));
@@ -60,6 +64,12 @@ export default function MessageThreadPage({ params }: { params: Promise<{ id: st
   }, [id, showSuggestions, lastMessage?.id]);
 
   const handleSend = (body: string) => {
+    const gate = signInGateHref(pathname);
+    if (gate) {
+      router.push(gate);
+      return;
+    }
+
     const next: Message = {
       id: `m-draft-${Date.now()}`,
       conversationId: id,

@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState, type CSSProperties } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { signInGateHref } from "@/lib/auth/require-sign-in";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { BackButton } from "@/components/ui/BackButton";
 import { IconButton } from "@/components/ui/IconButton";
@@ -61,6 +62,7 @@ const cardStyle: CSSProperties = {
 
 export function UchiakeStoryArticle({ story }: { story: UchiakeStory }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [selected, setSelected] = useState<Reaction["key"] | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
 
@@ -75,6 +77,11 @@ export function UchiakeStoryArticle({ story }: { story: UchiakeStory }) {
   }, [story.id]);
 
   const toggle = (key: Reaction["key"]) => {
+    const gate = signInGateHref(pathname);
+    if (gate) {
+      router.push(gate);
+      return;
+    }
     setSelected((prev) => (prev === key ? null : key));
   };
 

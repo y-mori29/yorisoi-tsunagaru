@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState, type CSSProperties } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import {
   getCommentSuggestions,
   invalidateCommentSuggestions,
   postComment,
 } from "@/lib/api/comments";
+import { signInGateHref } from "@/lib/auth/require-sign-in";
 import type { Comment, CommentSuggestion } from "@/lib/api/types";
 
 type Props = {
@@ -83,6 +85,8 @@ const chipBaseStyle: CSSProperties = {
  *   AI が直接コメントを書くわけではない。
  */
 export function CommentComposer({ parentId, onPosted }: Props) {
+  const router = useRouter();
+  const pathname = usePathname();
   const [suggestions, setSuggestions] = useState<CommentSuggestion[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -118,6 +122,13 @@ export function CommentComposer({ parentId, onPosted }: Props) {
   const submit = async () => {
     const trimmed = body.trim();
     if (!trimmed || sending) return;
+
+    const gate = signInGateHref(pathname);
+    if (gate) {
+      router.push(gate);
+      return;
+    }
+
     setSending(true);
     try {
       const c = await postComment({ parentId, body: trimmed });

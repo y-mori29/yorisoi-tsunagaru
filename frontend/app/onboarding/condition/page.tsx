@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useOnboarding } from "@/lib/onboarding/context";
 import { OnboardingShell } from "@/components/screens/onboarding/OnboardingShell";
 import { Icon } from "@/components/ui/Icon";
-import { nextStep } from "@/lib/onboarding/routing";
+import { signInGateHref } from "@/lib/auth/require-sign-in";
 import { diseaseCatalog, searchDiseases } from "@/lib/mock/explore";
 import type { DiseaseCatalogEntry, PatientDiseaseSelection } from "@/lib/mock/explore";
 import {
@@ -38,7 +38,7 @@ export default function ConditionPage() {
 
 function ConditionFallback() {
   return (
-    <OnboardingShell current="/onboarding/condition" showBack backHref="/onboarding">
+    <OnboardingShell current="/onboarding/condition" showBack backHref="/onboarding/profile">
       <h2 className="onboarding-section-title">あなたに近い声を届けるために</h2>
       <p className="onboarding-section-sub">病気・症状・不安を選ぶ準備をしています。</p>
     </OnboardingShell>
@@ -48,9 +48,17 @@ function ConditionFallback() {
 function ConditionContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const next = searchParams.get("next") || "/home";
+  const skipHref = next;
+  const backHref = `/onboarding/profile?next=${encodeURIComponent(next)}`;
   const { state, update } = useOnboarding();
   const [query, setQuery] = useState("");
   const appliedParams = useRef(false);
+
+  useEffect(() => {
+    const gate = signInGateHref("/onboarding/condition");
+    if (gate) router.replace(gate);
+  }, [router]);
 
   const context = state.healthContext;
   const diseaseSearch = useMemo(() => searchDiseases(query), [query]);
@@ -147,12 +155,7 @@ function ConditionContent() {
     });
   };
 
-  const toggleNoAnswer = () => {
-    if (state.conditionDeclined) {
-      update({ conditionDeclined: false });
-      return;
-    }
-
+  const skipSelection = () => {
     update({
       conditionDeclined: true,
       conditions: [],
@@ -165,20 +168,27 @@ function ConditionContent() {
         diagnosisStatus: "unknown",
       }),
     });
-    setQuery("");
+    router.push(next);
   };
 
   const onContinue = () => {
-    router.push(nextStep("/onboarding/condition", state.purposes));
+    router.push(next);
   };
 
   return (
-    <OnboardingShell current="/onboarding/condition" showBack backHref="/onboarding">
+    <OnboardingShell
+      current="/onboarding/condition"
+      skipHref={skipHref}
+      showBack
+      backHref={backHref}
+    >
       <h2 className="onboarding-section-title">あなたに近い声を届けるために</h2>
       <p className="onboarding-section-sub">
         病気・症状・不安を選んでください。
         <br />
         病名がまだ決まっていなくても大丈夫です。
+        <br />
+        あとからマイページでも変えられます。
       </p>
 
       <section className="health-context-card" aria-label="選んでいる内容">
@@ -186,11 +196,7 @@ function ConditionContent() {
           <span>選択中</span>
           <p>近い声やテーマを出すための設定です。あとから変更できます。</p>
         </div>
-        {state.conditionDeclined ? (
-          <p className="health-context-empty">今は選ばずに進みます。</p>
-        ) : (
-          <SelectedSummary context={context} onClearDisease={clearDisease} />
-        )}
+        <SelectedSummary context={context} onClearDisease={clearDisease} />
       </section>
 
       <section className="health-context-section" aria-labelledby="disease-title">
@@ -206,91 +212,84 @@ function ConditionContent() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="病名・疑い病名を入力"
-            disabled={state.conditionDeclined}
             aria-label="病名を検索"
           />
         </div>
 
-        {!state.conditionDeclined && (
-          <div className="health-disease-list">
-            {diseaseCandidates.map((disease) => (
-              <DiseaseChoice
-                key={disease.id}
-                disease={disease}
-                selected={context.primaryDisease?.selectedDiseaseId === disease.id}
-                onSelect={() => selectDisease(createCatalogDiseaseSelection(disease))}
-              />
-            ))}
+        <div className="health-disease-list">
+          {diseaseCandidates.map((disease) => (
+            <DiseaseChoice
+              key={disease.id}
+              disease={disease}
+              selected={context.primaryDisease?.selectedDiseaseId === disease.id}
+              onSelect={() => selectDisease(createCatalogDiseaseSelection(disease))}
+            />
+          ))}
 
-            {diseaseSearch.freeTextSelection && hasQuery && (
-              <button
-                type="button"
-                className="health-free-choice"
-                onClick={() => selectDisease(createFreeTextDiseaseSelection(query.trim()))}
-              >
-                <span>
-                  <small>候補になくても選べます</small>
-                  「{query.trim()}」を自分の病気として選ぶ
-                </span>
-                <Icon name="plus" />
-              </button>
-            )}
-
+          {diseaseSearch.freeTextSelection && hasQuery && (
             <button
               type="button"
-              className={`health-pending-choice ${context.diagnosisStatus === "pending" ? "is-active" : ""}`.trim()}
-              onClick={() => selectDisease(createPendingDiseaseSelection())}
+              className="health-free-choice"
+              onClick={() => selectDisease(createFreeTextDiseaseSelection(query.trim()))}
             >
               <span>
-                <small>診断前・検査中の方へ</small>
-                まだ診断名が決まっていない
+                <small>候補になくても選べます</small>
+                「{query.trim()}」を自分の病気として選ぶ
               </span>
-              <Icon name="chevronRight" />
+              <Icon name="plus" />
             </button>
-          </div>
-        )}
+          )}
+
+          <button
+            type="button"
+            className={`health-pending-choice ${context.diagnosisStatus === "pending" ? "is-active" : ""}`.trim()}
+            onClick={() => selectDisease(createPendingDiseaseSelection())}
+          >
+            <span>
+              <small>診断前・検査中の方へ</small>
+              まだ診断名が決まっていない
+            </span>
+            <Icon name="chevronRight" />
+          </button>
+        </div>
       </section>
 
-      {!state.conditionDeclined && (
-        <>
-          <section className="health-context-section" aria-labelledby="diagnosis-title">
-            <div className="health-context-section__head">
-              <h3 id="diagnosis-title">診断の状態</h3>
-              <span>言える範囲で大丈夫です</span>
-            </div>
-            <div className="health-status-row">
-              {(Object.keys(diagnosisLabels) as Array<MemberHealthContext["diagnosisStatus"]>).map((status) => (
-                <button
-                  key={status}
-                  type="button"
-                  className={context.diagnosisStatus === status ? "is-active" : ""}
-                  onClick={() => setDiagnosisStatus(status)}
-                >
-                  {diagnosisLabels[status]}
-                </button>
-              ))}
-            </div>
-          </section>
+      <section className="health-context-section" aria-labelledby="diagnosis-title">
+        <div className="health-context-section__head">
+          <h3 id="diagnosis-title">診断の状態</h3>
+          <span>言える範囲で大丈夫です</span>
+        </div>
+        <div className="health-status-row">
+          {(Object.keys(diagnosisLabels) as Array<MemberHealthContext["diagnosisStatus"]>).map((status) => (
+            <button
+              key={status}
+              type="button"
+              className={context.diagnosisStatus === status ? "is-active" : ""}
+              onClick={() => setDiagnosisStatus(status)}
+            >
+              {diagnosisLabels[status]}
+            </button>
+          ))}
+        </div>
+      </section>
 
-          <TopicSection
-            title="症状"
-            lead="病名が違っても、近い声につながる入口になります。"
-            topics={SYMPTOM_CATALOG}
-            selected={context.symptoms}
-            onToggle={toggleTopic}
-          />
+      <TopicSection
+        title="症状"
+        lead="病名が違っても、近い声につながる入口になります。"
+        topics={SYMPTOM_CATALOG}
+        selected={context.symptoms}
+        onToggle={toggleTopic}
+      />
 
-          <TopicSection
-            title="不安・暮らしの悩み"
-            lead="仕事、家族、医療費、診断前の不安なども選べます。"
-            topics={CONCERN_CATALOG}
-            selected={context.concerns}
-            onToggle={toggleTopic}
-          />
-        </>
-      )}
+      <TopicSection
+        title="不安・暮らしの悩み"
+        lead="仕事、家族、医療費、診断前の不安なども選べます。"
+        topics={CONCERN_CATALOG}
+        selected={context.concerns}
+        onToggle={toggleTopic}
+      />
 
-      <button type="button" className={`health-skip ${state.conditionDeclined ? "is-active" : ""}`} onClick={toggleNoAnswer}>
+      <button type="button" className="health-skip" onClick={skipSelection}>
         今は選ばずに進む
       </button>
 

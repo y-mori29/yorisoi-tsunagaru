@@ -1,49 +1,9 @@
-"use client";
-
-import Link from "next/link";
-import Image from "next/image";
-import { OnboardingShell } from "@/components/screens/onboarding/OnboardingShell";
+import { redirect } from "next/navigation";
 
 /**
- * /onboarding — ようこそ画面
- *
- * トーン：来てくれたことへの感謝。
- * 「しんどい人」「病気」など一切ラベリングしない（feedback_patient_facing_no_labeling）。
+ * 旧ようこそ画面。2026-07-03 の初回フロー変更（案1・森さん承認）で廃止。
+ * 読むのは登録不要のため、初回は /home で直接読める。
  */
 export default function OnboardingWelcomePage() {
-  return (
-    <OnboardingShell current="/onboarding" canSkip>
-      <div className="onboarding-hero">
-        <Image
-          src="/assets/heroes/onboarding-zabuton.png"
-          alt=""
-          fill
-          sizes="(max-width: 480px) 100vw, 480px"
-          priority
-          style={{ objectFit: "contain" }}
-        />
-      </div>
-
-      <p className="eyebrow" style={{ marginTop: 8 }}>
-        ようこそ
-      </p>
-      <h1 className="onboarding-title">よりそい つながる</h1>
-      <p className="onboarding-body">
-        ここまで、来てくださって、
-        <br />
-        ありがとうございます。
-        <br />
-        <br />
-        何もしなくて、大丈夫です。
-        <br />
-        ただ、いてください。
-      </p>
-
-      <div className="onboarding-footer">
-        <Link href="/onboarding/condition" className="btn btn--primary btn--full">
-          そっと、開く
-        </Link>
-      </div>
-    </OnboardingShell>
-  );
+  redirect("/home");
 }

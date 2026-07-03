@@ -43,9 +43,11 @@ function AuthForm() {
   const [done, setDone] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
+  const onboardingHref = `/onboarding/profile?next=${encodeURIComponent(next)}`;
+
   const finish = () => {
     setDone(true);
-    window.setTimeout(() => router.push(next), 450);
+    window.setTimeout(() => router.push(onboardingHref), 450);
   };
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {

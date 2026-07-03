@@ -7,7 +7,9 @@ import { progressRatio, type Step } from "@/lib/onboarding/routing";
 
 type OnboardingShellProps = {
   current: Step;
-  /** スキップ可能かどうか（ようこそ画面など） */
+  /** スキップ先（未指定なら /home） */
+  skipHref?: string;
+  /** スキップ可能かどうか */
   canSkip?: boolean;
   /** 戻るボタンを表示するか */
   showBack?: boolean;
@@ -21,6 +23,7 @@ type OnboardingShellProps = {
  */
 export function OnboardingShell({
   current,
+  skipHref = "/home",
   canSkip = true,
   showBack = false,
   backHref,
@@ -46,7 +49,7 @@ export function OnboardingShell({
           />
         </div>
         {canSkip ? (
-          <Link href="/home" className="onboarding-header__skip">
+          <Link href={skipHref} className="onboarding-header__skip">
             スキップ
           </Link>
         ) : (

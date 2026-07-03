@@ -1,7 +1,8 @@
 "use client";
 
 import { use, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { signInGateHref } from "@/lib/auth/require-sign-in";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { BackButton } from "@/components/ui/BackButton";
 import { IconButton } from "@/components/ui/IconButton";
@@ -35,6 +36,7 @@ const REACTIONS: Reaction[] = [
  */
 export function LetterVoicePage({ id }: { id: string }) {
   const router = useRouter();
+  const pathname = usePathname();
   const letter = use(getLetterById(id));
 
   const [selected, setSelected] = useState<Reaction["key"] | null>(null);
@@ -53,7 +55,21 @@ export function LetterVoicePage({ id }: { id: string }) {
   }, [letter.id]);
 
   const toggle = (key: Reaction["key"]) => {
+    const gate = signInGateHref(pathname);
+    if (gate) {
+      router.push(gate);
+      return;
+    }
     setSelected((prev) => (prev === key ? null : key));
+  };
+
+  const handleSave = () => {
+    const gate = signInGateHref(pathname);
+    if (gate) {
+      router.push(gate);
+      return;
+    }
+    setSaved((v) => !v);
   };
 
   const handlePosted = (c: Comment) => {
@@ -205,7 +221,7 @@ export function LetterVoicePage({ id }: { id: string }) {
               <button
                 type="button"
                 className="btn btn--ghost btn--full"
-                onClick={() => setSaved((v) => !v)}
+                onClick={handleSave}
               >
                 {saved ? "あとで 読み返す（保存しました）" : "あとで 読み返す"}
               </button>

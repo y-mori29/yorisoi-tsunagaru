@@ -1,18 +1,37 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useOnboarding } from "@/lib/onboarding/context";
 import { OnboardingShell } from "@/components/screens/onboarding/OnboardingShell";
 import { AvatarPicker } from "@/components/screens/onboarding/AvatarPicker";
-import { nextStep } from "@/lib/onboarding/routing";
 
 /**
  * /onboarding/profile — ニックネーム + 動物アバター + 背景カラー。
- * 2026-07-03 の 3 ステップ化で avatar 画面と統合。性別・生年月日は任意（オンボでは聞かない）。
+ * 登録成功後の最初のステップ。次は /onboarding/condition。
  */
 export default function ProfilePage() {
+  return (
+    <Suspense fallback={<ProfileFallback />}>
+      <ProfileContent />
+    </Suspense>
+  );
+}
+
+function ProfileFallback() {
+  return (
+    <OnboardingShell current="/onboarding/profile" canSkip={false}>
+      <h2 className="onboarding-section-title">あなたの ことを、少しだけ</h2>
+      <p className="onboarding-section-sub">準備しています。</p>
+    </OnboardingShell>
+  );
+}
+
+function ProfileContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const next = searchParams.get("next") || "/home";
+  const skipHref = next;
   const { state, patchProfile } = useOnboarding();
   const [name, setName] = useState(state.profile.displayName ?? "");
 
@@ -22,11 +41,11 @@ export default function ProfilePage() {
       displayName: finalName || "ななし",
       avatarTone: state.profile.avatarTone ?? "terra",
     });
-    router.push(nextStep("/onboarding/profile", state.purposes));
+    router.push(`/onboarding/condition?next=${encodeURIComponent(next)}`);
   };
 
   return (
-    <OnboardingShell current="/onboarding/profile" showBack backHref="/onboarding/condition">
+    <OnboardingShell current="/onboarding/profile" skipHref={skipHref}>
       <h2 className="onboarding-section-title">あなたの ことを、少しだけ</h2>
       <p className="onboarding-section-sub">
         本名は いりません。

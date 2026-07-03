@@ -2,7 +2,8 @@
 
 import { Suspense, use, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { signInGateHref } from "@/lib/auth/require-sign-in";
 import { BackButton } from "@/components/ui/BackButton";
 import { Icon } from "@/components/ui/Icon";
 import { getRooms } from "@/lib/api/rooms";
@@ -108,6 +109,7 @@ function PostPageFallback() {
 
 function PostComposer() {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const roomId = searchParams.get("room");
   const rooms = useMemo(() => getRooms(), []);
@@ -145,6 +147,13 @@ function PostComposer() {
     selectedRoomId: selectedRoom?.id,
     contextSummary,
   });
+
+  useEffect(() => {
+    const query = searchParams.toString();
+    const next = query ? `${pathname}?${query}` : pathname;
+    const gate = signInGateHref(next);
+    if (gate) router.replace(gate);
+  }, [pathname, router, searchParams]);
 
   useEffect(() => {
     if (writeConfig.visibilities.includes(visibility)) return;

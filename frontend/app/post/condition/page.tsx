@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { signInGateHref } from "@/lib/auth/require-sign-in";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { IconButton } from "@/components/ui/IconButton";
 import { ConditionSelector } from "@/components/screens/post/ConditionSelector";
@@ -30,7 +31,13 @@ type Step = "select" | "write" | "done";
 
 export default function ConditionPostPage() {
   const router = useRouter();
+  const pathname = usePathname();
   const metaList = useMemo(() => getConditionMetaList(), []);
+
+  useEffect(() => {
+    const gate = signInGateHref(pathname);
+    if (gate) router.replace(gate);
+  }, [pathname, router]);
 
   const [step, setStep] = useState<Step>("select");
   const [level, setLevel] = useState<ConditionLevel | null>(null);

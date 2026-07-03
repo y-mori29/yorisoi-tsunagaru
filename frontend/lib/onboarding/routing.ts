@@ -1,15 +1,10 @@
 import type { PurposeId } from "./types";
 
 /**
- * オンボーディングの全ステップ（2026-07-03 3ステップ化）。
- * ようこそ → 病気・症状・不安（任意）→ ニックネーム＋アバター → complete
+ * オンボーディングの全ステップ（2026-07-03 初回フロー変更）。
+ * 登録後: ニックネーム＋アバター → 病気・症状・不安（任意）
  */
-export const ALL_STEPS = [
-  "/onboarding",
-  "/onboarding/condition",
-  "/onboarding/profile",
-  "/onboarding/complete",
-] as const;
+export const ALL_STEPS = ["/onboarding/profile", "/onboarding/condition"] as const;
 
 export type Step = (typeof ALL_STEPS)[number];
 
