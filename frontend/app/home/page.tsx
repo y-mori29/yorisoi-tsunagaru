@@ -10,15 +10,14 @@ import { Icon } from "@/components/ui/Icon";
 import { explorePosts } from "@/lib/mock/explore";
 import { getCurrentSession } from "@/lib/auth/local-auth";
 import { getHealthRecommendation } from "@/lib/onboarding/recommendations";
+import { resolveMemberIdentity, type MemberIdentity } from "@/lib/onboarding/identity";
+import { readOnboardingState } from "@/lib/onboarding/storage";
 import { useStoredHealthContext } from "@/lib/onboarding/useStoredHealthContext";
-import type { ExplorePost, ExploreTopicKind } from "@/lib/mock/explore";
+import type { ExplorePost } from "@/lib/mock/explore";
 
-const tabs: Array<{ value: "latest" | "near" | ExploreTopicKind; label: string }> = [
-  { value: "latest", label: "最新" },
+const tabs: Array<{ value: "latest" | "near"; label: string }> = [
+  { value: "latest", label: "新着" },
   { value: "near", label: "近い声" },
-  { value: "condition", label: "病気" },
-  { value: "symptom", label: "症状" },
-  { value: "concern", label: "悩み" },
 ];
 
 const nearTopics = new Set([
@@ -40,9 +39,12 @@ export default function HomePage() {
   const [visibleCount, setVisibleCount] = useState(12);
   // SSRとの hydration 不一致を避けるため、セッション判定はマウント後に行う
   const [isSignedIn, setIsSignedIn] = useState(false);
+  const [memberIdentity, setMemberIdentity] = useState<MemberIdentity | null>(null);
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
-      setIsSignedIn(Boolean(getCurrentSession()));
+      const session = getCurrentSession();
+      setIsSignedIn(Boolean(session));
+      if (session) setMemberIdentity(resolveMemberIdentity(session, readOnboardingState()));
     });
     return () => window.cancelAnimationFrame(frame);
   }, []);
@@ -58,8 +60,7 @@ export default function HomePage() {
         : [];
       return personalPosts.length > 0 ? personalPosts : explorePosts.filter((post) => nearTopics.has(post.topic));
     }
-    // 体験談データは病名がカタログ外のことも多いため、ラベル一致でなく種別で絞る
-    return explorePosts.filter((post) => post.topicKind === tab);
+    return explorePosts;
   }, [healthRecommendation, tab]);
 
   const visiblePosts = filteredPosts.slice(0, visibleCount);
@@ -115,13 +116,15 @@ export default function HomePage() {
           ))}
         </nav>
 
-        <HomeComposer signedIn={isSignedIn} />
-
         <HomeNearContextPanel
           recommendation={healthRecommendation}
           signedIn={isSignedIn}
           onOpenNear={() => handleTab("near")}
         />
+
+        <HomeFindEntry />
+
+        <HomeComposer signedIn={isSignedIn} identity={memberIdentity} />
 
         <section className="explore-feed" id="feed" aria-label="体験談タイムライン">
           {visiblePosts.map((post, index) => (
@@ -211,35 +214,36 @@ function HomeNearContextPanel({
   );
 }
 
-function HomeComposer({ signedIn }: { signedIn: boolean }) {
+function HomeFindEntry() {
+  return (
+    <Link href="/find" className="home-find-entry" aria-label="病気・症状・悩みから近い声を探す">
+      <span className="home-find-entry__icon"><Icon name="search" size={18} /></span>
+      <span>
+        <strong>近い声を探す</strong>
+        <small>病気・症状・暮らしの悩みから探せます</small>
+      </span>
+      <Icon name="chevronRight" size={16} />
+    </Link>
+  );
+}
+
+function HomeComposer({ signedIn, identity }: { signedIn: boolean; identity: MemberIdentity | null }) {
   const href = signedIn ? "/post" : "/auth/register?next=/post";
 
   return (
     <section className="home-composer" aria-label="今の気持ちを書く">
       <Avatar
-        animal="rabbit"
-        src={`${communityAssetRoot}/avatars/anonymous-avatar-01.png`}
+        animal={identity?.animal ?? "rabbit"}
+        src={identity?.avatarSrc ?? `${communityAssetRoot}/avatars/anonymous-avatar-01.png`}
         alt=""
-        tone="moss"
+        tone={identity?.avatarTone ?? "moss"}
         size={44}
       />
       <div>
-        <p>今の気持ちを、ひとことだけ</p>
-        <Link href={href}>つらい日も、うれしい日も、ここでつながれます</Link>
-        <div className="home-composer__tools" aria-label="投稿の補助">
-          <Link href={href}>
-            <Icon name="image" size={15} />
-            画像を追加
-          </Link>
-          <Link href={href}>
-            <Icon name="heart" size={15} />
-            気持ちスタンプ
-          </Link>
-          <Link href={href} className="home-composer__submit">
-            投稿する
-          </Link>
-        </div>
+        <p>今の気持ちを書く</p>
+        <span>ひとことだけでも大丈夫です</span>
       </div>
+      <Link href={href} className="home-composer__submit">書く</Link>
     </section>
   );
 }

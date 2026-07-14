@@ -38,7 +38,7 @@ export default function ConditionPage() {
 
 function ConditionFallback() {
   return (
-    <OnboardingShell current="/onboarding/condition" showBack backHref="/onboarding/profile">
+    <OnboardingShell current="/onboarding/condition" showBack backHref="/me" showProgress={false}>
       <h2 className="onboarding-section-title">あなたに近い声を届けるために</h2>
       <p className="onboarding-section-sub">病気・症状・不安を選ぶ準備をしています。</p>
     </OnboardingShell>
@@ -50,7 +50,7 @@ function ConditionContent() {
   const searchParams = useSearchParams();
   const next = searchParams.get("next") || "/home";
   const skipHref = next;
-  const backHref = `/onboarding/profile?next=${encodeURIComponent(next)}`;
+  const backHref = next === "/home" ? "/me" : next;
   const { state, update } = useOnboarding();
   const [query, setQuery] = useState("");
   const appliedParams = useRef(false);
@@ -180,6 +180,7 @@ function ConditionContent() {
       skipHref={skipHref}
       showBack
       backHref={backHref}
+      showProgress={false}
     >
       <h2 className="onboarding-section-title">あなたに近い声を届けるために</h2>
       <p className="onboarding-section-sub">

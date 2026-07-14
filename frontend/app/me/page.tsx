@@ -1,6 +1,6 @@
 "use client";
 
-import { use } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { BottomNav } from "@/components/layout/BottomNav";
@@ -9,16 +9,44 @@ import { Icon } from "@/components/ui/Icon";
 import { IconButton } from "@/components/ui/IconButton";
 import { VoiceCard } from "@/components/ui/VoiceCard";
 import { HealthContextSummaryCard } from "@/components/screens/me/HealthContextSummaryCard";
-import { getCurrentUser, getMyVoices } from "@/lib/api/me";
+import { getCurrentSession, type AuthUser } from "@/lib/auth/local-auth";
 import { explorePosts } from "@/lib/mock/explore";
+import { myVoices } from "@/lib/mock/me";
+import { resolveMemberIdentity } from "@/lib/onboarding/identity";
+import { readOnboardingState } from "@/lib/onboarding/storage";
+import { INITIAL_STATE, type OnboardingState } from "@/lib/onboarding/types";
 import type { ExplorePost } from "@/lib/mock/explore";
 
 const savedPosts = explorePosts.filter((post) => post.saved).slice(0, 2);
 
 export default function MePage() {
-  const currentUser = use(getCurrentUser());
-  const myVoices = use(getMyVoices());
+  const [session, setSession] = useState<AuthUser | null>(null);
+  const [state, setState] = useState<OnboardingState>(INITIAL_STATE);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      setSession(getCurrentSession());
+      setState(readOnboardingState());
+      setLoaded(true);
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+
+  const currentUser = useMemo(() => resolveMemberIdentity(session, state), [session, state]);
   const recentVoices = myVoices.slice(0, 2);
+
+  if (loaded && !session) {
+    return (
+      <main className="explore-shell auth-required-state">
+        <Icon name="lock" size={22} />
+        <h1>マイページは登録後に使えます</h1>
+        <p>読むだけなら登録なしで大丈夫です。保存や投稿を使う時に始められます。</p>
+        <Link href="/auth/register?next=/me" className="explore-primary-btn">登録して続ける</Link>
+        <Link href="/home">ホームへ戻る</Link>
+      </main>
+    );
+  }
 
   return (
     <>
@@ -49,13 +77,17 @@ export default function MePage() {
           }}
         >
           <Avatar
-            animal={currentUser.avatar}
+            animal={currentUser.animal}
             src={currentUser.avatarSrc}
             tone={currentUser.avatarTone}
             size={44}
-            alt={currentUser.name}
+            alt={currentUser.displayName}
           />
           <div>
+            <div className="me-identity-line">
+              <strong>{currentUser.displayName}</strong>
+              <Link href="/me/edit">表示情報を編集</Link>
+            </div>
             <p style={{ margin: 0, color: "var(--color-ink-900)", font: "700 14px/1.55 var(--font-jp)" }}>
               読むことも、置くことも、自分のペースで。
             </p>
@@ -82,6 +114,25 @@ export default function MePage() {
           <HubAction href="/me/voices" icon="whisper" title="置いた声" body="自分の投稿を振り返る" />
           <HubAction href="/settings" icon="shield" title="安心設定" body="公開範囲や通知を整える" />
         </nav>
+
+        <section className="me-account-settings" aria-label="アカウント情報">
+          <div>
+            <Icon name="profile" size={18} />
+            <span>
+              <strong>公開される表示情報</strong>
+              <small>表示名とアイコン</small>
+            </span>
+            <Link href="/me/edit">編集</Link>
+          </div>
+          <div>
+            <Icon name="lock" size={18} />
+            <span>
+              <strong>非公開の基本情報</strong>
+              <small>病名・生年・性別</small>
+            </span>
+            <Link href="/onboarding/profile?mode=edit&next=/me">編集</Link>
+          </div>
+        </section>
 
         <HealthContextSummaryCard />
 
@@ -157,10 +208,10 @@ export default function MePage() {
                 voiceId={voice.id}
                 href={`/voice/${voice.id}`}
                 author={{
-                  name: voice.authorName,
-                  avatar: voice.authorAvatar,
-                  avatarSrc: voice.authorAvatarSrc,
-                  tone: voice.authorAvatarTone,
+                  name: currentUser.displayName,
+                  avatar: currentUser.animal,
+                  avatarSrc: currentUser.avatarSrc,
+                  tone: currentUser.avatarTone,
                 }}
                 roomName={voice.roomName}
                 roomTone={voice.roomTone}
@@ -279,9 +330,10 @@ function HubAction({
 }
 
 function SavedVoiceItem({ post }: { post: ExplorePost }) {
+  const href = post.id.startsWith("uchiake-") ? `/voice/${post.id}` : "/home#feed";
   return (
     <Link
-      href="/home#feed"
+      href={href}
       className="me-saved-item"
       style={{
         display: "grid",

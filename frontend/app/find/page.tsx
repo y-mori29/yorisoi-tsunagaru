@@ -335,6 +335,7 @@ function FindVoicePreview({
   const shown = posts.slice(0, visibleCount);
   const trimmedQuery = query?.trim();
   const hasSearch = Boolean(trimmedQuery);
+  const postContext = hasSearch ? trimmedQuery : selectedTopics.join("・");
 
   return (
     <section className="find-voice-preview" aria-label="近い声">
@@ -393,6 +394,19 @@ function FindVoicePreview({
         <p className="find-empty">
           近い声がまだ見つかりませんでした。言葉を短くするか、症状や暮らしの悩みでも探せます。
         </p>
+      )}
+
+      {postContext && (
+        <aside className="find-post-entry" aria-label="この文脈で声を書く">
+          <div>
+            <p>同じ文脈に、あなたの声も置けます</p>
+            <span>「{postContext}」を引き継いで書き始めます。</span>
+          </div>
+          <Link href={`/post?context=${encodeURIComponent(postContext)}`}>
+            この内容で書く
+            <Icon name="plus" size={15} />
+          </Link>
+        </aside>
       )}
 
       {onLoadMore ? (

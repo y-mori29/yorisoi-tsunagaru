@@ -37,13 +37,14 @@ function AuthForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get("next") || "/home";
+  const referralSource = searchParams.get("source") || searchParams.get("ref") || "";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  const onboardingHref = `/onboarding/profile?next=${encodeURIComponent(next)}`;
+  const onboardingHref = `/onboarding/profile?next=${encodeURIComponent(next)}${referralSource ? `&source=${encodeURIComponent(referralSource)}` : ""}`;
 
   const finish = () => {
     setDone(true);

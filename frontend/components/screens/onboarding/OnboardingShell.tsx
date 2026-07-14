@@ -14,6 +14,7 @@ type OnboardingShellProps = {
   /** 戻るボタンを表示するか */
   showBack?: boolean;
   backHref?: string;
+  showProgress?: boolean;
   children: ReactNode;
 };
 
@@ -27,6 +28,7 @@ export function OnboardingShell({
   canSkip = true,
   showBack = false,
   backHref,
+  showProgress = true,
   children,
 }: OnboardingShellProps) {
   const { state } = useOnboarding();
@@ -42,12 +44,16 @@ export function OnboardingShell({
         ) : (
           <span className="onboarding-header__spacer" />
         )}
-        <div className="onboarding-header__progress" aria-hidden>
-          <div
-            className="onboarding-header__progress-bar"
-            style={{ width: `${Math.max(ratio, 0.08) * 100}%` }}
-          />
-        </div>
+        {showProgress ? (
+          <div className="onboarding-header__progress" aria-hidden>
+            <div
+              className="onboarding-header__progress-bar"
+              style={{ width: `${Math.max(ratio, 0.08) * 100}%` }}
+            />
+          </div>
+        ) : (
+          <span className="onboarding-header__title">基本情報</span>
+        )}
         {canSkip ? (
           <Link href={skipHref} className="onboarding-header__skip">
             スキップ

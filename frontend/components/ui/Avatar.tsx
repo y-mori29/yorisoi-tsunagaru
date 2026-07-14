@@ -1,8 +1,8 @@
 import { AnimalAvatar } from "./AnimalAvatar";
 import type { AnimalName } from "@/lib/icons";
 
-export type AvatarSize = 28 | 36 | 40 | 44 | 56 | 80 | 100 | 112;
-export type AvatarTone = "terra" | "moss" | "plum" | "cream" | "default";
+export type AvatarSize = 28 | 36 | 40 | 44 | 52 | 56 | 64 | 80 | 100 | 112;
+export type AvatarTone = "terra" | "moss" | "plum" | "gold" | "cream" | "default";
 
 type AvatarProps = {
   /** 動物の名前（線画アイコン） */

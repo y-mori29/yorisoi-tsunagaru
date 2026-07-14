@@ -1,8 +1,8 @@
 import type { PurposeId } from "./types";
 
 /**
- * オンボーディングの全ステップ（2026-07-03 初回フロー変更）。
- * 登録後: ニックネーム＋アバター → 病気・症状・不安（任意）
+ * 既知のオンボーディング画面。
+ * 初回登録は /onboarding/profile の1画面で完結し、condition は後からの詳細編集に使う。
  */
 export const ALL_STEPS = ["/onboarding/profile", "/onboarding/condition"] as const;
 
@@ -14,7 +14,7 @@ export type Step = (typeof ALL_STEPS)[number];
  */
 export function buildPath(_purposes?: PurposeId[]): Step[] {
   void _purposes;
-  return [...ALL_STEPS];
+  return ["/onboarding/profile"];
 }
 
 /**
@@ -38,6 +38,6 @@ export function progressRatio(current: Step, _purposes?: PurposeId[]): number {
   void _purposes;
   const path = buildPath();
   const idx = path.indexOf(current);
-  if (idx < 0) return 0;
+  if (idx < 0) return 1;
   return (idx + 1) / path.length;
 }

@@ -185,12 +185,14 @@ export type OnboardingState = {
     /** アバター背景色（terra/moss/plum/gold/default） */
     avatarTone?: "terra" | "moss" | "plum" | "gold" | "default";
     displayName?: string;
-    /** 性別。冨澤指針：「答えたくない」は出さない。男/女/その他 の 3 択 */
-    gender?: "male" | "female" | "other";
-    /** 生年月日（西暦・1〜12・1〜31）。年齢ではなく生年月日でハードルを下げる */
-    birthYear?: number;
+    /** 非公開の基本情報。回答しない選択も値として保持する。 */
+    gender?: "male" | "female" | "other" | "undisclosed";
+    /** 生年のみ。プロフィールには公開しない。 */
+    birthYear?: number | "undisclosed";
     birthMonth?: number;
     birthDay?: number;
+    /** QRや専用URLから受け取る患者会等の流入元。画面には表示しない。 */
+    referralSource?: string;
     rooms?: string[];
   };
 };
