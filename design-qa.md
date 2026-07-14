@@ -1,32 +1,34 @@
-# よりそい コミュニティ版 投稿・お便り デザインQA
+# よりそい コミュニティ版「探す」再設計 デザインQA
 
 source visual truth path:
 
-- 投稿の問題画面: `C:\Users\green\AppData\Local\Temp\codex-clipboard-6ff3811a-cb64-47d7-8b77-5d849fa3163c.png`
-- DM一覧の構造参照: `C:\Users\green\Projects\medicanvas\yorisoi-tsunagaru\archive\docs\ref\11_GRAVITYメッセージ画面.png`
-- 比較画像: `C:\Users\green\Projects\.tmp\tsunagaru-qa\post-before-after.png`, `C:\Users\green\Projects\.tmp\tsunagaru-qa\mail-reference-after.png`
+- アイコンずれの報告画像: `C:\Users\green\AppData\Local\Temp\codex-clipboard-241ac7f1-7d51-44f2-961d-37c6f97c6ee2.png`
+- 旧「探す」の報告画像: `C:\Users\green\AppData\Local\Temp\codex-clipboard-3dc314f3-4e40-4135-a9b0-02344651415e.png`
+- テーマ画面の構造参照: `C:\Users\green\Projects\.tmp\tsunagaru-find-qa\rooms-target.png`
+- 同一画像内の比較: `C:\Users\green\Projects\.tmp\tsunagaru-find-qa\rooms-find-comparison.png`, `C:\Users\green\Projects\.tmp\tsunagaru-find-qa\icon-before-after.png`
 
 implementation screenshot path:
 
-- `C:\Users\green\Projects\.tmp\tsunagaru-qa\post-production.png`
-- `C:\Users\green\Projects\.tmp\tsunagaru-qa\mail-production.png`
+- `C:\Users\green\Projects\.tmp\tsunagaru-find-qa\find-after-local.png`
+- `C:\Users\green\Projects\.tmp\tsunagaru-find-qa\me-icon-fixed.png`
 
-viewport: `1920x992`（中央のアプリ領域は幅430px）
+viewport: Chrome `1294x1015`、中央アプリ領域は幅430px
 
-state: Cloud Run公開版、投稿は未登録初期状態、お便りはメッセージタブ初期状態
+state: ローカル実装、未検索の「探す」初期画面、マイページの健康情報カード
 
 ## full-view comparison evidence
 
-- 投稿画面は、旧画面で説明カードと常時表示プレビューが縦方向を占有していた。修正版は本文入力を主役にし、登録案内を2行へ圧縮、プレビューを確認操作後に展開する構成へ変更した。
-- お便り画面は、参照画像の「相手・最新メッセージ・時刻・未読数を一覧から判断できる」構造を、よりそいの紙背景・水彩アバター・静かな配色で再構成した。
-- 通知はDM一覧から切り離し、「お知らせ」補助タブへ移動した。初期表示は常に1対1のメッセージ一覧である。
+- 旧画面は病気タグ、診断前カード、症状タグ、声一覧が同じ階層で連続し、押した後にテーマへ進むのか声だけを絞るのか判断しづらかった。
+- 修正版は `/rooms` と同じ「テーマ行」を正本にし、初期画面を検索欄、3つの入口、近いテーマの順に限定した。
+- `/rooms` の紙背景、和文見出し、淡いテーマ行、アイコン、説明、右向き矢印の構成を維持しながら、「探す」側では入口選択を1つの連続リストにまとめた。
+- 下部ナビは球体に見える `stroll` アイコンから虫眼鏡へ変更し、ラベルを読まなくても検索機能だと判断できる。
 
 ## focused region comparison evidence
 
-- 投稿上部を重点確認し、登録前説明が本文入力より強く見えないこと、タイトル・説明・入力欄の順序が自然なことを確認した。
-- 投稿下部を重点確認し、届け先、プレビュー操作、固定CTAが重ならず、初期表示の一画面内で役割を判断できることを確認した。
-- お便り一覧を重点確認し、4件の会話で名前・疾患/テーマ・本文プレビュー・時刻・未読数が視線順に並ぶことを確認した。
-- 独自画像の差し替えはないため、画像の詳細比較はアバターの丸抜き・鮮明さ・背景とのなじみだけを確認した。
+- マイページの健康情報カードを拡大比較した。旧CSSでは説明文用の `span` 指定が丸アイコン内にも適用され、2pxの上余白とblock表示が入っていた。修正版は説明文を直接の子要素に限定し、18pxアイコンを36px円の中央へ固定した。
+- 下部ナビを重点確認し、虫眼鏡の22px外枠、SVGの描画位置、アクティブ色、ラベルとの4px間隔がホーム・お便り・マイページと揃っている。
+- 「症状から探す」操作後のテーマ行を確認し、行全体が `/rooms/[id]` へのリンクになり、腹痛テーマ詳細まで遷移できた。
+- 「クローン病」検索時に、近いテーマ1件を先に、その後に近い声4件を表示し、テーマ詳細と体験談詳細の両方へ進めることを確認した。
 
 ## findings
 
@@ -34,33 +36,34 @@ P0/P1/P2の未解決項目はなし。
 
 ## required fidelity surfaces
 
-- Fonts and typography: 既存の和文フォントと階層を維持。投稿本文を最も読みやすい15px、お便りの名前・本文・補助情報を段階的に小さくし、長文は1行で省略される。
-- Spacing and layout rhythm: 投稿の説明カードとテキスト欄を圧縮し、届け先とプレビュー操作の間隔を12px前後で統一。会話一覧は個別カードの連続ではなく、1つの一覧面と区切り線でDMらしい密度にした。
-- Colors and visual tokens: `moss`、`terra`、紙背景、既存の線色のみを使用。未読数だけをterraで明確にし、その他は低コントラストの落ち着いた階層にした。
-- Image quality and asset fidelity: 既存の水彩動物アバターを再利用し、文字記号や仮画像への置き換えはしていない。返信候補の装飾記号は既存SVGアイコンへ置き換えた。
-- Copy and content: 「24時間で消えるお便り」を初期画面から撤去し、「1対1で、ゆっくり話せる場所」と明示。投稿は「登録なしでプレビューまで」「公開時だけ登録」に整理した。
+- Fonts and typography: `/rooms` と同じ明朝見出し・ゴシック本文を使用。入口タイトル13px、説明10.5px、例示9.5pxで階層を分離し、長い病名や説明はテーマ行内で2行までに制限した。
+- Spacing and layout rhythm: 初期画面は14pxのセクション間隔、入口行は最小88px、テーマ行は既存12〜13px余白を再利用。固定フッターとの重なりはない。
+- Colors and visual tokens: 既存の `moss`、`terra`、`plum`、紙背景、線色のみを使用。病気・症状・悩みの入口は淡い色差で区別し、意味のない強調色は追加していない。
+- Image quality and asset fidelity: 新規画像は追加していない。背景画像と既存SVGアイコンをそのまま利用し、文字記号やCSS描画による代替はない。
+- Copy and content: 「何千もの病気・症状から探せます」から、操作が分かる「言葉で検索するか、入口を選ぶと、近いテーマと声をたどれます」へ変更。テーマと声の順序も画面上で明示した。
 
 ## patches made since previous QA pass
 
-- お便りの初期タブをメッセージ一覧へ変更。
-- 「お便り / やりとり」を「メッセージ / お知らせ」へ整理。
-- 会話一覧をDM向けの連続リスト、時刻、文脈、未読数表示へ再設計。
-- 個別会話への遷移と戻り先を実画面で確認。
-- 投稿の登録前説明を圧縮し、プレビューを折りたたみ式へ変更。
-- 投稿CTAを「プレビューを確認」から「登録して公開へ」へ段階的に変化させた。
-- Firebase AuthenticationのGoogleプロバイダーを有効化し、公開画面でGoogleログイン完了と下書き復元を確認。
+- `Icon` の外枠を中央揃え・line-height 0へ統一。
+- 健康情報カードの説明文CSSを子要素へ限定し、丸アイコン内への誤適用を解消。
+- 下部ナビの「探す」を虫眼鏡アイコンへ変更。
+- `/find` の大量タグ初期表示を撤去。
+- `/find` を検索、3カテゴリ入口、近いテーマのハブへ変更。
+- 検索結果を「近いテーマ」→「近い声」の順へ変更。
+- カテゴリ選択後は `/rooms` と同じテーマ行を表示し、テーマ詳細へ直接遷移。
+- `/rooms` の病気・症状・悩みセクションにアンカーを追加。
 
 ## validation
 
 - TypeScript `tsc --noEmit`: passed
 - ESLint `app components lib`: passed
-- Next.js production build: passed
-- Chrome: 投稿入力→プレビュー→登録→Googleログイン→投稿画面復帰 passed
-- Chrome: お便り一覧→個別会話 passed
-- Cloud Run revision: `tsunagaru-frontend-00015-227`、100%配信
+- Next.js production build: passed（41 routes）
+- Chrome: `/find`初期画面、症状カテゴリ、腹痛テーマ詳細への遷移 passed
+- Chrome: `クローン病`検索、テーマ結果、声結果、投稿文脈リンク passed
+- Chrome: マイページ健康情報カード、下部ナビのアイコン位置 passed
 
 ## follow-up polish
 
-- 実バックエンド接続時に、会話の未読既読更新と送信後の永続化を同じ見た目のまま接続する。
+- 実バックエンド接続時に、テーマ件数と声件数を検索APIの集計値へ置き換える。
 
 final result: passed

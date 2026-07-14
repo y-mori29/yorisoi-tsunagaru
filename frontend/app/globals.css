@@ -2250,12 +2250,18 @@ input, textarea {
   font: 700 14px/1.6 var(--font-jp);
 }
 
-.health-summary-card__head span {
+.health-summary-card__head > div > span {
   display: block;
   margin-top: 2px;
   color: var(--color-ink-500);
   font: 500 11px/1.7 var(--font-jp);
   letter-spacing: 0.03em;
+}
+
+.health-summary-card__icon > .app-icon {
+  width: 18px;
+  height: 18px;
+  margin: 0;
 }
 
 .health-summary-card__list {
@@ -6803,5 +6809,340 @@ input, textarea {
 
   .simple-post-footer.is-complete > a:not(.simple-post-footer__secondary) {
     width: 100%;
+  }
+}
+
+/* =====================================================================
+   Find hub redesign — search, theme catalog, and voice results
+   ===================================================================== */
+
+.app-icon > svg {
+  display: block;
+}
+
+.bottom-nav__item > .app-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.find-hub-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.find-header__themes {
+  justify-self: end;
+  color: var(--color-moss-700);
+  font: 700 11px/1 var(--font-jp);
+  text-decoration: none;
+}
+
+.find-hub-hero {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid rgba(214, 200, 178, 0.76);
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(255, 253, 248, 0.94), rgba(239, 241, 230, 0.7));
+  box-shadow: 0 12px 30px rgba(74, 56, 38, 0.06);
+}
+
+.find-hub-hero__icon {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--color-moss-50);
+  color: var(--color-moss-700);
+}
+
+.find-hub-hero p,
+.find-hub-hero h2,
+.find-hub-hero span {
+  margin: 0;
+}
+
+.find-hub-hero p {
+  color: var(--color-moss-700);
+  font: 700 10.5px/1.4 var(--font-jp);
+  letter-spacing: 0.1em;
+}
+
+.find-hub-hero h2 {
+  margin-top: 3px;
+  color: var(--color-ink-900);
+  font: 500 20px/1.45 var(--font-mincho);
+}
+
+.find-hub-hero div > span {
+  display: block;
+  margin-top: 5px;
+  color: var(--color-ink-500);
+  font: 500 11px/1.65 var(--font-jp);
+}
+
+.find-search--hub {
+  position: relative;
+  margin: 0;
+}
+
+.find-search--hub input {
+  padding-right: 40px;
+}
+
+.find-search--hub > button {
+  position: absolute;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 999px;
+  background: var(--color-paper-soft);
+  color: var(--color-ink-500);
+}
+
+.find-way-section,
+.find-nearby-section,
+.find-browse-results,
+.find-search-results {
+  display: grid;
+  gap: 10px;
+  scroll-margin-top: 68px;
+}
+
+.find-nearby-section,
+.find-browse-results,
+.find-search-results {
+  margin-top: 8px;
+}
+
+.find-section-heading,
+.find-result-block__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.find-section-heading p,
+.find-section-heading h2,
+.find-result-block__head h3,
+.find-result-block__head span {
+  margin: 0;
+}
+
+.find-section-heading p {
+  color: var(--color-moss-700);
+  font: 700 10px/1.3 var(--font-jp);
+  letter-spacing: 0.08em;
+}
+
+.find-section-heading h2 {
+  margin-top: 3px;
+  color: var(--color-ink-900);
+  font: 700 15px/1.4 var(--font-jp);
+}
+
+.find-section-heading > a {
+  color: var(--color-moss-700);
+  font: 700 10.5px/1.4 var(--font-jp);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.find-way-list {
+  overflow: hidden;
+  border: 1px solid rgba(214, 200, 178, 0.76);
+  border-radius: 18px;
+  background: rgba(255, 253, 248, 0.84);
+  box-shadow: 0 8px 24px rgba(74, 56, 38, 0.045);
+}
+
+.find-way-list > button {
+  width: 100%;
+  min-height: 88px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 11px;
+  padding: 13px;
+  border: 0;
+  border-bottom: 1px solid rgba(214, 200, 178, 0.56);
+  background: transparent;
+  color: var(--color-ink-500);
+  text-align: left;
+}
+
+.find-way-list > button:last-child {
+  border-bottom: 0;
+}
+
+.find-way-list__icon {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  background: var(--color-moss-50);
+  color: var(--color-moss-700);
+}
+
+.find-way-list__icon--symptom {
+  background: var(--color-terra-50);
+  color: var(--color-terra-700);
+}
+
+.find-way-list__icon--concern {
+  background: var(--color-plum-50);
+  color: var(--color-plum-600);
+}
+
+.find-way-list__copy,
+.find-way-list__copy strong,
+.find-way-list__copy > span,
+.find-way-list__copy small {
+  display: block;
+}
+
+.find-way-list__copy strong {
+  color: var(--color-ink-900);
+  font: 700 13px/1.4 var(--font-jp);
+}
+
+.find-way-list__copy > span {
+  margin-top: 3px;
+  color: var(--color-ink-600, var(--color-ink-500));
+  font: 500 10.5px/1.5 var(--font-jp);
+}
+
+.find-way-list__copy small {
+  margin-top: 4px;
+  color: var(--color-ink-400, var(--color-ink-500));
+  font: 500 9.5px/1.4 var(--font-jp);
+}
+
+.find-nearby-section__lead {
+  margin: -2px 0 0;
+  color: var(--color-ink-500);
+  font: 500 10.5px/1.6 var(--font-jp);
+}
+
+.find-room-list {
+  gap: 8px;
+}
+
+.find-room-list .rooms-row {
+  align-items: center;
+  padding: 12px;
+}
+
+.find-room-list .rooms-row__description {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.find-browse-results__back {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-moss-700);
+  font: 700 10.5px/1.4 var(--font-jp);
+}
+
+.find-all-themes-link {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border: 1px solid rgba(117, 127, 85, 0.24);
+  border-radius: 14px;
+  background: rgba(239, 241, 230, 0.68);
+  color: var(--color-moss-700);
+  font: 700 11px/1.4 var(--font-jp);
+  text-decoration: none;
+}
+
+.find-result-block {
+  display: grid;
+  gap: 9px;
+  margin-top: 8px;
+}
+
+.find-result-block__head h3 {
+  color: var(--color-ink-900);
+  font: 700 13px/1.4 var(--font-jp);
+}
+
+.find-result-block__head span {
+  color: var(--color-ink-400, var(--color-ink-500));
+  font: 600 10px/1.4 var(--font-jp);
+}
+
+.find-no-results {
+  display: grid;
+  justify-items: center;
+  gap: 7px;
+  padding: 30px 20px;
+  border: 1px dashed var(--color-line-medium);
+  border-radius: 18px;
+  background: rgba(255, 253, 248, 0.62);
+  color: var(--color-moss-700);
+  text-align: center;
+}
+
+.find-no-results p,
+.find-no-results span {
+  margin: 0;
+}
+
+.find-no-results p {
+  color: var(--color-ink-900);
+  font: 700 13px/1.5 var(--font-jp);
+}
+
+.find-no-results span {
+  color: var(--color-ink-500);
+  font: 500 10.5px/1.6 var(--font-jp);
+}
+
+.find-no-results button {
+  min-height: 36px;
+  margin-top: 4px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--color-moss-500);
+  color: var(--color-card);
+  font: 700 11px/1 var(--font-jp);
+}
+
+.rooms-section[id] {
+  scroll-margin-top: 70px;
+}
+
+@media (max-width: 370px) {
+  .find-hub-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .find-way-list > button {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .find-way-list > button > .app-icon:last-child {
+    display: none;
   }
 }

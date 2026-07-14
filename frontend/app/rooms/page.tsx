@@ -89,9 +89,9 @@ export default function RoomsPage() {
         </section>
 
         <Section title={healthRecommendation.roomsTitle} rooms={suggested} compact personal />
-        <Section title="病気から探す" empty="病気のテーマはまだありません。" rooms={diseases} />
-        <Section title="症状から探す" empty="症状のテーマはまだありません。" rooms={symptoms} />
-        <Section title="悩みから探す" empty="悩みのテーマはまだありません。" rooms={concerns} />
+        <Section id="disease" title="病気から探す" empty="病気のテーマはまだありません。" rooms={diseases} />
+        <Section id="symptom" title="症状から探す" empty="症状のテーマはまだありません。" rooms={symptoms} />
+        <Section id="concern" title="悩みから探す" empty="悩みのテーマはまだありません。" rooms={concerns} />
       </main>
 
       <BottomNav active="stroll" />
@@ -105,15 +105,17 @@ function Section({
   rooms,
   compact = false,
   personal = false,
+  id,
 }: {
   title: string;
   empty?: string;
   rooms: Room[];
   compact?: boolean;
   personal?: boolean;
+  id?: string;
 }) {
   return (
-    <section className="rooms-section">
+    <section className="rooms-section" id={id}>
       <div className="rooms-section__head">
         <h2>{title}</h2>
         {!compact && <Link href="/find">探す</Link>}

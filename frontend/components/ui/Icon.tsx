@@ -22,8 +22,8 @@ export function Icon({ name, className, size, style }: IconProps) {
     : undefined;
   return (
     <span
-      className={className}
-      style={{ display: "inline-flex", ...sizeStyle, ...style }}
+      className={["app-icon", className].filter(Boolean).join(" ")}
+      style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, lineHeight: 0, ...sizeStyle, ...style }}
       // SVG 文字列は信頼できる静的辞書由来
       dangerouslySetInnerHTML={{ __html: svg }}
     />

@@ -1,164 +1,252 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { use, useMemo, useState } from "react";
 import Link from "next/link";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { BackButton } from "@/components/ui/BackButton";
 import { Icon } from "@/components/ui/Icon";
-import {
-  explorePosts,
-  getDiagnosisPendingGuideTopics,
-  getDiseaseGuideTopics,
-  getFreeTextDiseaseGuideTopics,
-  getTopicsByKind,
-  searchExplorePosts,
-  searchDiseases,
-  searchTopics,
-} from "@/lib/mock/explore";
-import type { DiseaseCatalogEntry, DiseaseSearchResult, ExplorePost, ExploreTopic, ExploreTopicKind } from "@/lib/mock/explore";
+import { getRooms } from "@/lib/api/rooms";
+import { getHealthRecommendation } from "@/lib/onboarding/recommendations";
+import { useStoredHealthContext } from "@/lib/onboarding/useStoredHealthContext";
+import { searchExplorePosts, searchTopics } from "@/lib/mock/explore";
+import type { Room, RoomKind } from "@/lib/api/types";
+import type { ExplorePost } from "@/lib/mock/explore";
 
-const groupLabels: Record<ExploreTopicKind, string> = {
-  condition: "病気",
+type BrowseKind = "disease" | "symptom" | "concern";
+
+const BROWSE_OPTIONS: Array<{
+  kind: BrowseKind;
+  title: string;
+  body: string;
+  icon: "leaf" | "whisper" | "heart";
+  examples: string;
+}> = [
+  {
+    kind: "disease",
+    title: "病気から探す",
+    body: "同じ病気の人の体験や、通院・治療中の声へ",
+    icon: "leaf",
+    examples: "潰瘍性大腸炎・クローン病・がん など",
+  },
+  {
+    kind: "symptom",
+    title: "症状から探す",
+    body: "病名が分からない時も、今ある症状を入口に",
+    icon: "whisper",
+    examples: "腹痛・強い疲れ・しびれ・息苦しさ など",
+  },
+  {
+    kind: "concern",
+    title: "暮らしや不安から探す",
+    body: "仕事、家族、診断前など、生活に近いテーマへ",
+    icon: "heart",
+    examples: "検査待ち・仕事との両立・通院前の不安 など",
+  },
+];
+
+const FALLBACK_ROOM_IDS = [
+  "room-before-diagnosis",
+  "room-night-anxiety",
+  "room-work-school",
+  "room-fatigue",
+];
+
+const KIND_LABEL: Record<RoomKind, string> = {
+  disease: "病気",
   symptom: "症状",
-  concern: "暮らしの悩み",
-};
-
-const groupLead: Record<ExploreTopicKind, string> = {
-  condition: "難病・希少疾患・がん・慢性疾患など",
-  symptom: "病名がまだ分からない時も、症状から探せます",
-  concern: "仕事、家族、医療費、診断前の不安など",
-};
-
-const groupIcons: Record<ExploreTopicKind, "heart" | "leaf" | "flower"> = {
-  condition: "heart",
-  symptom: "leaf",
-  concern: "flower",
+  concern: "悩み",
+  medication: "薬",
+  treatment: "治療",
 };
 
 export default function FindPage() {
+  const allRooms = use(getRooms());
+  const { healthContext } = useStoredHealthContext();
+  const recommendation = useMemo(() => getHealthRecommendation(healthContext), [healthContext]);
   const [query, setQuery] = useState("");
-  const [visibleSearchCount, setVisibleSearchCount] = useState(12);
-  const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
-  const [expanded, setExpanded] = useState<Record<ExploreTopicKind, boolean>>({
-    condition: false,
-    symptom: false,
-    concern: false,
-  });
+  const [browseKind, setBrowseKind] = useState<BrowseKind | null>(null);
+  const [visibleVoiceCount, setVisibleVoiceCount] = useState(6);
 
-  const searched = useMemo(() => searchTopics(query), [query]);
-  const diseaseSearch = useMemo(() => searchDiseases(query), [query]);
-  const searchedPosts = useMemo(() => searchExplorePosts(query), [query]);
-  const hasQuery = query.trim().length > 0;
-  const nonDiseaseResults = searched.filter((topic) => topic.kind !== "condition");
-  const selectedPosts = useMemo(() => {
-    if (selectedTopics.length === 0) {
-      return explorePosts.filter((post) =>
-        ["診断前・検査待ち", "強い疲れ", "仕事との両立", "眠れない夜"].includes(post.topic),
-      );
-    }
-    const labels = new Set(selectedTopics);
-    return explorePosts.filter((post) => labels.has(post.topic));
-  }, [selectedTopics]);
-
-  const toggleTopic = (topic: ExploreTopic) => {
-    setSelectedTopics((current) =>
-      current.includes(topic.label)
-        ? current.filter((label) => label !== topic.label)
-        : [...current, topic.label].slice(-6),
+  const trimmedQuery = query.trim();
+  const hasQuery = trimmedQuery.length > 0;
+  const searchedPosts = useMemo(() => searchExplorePosts(trimmedQuery), [trimmedQuery]);
+  const searchedRooms = useMemo(() => {
+    if (!trimmedQuery) return [];
+    const topicRoomIds = new Set(
+      searchTopics(trimmedQuery)
+        .map((topic) => topic.roomHref?.split("/").pop())
+        .filter((roomId): roomId is string => Boolean(roomId)),
     );
+    const normalized = trimmedQuery.toLocaleLowerCase("ja");
+    return allRooms.filter((room) => {
+      const roomText = `${room.name} ${room.description} ${KIND_LABEL[room.kind]}`.toLocaleLowerCase("ja");
+      return topicRoomIds.has(room.id) || roomText.includes(normalized);
+    });
+  }, [allRooms, trimmedQuery]);
+
+  const recommendedRooms = useMemo(() => {
+    const ids = recommendation.roomIds.length > 0 ? recommendation.roomIds : FALLBACK_ROOM_IDS;
+    return ids
+      .map((roomId) => allRooms.find((room) => room.id === roomId))
+      .filter((room): room is Room => Boolean(room))
+      .slice(0, 4);
+  }, [allRooms, recommendation.roomIds]);
+
+  const browsedRooms = useMemo(
+    () => browseKind ? allRooms.filter((room) => roomMatchesBrowseKind(room, browseKind)) : [],
+    [allRooms, browseKind],
+  );
+
+  const selectBrowseKind = (kind: BrowseKind) => {
+    setBrowseKind(kind);
+    setQuery("");
+    window.requestAnimationFrame(() => {
+      document.getElementById("find-results")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
   };
 
   return (
     <>
-      <main className="explore-shell">
+      <main className="explore-shell find-hub-shell">
         <header className="find-header">
           <BackButton fallbackHref="/home" />
           <h1>探す</h1>
-          <span aria-hidden="true" />
+          <Link href="/rooms" className="find-header__themes">テーマ</Link>
         </header>
 
-        <section className="find-hero" aria-labelledby="find-title">
-          <span className="find-hero__leaf" aria-hidden="true">
-            <Icon name="leaf" size={24} />
+        <section className="find-hub-hero" aria-labelledby="find-title">
+          <span className="find-hub-hero__icon" aria-hidden="true">
+            <Icon name="search" size={22} />
           </span>
-          <h2 id="find-title">
-            何千もの病気・症状から
-            <br />
-            探せます
-          </h2>
-          <p>
-            病気の名前、気になる症状、暮らしの悩み。今の自分に近い入口から、同じような声を探せます。
-          </p>
+          <div>
+            <p>近い声を見つける</p>
+            <h2 id="find-title">病気・症状・悩みから探す</h2>
+            <span>言葉で検索するか、入口を選ぶと、近いテーマと声をたどれます。</span>
+          </div>
         </section>
 
-        <label className="find-search">
-          <Icon name="search" size={18} />
+        <label className="find-search find-search--hub">
+          <Icon name="search" size={19} />
           <input
             value={query}
             onChange={(event) => {
               setQuery(event.target.value);
-              setVisibleSearchCount(12);
+              setBrowseKind(null);
+              setVisibleVoiceCount(6);
             }}
             placeholder="病気・症状・悩みを入力"
+            aria-label="病気・症状・悩みを検索"
           />
+          {hasQuery && (
+            <button type="button" onClick={() => setQuery("")} aria-label="検索をクリア">
+              <Icon name="close" size={15} />
+            </button>
+          )}
         </label>
 
-        {hasQuery ? (
+        {!hasQuery && !browseKind && (
           <>
-            <DiseaseSearchPanel query={query} result={diseaseSearch} />
-            {nonDiseaseResults.length > 0 && (
-              <section className="find-group" aria-label="症状と悩みの検索結果">
-                <div className="find-group__head">
-                  <div>
-                    <h3>症状・悩みからも探せます</h3>
-                    <p>病名がはっきりしない時も、近い声に進めます。</p>
-                  </div>
+            <section className="find-way-section" aria-labelledby="find-way-title">
+              <div className="find-section-heading">
+                <div>
+                  <p>入口を選ぶ</p>
+                  <h2 id="find-way-title">どこから探しますか</h2>
                 </div>
-                <TopicCloud topics={nonDiseaseResults.slice(0, 24)} selectedLabels={selectedTopics} onToggle={toggleTopic} />
-              </section>
-            )}
-          </>
-        ) : (
-          (["condition", "symptom", "concern"] as ExploreTopicKind[]).map((kind) => {
-            const topics = getTopicsByKind(kind);
-            const visible = expanded[kind] ? topics : topics.slice(0, 14);
-            return (
-              <section key={kind} className={`find-group find-group--${kind}`}>
-                <div className="find-group__head">
-                  <div>
-                    <h3>
-                      <Icon name={groupIcons[kind]} size={17} />
-                      {groupLabels[kind]}
-                    </h3>
-                    <p>{groupLead[kind]}</p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setExpanded((current) => ({ ...current, [kind]: !current[kind] }))}
-                  >
-                    {expanded[kind] ? "閉じる" : "もっと見る"}
-                    <Icon name={expanded[kind] ? "chevronDown" : "chevronRight"} size={14} />
+                <Link href="/rooms">すべてのテーマ</Link>
+              </div>
+              <div className="find-way-list">
+                {BROWSE_OPTIONS.map((option) => (
+                  <button key={option.kind} type="button" onClick={() => selectBrowseKind(option.kind)}>
+                    <span className={`find-way-list__icon find-way-list__icon--${option.kind}`}>
+                      <Icon name={option.icon} size={20} />
+                    </span>
+                    <span className="find-way-list__copy">
+                      <strong>{option.title}</strong>
+                      <span>{option.body}</span>
+                      <small>{option.examples}</small>
+                    </span>
+                    <Icon name="chevronRight" size={17} />
                   </button>
+                ))}
+              </div>
+            </section>
+
+            <section className="find-nearby-section" aria-labelledby="find-nearby-title">
+              <div className="find-section-heading">
+                <div>
+                  <p>今の設定から</p>
+                  <h2 id="find-nearby-title">あなたに近いテーマ</h2>
                 </div>
-                <TopicCloud topics={visible} selectedLabels={selectedTopics} onToggle={toggleTopic} />
-                {kind === "condition" && <DiagnosisPendingCard compact />}
-              </section>
-            );
-          })
+                <Link href="/onboarding/condition">設定を変える</Link>
+              </div>
+              <p className="find-nearby-section__lead">{recommendation.roomsLead}</p>
+              <FindRoomList rooms={recommendedRooms} compact />
+            </section>
+          </>
         )}
 
-        <FindVoicePreview
-          query={hasQuery ? query : undefined}
-          selectedTopics={hasQuery ? [] : selectedTopics}
-          posts={hasQuery ? searchedPosts : selectedPosts}
-          visibleCount={hasQuery ? visibleSearchCount : 4}
-          onLoadMore={
-            hasQuery && visibleSearchCount < searchedPosts.length
-              ? () => setVisibleSearchCount((current) => current + 12)
-              : undefined
-          }
-          onClear={() => setSelectedTopics([])}
-        />
+        {browseKind && !hasQuery && (
+          <section className="find-browse-results" id="find-results" aria-labelledby="find-browse-title">
+            <button type="button" className="find-browse-results__back" onClick={() => setBrowseKind(null)}>
+              <Icon name="back" size={15} />
+              探し方を選び直す
+            </button>
+            <div className="find-section-heading">
+              <div>
+                <p>テーマから読む</p>
+                <h2 id="find-browse-title">{BROWSE_OPTIONS.find((option) => option.kind === browseKind)?.title}</h2>
+              </div>
+            </div>
+            <FindRoomList rooms={browsedRooms.slice(0, 10)} />
+            <Link href={`/rooms#${browseKind}`} className="find-all-themes-link">
+              この種類のテーマをすべて見る
+              <Icon name="chevronRight" size={15} />
+            </Link>
+          </section>
+        )}
+
+        {hasQuery && (
+          <section className="find-search-results" id="find-results" aria-labelledby="find-search-results-title">
+            <div className="find-section-heading">
+              <div>
+                <p>検索結果</p>
+                <h2 id="find-search-results-title">「{trimmedQuery}」から探す</h2>
+              </div>
+            </div>
+
+            {searchedRooms.length > 0 && (
+              <section className="find-result-block" aria-labelledby="find-theme-results-title">
+                <div className="find-result-block__head">
+                  <h3 id="find-theme-results-title">近いテーマ</h3>
+                  <span>{searchedRooms.length}件</span>
+                </div>
+                <FindRoomList rooms={searchedRooms.slice(0, 6)} />
+              </section>
+            )}
+
+            <FindVoiceResults
+              query={trimmedQuery}
+              posts={searchedPosts}
+              visibleCount={visibleVoiceCount}
+              onLoadMore={
+                visibleVoiceCount < searchedPosts.length
+                  ? () => setVisibleVoiceCount((current) => current + 12)
+                  : undefined
+              }
+            />
+
+            {searchedRooms.length === 0 && searchedPosts.length === 0 && (
+              <div className="find-no-results">
+                <Icon name="search" size={22} />
+                <p>近いテーマや声が見つかりませんでした</p>
+                <span>言葉を短くするか、病名が分からない場合は症状や不安から探せます。</span>
+                <button type="button" onClick={() => { setQuery(""); setBrowseKind("symptom"); }}>
+                  症状から探す
+                </button>
+              </div>
+            )}
+          </section>
+        )}
       </main>
 
       <BottomNav active="stroll" />
@@ -166,261 +254,108 @@ export default function FindPage() {
   );
 }
 
-function DiseaseSearchPanel({ query, result }: { query: string; result: DiseaseSearchResult }) {
-  const trimmedQuery = query.trim();
-
+function FindRoomList({ rooms, compact = false }: { rooms: Room[]; compact?: boolean }) {
   return (
-    <section className="find-group find-group--condition" aria-label="病名の検索結果">
-      <div className="find-group__head">
-        <div>
-          <h3>
-            <Icon name="heart" size={17} />
-            病名から探す
-          </h3>
-          <p>候補にない病名でも、その言葉を残して近いテーマへ進めます。</p>
-        </div>
-      </div>
-
-      {result.matches.length > 0 && (
-        <div className="find-disease-results">
-          {result.matches.slice(0, 8).map((disease) => (
-            <DiseaseResultCard key={disease.id} disease={disease} />
-          ))}
-        </div>
-      )}
-
-      {result.freeTextSelection && trimmedQuery && (
-        <FreeTextDiseaseCard diseaseName={trimmedQuery} />
-      )}
-
-      <DiagnosisPendingCard />
-    </section>
-  );
-}
-
-function DiseaseResultCard({ disease }: { disease: DiseaseCatalogEntry }) {
-  const guideTopics = getDiseaseGuideTopics(disease);
-  const mainRoom = guideTopics[0];
-
-  return (
-    <article className={`find-disease-card find-disease-card--${disease.tone}`}>
-      <div className="find-disease-card__main">
-        <div>
-          <p className="find-disease-card__label">候補から選ぶ</p>
-          <h4>{disease.displayName}</h4>
-          {disease.aliases?.[0] && <span>{disease.aliases.join(" / ")}</span>}
-        </div>
-        <div className="find-disease-card__actions">
-          <Link href={`/onboarding/condition?disease=${disease.id}`} className="find-disease-card__button">
-            自分に追加
-            <Icon name="check" size={14} />
+    <ul className={`rooms-list find-room-list${compact ? " rooms-list--compact" : ""}`}>
+      {rooms.map((room) => (
+        <li key={room.id}>
+          <Link href={`/rooms/${room.id}`} className={`rooms-row rooms-row--${room.tone}`}>
+            <span className="rooms-row__icon" aria-hidden="true">
+              <Icon name={kindToIcon(room.kind)} size={19} />
+            </span>
+            <span className="rooms-row__body">
+              <span className="rooms-row__titleline">
+                <strong>{room.name}</strong>
+                <em>{KIND_LABEL[room.kind]}</em>
+              </span>
+              <span className="rooms-row__description">{room.description}</span>
+              <span className="rooms-row__movement">
+                <Icon name="whisper" size={12} />
+                このテーマの声を読む
+              </span>
+            </span>
+            <Icon name="chevronRight" size={18} />
           </Link>
-          {mainRoom?.roomHref && (
-            <Link href={mainRoom.roomHref} className="find-disease-card__button find-disease-card__button--ghost">
-              声を読む
-              <Icon name="chevronRight" size={14} />
-            </Link>
-          )}
-        </div>
-      </div>
-      <GuideTopicLinks title="近いテーマ" topics={guideTopics.slice(0, 4)} />
-    </article>
+        </li>
+      ))}
+    </ul>
   );
 }
 
-function FreeTextDiseaseCard({ diseaseName }: { diseaseName: string }) {
-  return (
-    <article className="find-disease-card find-disease-card--free">
-      <div className="find-disease-card__main">
-        <div>
-          <p className="find-disease-card__label">リストになくても大丈夫です</p>
-          <h4>「{diseaseName}」で始める</h4>
-          <span>専用テーマがまだなくても、近い症状や不安の声を読めます。</span>
-        </div>
-        <Link
-          href={`/onboarding/condition?diseaseName=${encodeURIComponent(diseaseName)}`}
-          className="find-disease-card__button"
-        >
-          自分に追加
-          <Icon name="check" size={14} />
-        </Link>
-      </div>
-      <GuideTopicLinks title="まず読める近いテーマ" topics={getFreeTextDiseaseGuideTopics()} />
-    </article>
-  );
-}
-
-function DiagnosisPendingCard({ compact = false }: { compact?: boolean }) {
-  return (
-    <article className={`find-diagnosis-card${compact ? " find-diagnosis-card--compact" : ""}`}>
-      <div className="find-diagnosis-card__copy">
-        <p>まだ診断名が決まっていない</p>
-        <span>検査中・疑い病名・診療科だけ分かっている方も、症状や不安から探せます。</span>
-      </div>
-      <Link href="/onboarding/condition?status=pending" className="find-diagnosis-card__select">
-        診断前として選ぶ
-        <Icon name="chevronRight" size={14} />
-      </Link>
-      <GuideTopicLinks title="診断前の方へ" topics={getDiagnosisPendingGuideTopics()} />
-    </article>
-  );
-}
-
-function GuideTopicLinks({ title, topics }: { title: string; topics: ExploreTopic[] }) {
-  if (topics.length === 0) return null;
-
-  return (
-    <div className="find-guide-links" aria-label={title}>
-      <p>{title}</p>
-      <div>
-        {topics.map((topic) => (
-          <Link key={topic.id} href={topic.roomHref ?? "/home#feed"}>
-            {topic.label}
-            <Icon name="chevronRight" size={13} />
-          </Link>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function TopicCloud({
-  topics,
-  selectedLabels,
-  onToggle,
-}: {
-  topics: ExploreTopic[];
-  selectedLabels: string[];
-  onToggle: (topic: ExploreTopic) => void;
-}) {
-  if (topics.length === 0) {
-    return <p className="find-empty">近いテーマが見つかりませんでした。</p>;
-  }
-
-  return (
-    <div className="find-topic-cloud">
-      {topics.map((topic) => {
-        const selected = selectedLabels.includes(topic.label);
-        return (
-          <button
-            key={topic.id}
-            type="button"
-            className={`find-topic find-topic--${topic.tone} ${selected ? "is-active" : ""}`.trim()}
-            onClick={() => onToggle(topic)}
-          >
-            {topic.label}
-            {topic.aliases?.[0] && <span>{topic.aliases[0]}</span>}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
-function FindVoicePreview({
+function FindVoiceResults({
   query,
-  selectedTopics,
   posts,
   visibleCount,
   onLoadMore,
-  onClear,
 }: {
-  query?: string;
-  selectedTopics: string[];
+  query: string;
   posts: ExplorePost[];
   visibleCount: number;
   onLoadMore?: () => void;
-  onClear: () => void;
 }) {
   const shown = posts.slice(0, visibleCount);
-  const trimmedQuery = query?.trim();
-  const hasSearch = Boolean(trimmedQuery);
-  const postContext = hasSearch ? trimmedQuery : selectedTopics.join("・");
+
+  if (posts.length === 0) return null;
 
   return (
-    <section className="find-voice-preview" aria-label="近い声">
-      <div className="find-voice-preview__head">
-        <div>
-          <p>
-            {hasSearch
-              ? `「${trimmedQuery}」に近い声 ${posts.length}件`
-              : selectedTopics.length > 0
-                ? "選んだ内容に近い声"
-                : "近い声が見つかりました"}
-          </p>
-          <span>
-            {hasSearch
-              ? "病名・症状・暮らしの悩み・体験談の本文から探しています。"
-              : selectedTopics.length > 0
-              ? selectedTopics.join("・")
-              : "まずは読むだけでも大丈夫です。気になるテーマを押すと絞り込めます。"}
-          </span>
-        </div>
-        {selectedTopics.length > 0 && (
-          <button type="button" onClick={onClear}>
-            解除
-          </button>
-        )}
+    <section className="find-result-block" aria-labelledby="find-voice-results-title">
+      <div className="find-result-block__head">
+        <h3 id="find-voice-results-title">近い声</h3>
+        <span>{posts.length}件</span>
+      </div>
+      <div className="find-voice-preview__list">
+        {shown.map((post) => {
+          const href = post.id.startsWith("uchiake-") ? `/voice/${post.id}` : "/home#feed";
+          return (
+            <article key={post.id} className="find-voice-card">
+              <Link href={href} aria-label={`${post.topic}の近い声を読む`}>
+                <header>
+                  <span className={`explore-topic-pill explore-topic-pill--${post.topicTone}`}>{post.topic}</span>
+                  <small>{post.timeLabel}</small>
+                </header>
+                <p>{post.body}</p>
+                <footer>
+                  <span><Icon name="understand" size={13} />{post.viewCount ?? "0"}</span>
+                  <span>読む<Icon name="chevronRight" size={13} /></span>
+                </footer>
+              </Link>
+            </article>
+          );
+        })}
       </div>
 
-      {shown.length > 0 ? (
-        <div className="find-voice-preview__list">
-          {shown.map((post) => {
-            const href = post.id.startsWith("uchiake-") ? `/voice/${post.id}` : "/home#feed";
-            return (
-              <article key={post.id} className="find-voice-card">
-                <Link href={href} aria-label={`${post.topic}の近い声を読む`}>
-                  <header>
-                    <span className={`explore-topic-pill explore-topic-pill--${post.topicTone}`}>{post.topic}</span>
-                    <small>{post.timeLabel}</small>
-                  </header>
-                  <p>{post.body}</p>
-                  <footer>
-                    <span>
-                      <Icon name="understand" size={13} />
-                      {post.viewCount ?? "0"}
-                    </span>
-                    <span>
-                      読む
-                      <Icon name="chevronRight" size={13} />
-                    </span>
-                  </footer>
-                </Link>
-              </article>
-            );
-          })}
+      <aside className="find-post-entry" aria-label="この文脈で声を書く">
+        <div>
+          <p>同じ文脈に、あなたの声も置けます</p>
+          <span>「{query}」を引き継いで書き始めます。</span>
         </div>
-      ) : (
-        <p className="find-empty">
-          近い声がまだ見つかりませんでした。言葉を短くするか、症状や暮らしの悩みでも探せます。
-        </p>
-      )}
+        <Link href={`/post?context=${encodeURIComponent(query)}`}>
+          この内容で書く
+          <Icon name="plus" size={15} />
+        </Link>
+      </aside>
 
-      {postContext && (
-        <aside className="find-post-entry" aria-label="この文脈で声を書く">
-          <div>
-            <p>同じ文脈に、あなたの声も置けます</p>
-            <span>「{postContext}」を引き継いで書き始めます。</span>
-          </div>
-          <Link href={`/post?context=${encodeURIComponent(postContext)}`}>
-            この内容で書く
-            <Icon name="plus" size={15} />
-          </Link>
-        </aside>
-      )}
-
-      {onLoadMore ? (
+      {onLoadMore && (
         <button type="button" className="find-voice-preview__more" onClick={onLoadMore}>
           さらに声を読む
           <Icon name="chevronDown" size={15} />
         </button>
-      ) : !hasSearch ? (
-        <Link href="/home#feed" className="find-voice-preview__more">
-          もっと近い声を読む
-          <Icon name="chevronRight" size={15} />
-        </Link>
-      ) : null}
+      )}
     </section>
   );
 }
 
+function roomMatchesBrowseKind(room: Room, kind: BrowseKind) {
+  if (kind === "concern") return room.kind === "concern" || room.kind === "treatment";
+  return room.kind === kind;
+}
+
+function kindToIcon(kind: RoomKind): "leaf" | "whisper" | "heart" | "flower" | "shield" {
+  switch (kind) {
+    case "disease": return "leaf";
+    case "symptom": return "whisper";
+    case "concern": return "heart";
+    case "medication": return "flower";
+    case "treatment": return "shield";
+  }
+}
