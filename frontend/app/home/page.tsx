@@ -8,6 +8,7 @@ import { BottomNav } from "@/components/layout/BottomNav";
 import { Avatar } from "@/components/ui/Avatar";
 import { Icon } from "@/components/ui/Icon";
 import { explorePosts } from "@/lib/mock/explore";
+import { createLatestVisitOrder } from "@/lib/feed/latest-visit-order";
 import { getCurrentSession } from "@/lib/auth/local-auth";
 import { getHealthRecommendation } from "@/lib/onboarding/recommendations";
 import { resolveMemberIdentity, type MemberIdentity } from "@/lib/onboarding/identity";
@@ -37,6 +38,7 @@ export default function HomePage() {
   const router = useRouter();
   const [tab, setTab] = useState<(typeof tabs)[number]["value"]>("latest");
   const [visibleCount, setVisibleCount] = useState(12);
+  const [latestPosts, setLatestPosts] = useState<ExplorePost[]>(explorePosts);
   // SSRとの hydration 不一致を避けるため、セッション判定はマウント後に行う
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [memberIdentity, setMemberIdentity] = useState<MemberIdentity | null>(null);
@@ -45,6 +47,7 @@ export default function HomePage() {
       const session = getCurrentSession();
       setIsSignedIn(Boolean(session));
       if (session) setMemberIdentity(resolveMemberIdentity(session, readOnboardingState()));
+      setLatestPosts(createLatestVisitOrder(explorePosts));
     });
     return () => window.cancelAnimationFrame(frame);
   }, []);
@@ -52,7 +55,7 @@ export default function HomePage() {
   const healthRecommendation = useMemo(() => getHealthRecommendation(healthContext), [healthContext]);
 
   const filteredPosts = useMemo(() => {
-    if (tab === "latest") return explorePosts;
+    if (tab === "latest") return latestPosts;
     if (tab === "near") {
       const personalTopicSet = new Set(healthRecommendation.topicLabels);
       const personalPosts = healthRecommendation.hasContext
@@ -61,7 +64,7 @@ export default function HomePage() {
       return personalPosts.length > 0 ? personalPosts : explorePosts.filter((post) => nearTopics.has(post.topic));
     }
     return explorePosts;
-  }, [healthRecommendation, tab]);
+  }, [healthRecommendation, latestPosts, tab]);
 
   const visiblePosts = filteredPosts.slice(0, visibleCount);
   const canLoadMore = visibleCount < filteredPosts.length;
