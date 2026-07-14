@@ -3,13 +3,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { use, useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { BackButton } from "@/components/ui/BackButton";
 import { Avatar } from "@/components/ui/Avatar";
 import { Icon } from "@/components/ui/Icon";
 import { getRooms } from "@/lib/api/rooms";
 import { getCurrentSession } from "@/lib/auth/local-auth";
-import { signInGateHref } from "@/lib/auth/require-sign-in";
 import { resolveMemberIdentity, type MemberIdentity } from "@/lib/onboarding/identity";
 import { getHealthRecommendation } from "@/lib/onboarding/recommendations";
 import { readOnboardingState } from "@/lib/onboarding/storage";
@@ -49,7 +48,6 @@ const VISIBILITIES: Array<{
 
 export function PostComposer() {
   const router = useRouter();
-  const pathname = usePathname();
   const searchParams = useSearchParams();
   const roomId = searchParams.get("room") || "";
   const contextParam = searchParams.get("context")?.trim() || "";
@@ -67,8 +65,10 @@ export function PostComposer() {
   const [hintsOpen, setHintsOpen] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(Boolean(roomId));
   const [draftSaved, setDraftSaved] = useState(false);
+  const [draftError, setDraftError] = useState<string | null>(null);
   const [placed, setPlaced] = useState(false);
   const [identity, setIdentity] = useState<MemberIdentity | null>(null);
+  const [isSignedIn, setIsSignedIn] = useState(false);
 
   const suggestedRooms = useMemo(() => {
     const ids = recommendation.roomIds.length > 0
@@ -88,17 +88,12 @@ export function PostComposer() {
   }, [contextParam, recommendation.topicLabels]);
   const contextSummary = contextLabels.length > 0 ? contextLabels.join("・") : "病気・症状・悩みは未設定";
   const destination = getDestination({ visibility, roomId: selectedRoom?.id, roomName: selectedRoom?.name });
-
-  useEffect(() => {
-    const query = searchParams.toString();
-    const next = query ? `${pathname}?${query}` : pathname;
-    const gate = signInGateHref(next);
-    if (gate) router.replace(gate);
-  }, [pathname, router, searchParams]);
+  const resumedAfterRegistration = isSignedIn && searchParams.get("resume") === "publish";
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
       const session = getCurrentSession();
+      setIsSignedIn(Boolean(session));
       if (session) setIdentity(resolveMemberIdentity(session, readOnboardingState()));
       try {
         const raw = window.localStorage.getItem(DRAFT_KEY);
@@ -116,14 +111,24 @@ export function PostComposer() {
     return () => window.cancelAnimationFrame(frame);
   }, [roomId]);
 
-  const saveDraft = () => {
+  const persistDraft = () => {
     try {
       const draft: PostDraft = { body, isQuestion, visibility, selectedRoomId: resolvedRoomId, image };
       window.localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const saveDraft = () => {
+    if (persistDraft()) {
+      setDraftError(null);
       setDraftSaved(true);
       window.setTimeout(() => setDraftSaved(false), 1800);
-    } catch {
+    } else {
       setDraftSaved(false);
+      setDraftError("下書きを保存できませんでした。写真を外して、もう一度お試しください。");
     }
   };
 
@@ -145,6 +150,20 @@ export function PostComposer() {
 
   const submit = () => {
     if (!body.trim()) return;
+
+    if (!isSignedIn) {
+      if (!persistDraft()) {
+        setDraftError("登録画面へ進む前に下書きを保存できませんでした。写真を外して、もう一度お試しください。");
+        return;
+      }
+      setDraftError(null);
+      const returnParams = new URLSearchParams(searchParams.toString());
+      returnParams.set("resume", "publish");
+      const next = `/post?${returnParams.toString()}`;
+      router.push(`/auth/register?next=${encodeURIComponent(next)}&source=post-publish`);
+      return;
+    }
+
     setPlaced(true);
     window.localStorage.removeItem(DRAFT_KEY);
   };
@@ -171,6 +190,18 @@ export function PostComposer() {
         <h2 id="post-heading">今の気持ちや体験を書く</h2>
         <span>ひとことだけでも、あとから見直しても大丈夫です。</span>
       </section>
+
+      {!isSignedIn && (
+        <section className="guest-post-guide" id="guest-post-guide" aria-label="登録前に試せること">
+          <span className="guest-post-guide__icon"><Icon name="shield" size={18} /></span>
+          <div>
+            <p>登録なしで、公開前まで試せます</p>
+            <span>本文を書く → 届け先を選ぶ → ほかの人からの見え方を確認</span>
+            <small>入力内容はこの端末に保存し、公開へ進むときだけ登録をお願いしています。</small>
+            {draftError && <em role="alert">{draftError}</em>}
+          </div>
+        </section>
+      )}
 
       <section className="simple-post-editor" aria-label="投稿本文">
         <textarea
@@ -296,6 +327,16 @@ export function PostComposer() {
         </div>
       </section>
 
+      {resumedAfterRegistration && !placed && (
+        <section className="post-registration-ready" aria-label="登録完了">
+          <Icon name="check" size={17} />
+          <div>
+            <p>登録できました。入力した内容も残っています</p>
+            <span>届け先とプレビューをもう一度確認して、投稿してください。</span>
+          </div>
+        </section>
+      )}
+
       <footer className={`simple-post-footer ${placed ? "is-complete" : ""}`}>
         {placed ? (
           <>
@@ -309,8 +350,15 @@ export function PostComposer() {
         ) : (
           <>
             <Link href={roomId ? `/rooms/${roomId}` : "/home"}>あとで</Link>
-            <button type="button" onClick={submit} disabled={!body.trim()}>
-              {visibility === "quiet" ? "自分だけに保存" : "投稿する"}
+            <button
+              type="button"
+              onClick={submit}
+              disabled={!body.trim()}
+              aria-describedby={!isSignedIn ? "guest-post-guide" : undefined}
+            >
+              {!isSignedIn
+                ? visibility === "quiet" ? "登録して保存へ" : "登録して公開へ"
+                : visibility === "quiet" ? "自分だけに保存" : "投稿する"}
             </button>
           </>
         )}

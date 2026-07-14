@@ -4948,20 +4948,30 @@ input, textarea {
 }
 
 .explore-tabs--home {
-  padding: 6px 0 12px;
-  justify-content: space-between;
-  gap: 4px;
+  gap: 0;
+  margin: 6px 0 12px;
+  padding: 3px;
+  overflow: hidden;
+  border: 1px solid rgba(172, 184, 133, 0.34);
+  border-radius: 14px;
+  background: rgba(239, 241, 230, 0.72);
 }
 
 .explore-tabs--home .explore-tab {
-  min-height: 36px;
-  padding-inline: 16px;
+  flex: 1 1 50%;
+  min-width: 0;
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 12px;
+  border-radius: 11px;
   background: transparent;
 }
 
 .explore-tabs--home .explore-tab.is-active {
-  min-width: 58px;
   background: var(--color-moss-500);
+  box-shadow: 0 5px 13px rgba(84, 92, 60, 0.16);
 }
 
 .explore-feed {
@@ -5024,72 +5034,11 @@ input, textarea {
   background: #d76f52;
 }
 
-.home-composer {
-  position: relative;
-  display: flex;
-  gap: 12px;
-  padding: 15px 14px 13px;
-  margin: 0 0 12px;
-  border: 1px solid rgba(214, 200, 178, 0.78);
-  border-radius: 16px;
-  background: rgba(255, 253, 248, 0.9);
-  box-shadow: 0 9px 22px rgba(74, 56, 38, 0.055);
-}
-
-.home-composer > div {
-  min-width: 0;
-  flex: 1;
-}
-
-.home-composer p {
-  color: var(--color-ink-900);
-  font: 600 13px/1.4 var(--font-jp);
-}
-
-.home-composer > div > a {
-  display: block;
-  margin-top: 8px;
-  min-height: 38px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  border: 1px solid var(--color-line-soft);
-  background: rgba(255, 255, 255, 0.58);
-  color: var(--color-ink-500);
-  font: 400 12px/1.4 var(--font-jp);
-}
-
-.home-composer__tools {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 12px;
-  flex-wrap: wrap;
-}
-
-.home-composer__tools a {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  color: var(--color-ink-500);
-  font: 500 12px/1 var(--font-jp);
-}
-
-.home-composer__tools .home-composer__submit {
-  margin-left: auto;
-  min-height: 36px;
-  padding-inline: 17px;
-  border-radius: 999px;
-  background: var(--color-moss-500);
-  color: var(--color-card);
-  font-weight: 700;
-}
-
 .home-near-context {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 11px;
-  padding: 13px 14px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  padding: 15px;
   margin-bottom: 12px;
   border-radius: 18px;
   border: 1px solid rgba(214, 200, 178, 0.78);
@@ -5098,30 +5047,51 @@ input, textarea {
   color: var(--color-moss-700);
 }
 
-.home-near-context p {
+.home-near-context__copy {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 10px;
+}
+
+.home-near-context__icon {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--color-moss-50);
+  color: var(--color-moss-700);
+}
+
+.home-near-context__copy p {
   margin: 0;
   color: var(--color-ink-900);
   font: 700 13px/1.45 var(--font-jp);
 }
 
-.home-near-context span {
+.home-near-context__copy div > span {
   display: block;
-  margin-top: 2px;
+  margin-top: 3px;
   color: var(--color-ink-500);
   font: 500 11px/1.6 var(--font-jp);
 }
 
-.home-near-context a,
-.home-near-context button {
-  min-height: 32px;
-  padding: 0 13px;
-  border-radius: 999px;
+.home-near-context .home-near-context__action {
+  width: 100%;
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 14px;
+  border-radius: 12px;
   border: 1px solid rgba(117, 127, 85, 0.34);
   background: var(--color-moss-50);
   color: var(--color-moss-700);
-  font: 700 11px/1 var(--font-jp);
+  font: 700 11.5px/1.4 var(--font-jp);
   text-decoration: none;
-  white-space: nowrap;
+  text-align: left;
 }
 
 .find-hero {
@@ -5221,6 +5191,20 @@ input, textarea {
   margin-top: 10px;
   color: var(--color-ink-600, var(--color-ink-500));
   font: 400 13px/1.8 var(--font-jp);
+}
+
+.auth-resume-note {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border: 1px solid rgba(117, 127, 85, 0.28);
+  border-radius: 13px;
+  background: var(--color-moss-50);
+  color: var(--color-moss-700);
+  font: 700 11px/1.5 var(--font-jp);
 }
 
 .auth-google,
@@ -6197,30 +6181,6 @@ input, textarea {
   color: var(--color-ink-400, var(--color-ink-500));
 }
 
-.home-composer {
-  align-items: center;
-}
-
-.home-composer > div > p + span {
-  display: block;
-  margin-top: 3px;
-  color: var(--color-ink-500);
-  font: 500 10.5px/1.45 var(--font-jp);
-}
-
-.home-composer > .home-composer__submit {
-  flex: 0 0 auto;
-  min-height: 36px;
-  display: inline-flex;
-  align-items: center;
-  padding: 0 17px;
-  border-radius: 999px;
-  background: var(--color-moss-500);
-  color: var(--color-card);
-  font: 700 12px/1 var(--font-jp);
-  text-decoration: none;
-}
-
 .find-post-entry {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -6312,6 +6272,65 @@ input, textarea {
   margin-top: 5px;
   color: var(--color-ink-500);
   font: 500 11px/1.65 var(--font-jp);
+}
+
+.guest-post-guide,
+.post-registration-ready {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 10px;
+  margin-top: 13px;
+  padding: 13px 14px;
+  border: 1px solid rgba(117, 127, 85, 0.28);
+  border-radius: 16px;
+  background: rgba(239, 241, 230, 0.72);
+  color: var(--color-moss-700);
+}
+
+.guest-post-guide__icon {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(255, 253, 248, 0.82);
+}
+
+.guest-post-guide p,
+.guest-post-guide span,
+.guest-post-guide small,
+.post-registration-ready p,
+.post-registration-ready span {
+  display: block;
+  margin: 0;
+}
+
+.guest-post-guide p,
+.post-registration-ready p {
+  color: var(--color-ink-900);
+  font: 700 12px/1.5 var(--font-jp);
+}
+
+.guest-post-guide div > span,
+.post-registration-ready span {
+  margin-top: 3px;
+  color: var(--color-ink-700);
+  font: 600 10.5px/1.55 var(--font-jp);
+}
+
+.guest-post-guide small {
+  margin-top: 5px;
+  color: var(--color-ink-500);
+  font: 500 9.8px/1.55 var(--font-jp);
+}
+
+.guest-post-guide em {
+  display: block;
+  margin-top: 7px;
+  color: var(--color-terra-700);
+  font: 700 10px/1.55 var(--font-jp);
+  font-style: normal;
 }
 
 .simple-post-editor {
@@ -6596,6 +6615,10 @@ input, textarea {
 .post-reassurance {
   padding: 13px 14px;
   border-radius: 16px;
+}
+
+.post-registration-ready {
+  background: rgba(255, 253, 248, 0.86);
 }
 
 .simple-post-footer {

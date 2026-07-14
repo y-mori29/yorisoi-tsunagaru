@@ -11,8 +11,6 @@ import { explorePosts } from "@/lib/mock/explore";
 import { createLatestVisitOrder } from "@/lib/feed/latest-visit-order";
 import { getCurrentSession } from "@/lib/auth/local-auth";
 import { getHealthRecommendation } from "@/lib/onboarding/recommendations";
-import { resolveMemberIdentity, type MemberIdentity } from "@/lib/onboarding/identity";
-import { readOnboardingState } from "@/lib/onboarding/storage";
 import { useStoredHealthContext } from "@/lib/onboarding/useStoredHealthContext";
 import type { ExplorePost } from "@/lib/mock/explore";
 
@@ -41,12 +39,10 @@ export default function HomePage() {
   const [latestPosts, setLatestPosts] = useState<ExplorePost[]>(explorePosts);
   // SSRとの hydration 不一致を避けるため、セッション判定はマウント後に行う
   const [isSignedIn, setIsSignedIn] = useState(false);
-  const [memberIdentity, setMemberIdentity] = useState<MemberIdentity | null>(null);
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
       const session = getCurrentSession();
       setIsSignedIn(Boolean(session));
-      if (session) setMemberIdentity(resolveMemberIdentity(session, readOnboardingState()));
       setLatestPosts(createLatestVisitOrder(explorePosts));
     });
     return () => window.cancelAnimationFrame(frame);
@@ -127,8 +123,6 @@ export default function HomePage() {
 
         <HomeFindEntry />
 
-        <HomeComposer signedIn={isSignedIn} identity={memberIdentity} />
-
         <section className="explore-feed" id="feed" aria-label="体験談タイムライン">
           {visiblePosts.map((post, index) => (
             <div key={post.id}>
@@ -181,37 +175,50 @@ function HomeNearContextPanel({
     if (!signedIn) {
       return (
         <section className="home-near-context" aria-label="近い声の案内">
-          <Icon name="leaf" size={17} />
-          <div>
-            <p>登録すると、あなたに近い声が届きます</p>
-            <span>病気・症状・不安に合わせて、近い体験談を先に読めるようになります。</span>
+          <div className="home-near-context__copy">
+            <span className="home-near-context__icon"><Icon name="leaf" size={17} /></span>
+            <div>
+              <p>登録すると、あなたに近い声が届きます</p>
+              <span>病気・症状・不安に合わせて、近い体験談を先に読めるようになります。</span>
+            </div>
           </div>
-          <Link href="/auth/register?next=/home">そっと登録（無料・メールだけ）</Link>
+          <Link className="home-near-context__action" href="/auth/register?next=/home">
+            無料で登録して近い声を受け取る
+            <Icon name="chevronRight" size={14} />
+          </Link>
         </section>
       );
     }
 
     return (
       <section className="home-near-context" aria-label="近い声の案内">
-        <Icon name="leaf" size={17} />
-        <div>
-          <p>近い声を増やせます</p>
-          <span>病気・症状・不安を選ぶと、あなたに近い体験談を先に読めます。</span>
+        <div className="home-near-context__copy">
+          <span className="home-near-context__icon"><Icon name="leaf" size={17} /></span>
+          <div>
+            <p>近い声を増やせます</p>
+            <span>病気・症状・不安を選ぶと、あなたに近い体験談を先に読めます。</span>
+          </div>
         </div>
-        <Link href="/onboarding/condition">選ぶ</Link>
+        <Link className="home-near-context__action" href="/onboarding/condition">
+          病気・症状・不安を選ぶ
+          <Icon name="chevronRight" size={14} />
+        </Link>
       </section>
     );
   }
 
   return (
     <section className="home-near-context" aria-label="あなたに近い声">
-      <Icon name="leaf" size={17} />
-      <div>
-        <p>あなたに近い声</p>
-        <span>{recommendation.homeLead}</span>
+      <div className="home-near-context__copy">
+        <span className="home-near-context__icon"><Icon name="leaf" size={17} /></span>
+        <div>
+          <p>あなたに近い声</p>
+          <span>{recommendation.homeLead}</span>
+        </div>
       </div>
-      <button type="button" onClick={onOpenNear}>
-        見る
+      <button className="home-near-context__action" type="button" onClick={onOpenNear}>
+        近い声を見る
+        <Icon name="chevronRight" size={14} />
       </button>
     </section>
   );
@@ -230,27 +237,6 @@ function HomeFindEntry() {
   );
 }
 
-function HomeComposer({ signedIn, identity }: { signedIn: boolean; identity: MemberIdentity | null }) {
-  const href = signedIn ? "/post" : "/auth/register?next=/post";
-
-  return (
-    <section className="home-composer" aria-label="今の気持ちを書く">
-      <Avatar
-        animal={identity?.animal ?? "rabbit"}
-        src={identity?.avatarSrc ?? `${communityAssetRoot}/avatars/anonymous-avatar-01.png`}
-        alt=""
-        tone={identity?.avatarTone ?? "moss"}
-        size={44}
-      />
-      <div>
-        <p>今の気持ちを書く</p>
-        <span>ひとことだけでも大丈夫です</span>
-      </div>
-      <Link href={href} className="home-composer__submit">書く</Link>
-    </section>
-  );
-}
-
 function SignInPanel() {
   return (
     <section className="explore-signin-panel" aria-label="登録案内">
@@ -263,9 +249,9 @@ function SignInPanel() {
         height={144}
       />
       <div>
-        <p className="explore-signin-panel__title">反応や投稿には登録が必要です</p>
+        <p className="explore-signin-panel__title">交流するときだけ、登録できます</p>
         <p className="explore-signin-panel__body">
-          読むだけならこのままで大丈夫です。書きたい時だけ、安心できる名前で始められます。
+          読むことと、投稿を書いてプレビューするところまでは登録なしで使えます。公開・反応・保存の直前に登録します。
         </p>
       </div>
       <Link href="/auth/register?next=/home" className="explore-primary-btn">

@@ -38,6 +38,7 @@ function AuthForm() {
   const searchParams = useSearchParams();
   const next = searchParams.get("next") || "/home";
   const referralSource = searchParams.get("source") || searchParams.get("ref") || "";
+  const isPostResume = next === "/post" || next.startsWith("/post?");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -48,7 +49,7 @@ function AuthForm() {
 
   const finish = () => {
     setDone(true);
-    window.setTimeout(() => router.push(onboardingHref), 450);
+    window.setTimeout(() => router.push(isPostResume ? next : onboardingHref), 450);
   };
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -83,7 +84,17 @@ function AuthForm() {
       <section className="auth-card" aria-label={TEXT.account}>
         <p className="auth-eyebrow">{TEXT.eyebrow}</p>
         <h2>{TEXT.heading}</h2>
-        <p className="auth-lead">{TEXT.lead}</p>
+        <p className="auth-lead">
+          {isPostResume
+            ? "入力した投稿は、この端末に下書きとして残っています。登録後すぐに投稿画面へ戻り、公開前の最終確認ができます。"
+            : TEXT.lead}
+        </p>
+        {isPostResume && (
+          <div className="auth-resume-note" aria-label="投稿の下書き">
+            <Icon name="check" size={16} />
+            <span>本文・届け先・プレビュー内容は消えません</span>
+          </div>
+        )}
         <button type="button" className="auth-google" onClick={onGoogle} disabled={submitting}>
           <span aria-hidden="true">G</span>
           {TEXT.google}

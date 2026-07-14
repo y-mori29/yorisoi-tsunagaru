@@ -6,10 +6,10 @@ import { Icon } from "@/components/ui/Icon";
 
 export type NavTab = "home" | "stroll" | "mail" | "profile";
 
-const ITEMS: Array<{ tab: NavTab; href: string; label: string; icon: "home" | "stroll" | "bookmark" | "profile" }> = [
+const ITEMS: Array<{ tab: NavTab; href: string; label: string; icon: "home" | "stroll" | "mail" | "profile" }> = [
   { tab: "home", href: "/home", label: "ホーム", icon: "home" },
   { tab: "stroll", href: "/find", label: "探す", icon: "stroll" },
-  { tab: "mail", href: "/me/bookmarks", label: "ブックマーク", icon: "bookmark" },
+  { tab: "mail", href: "/notifications", label: "お便り", icon: "mail" },
   { tab: "profile", href: "/me", label: "マイページ", icon: "profile" },
 ];
 
@@ -55,7 +55,7 @@ function NavItem({
 }: {
   href: string;
   label: string;
-  icon: "home" | "stroll" | "bookmark" | "profile";
+  icon: "home" | "stroll" | "mail" | "profile";
   active: boolean;
 }) {
   return (
