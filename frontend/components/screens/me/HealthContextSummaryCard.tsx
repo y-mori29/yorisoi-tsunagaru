@@ -39,7 +39,10 @@ export function HealthContextSummaryCard() {
   const [state, setState] = useState<OnboardingState | null>(null);
 
   useEffect(() => {
-    setState(readOnboardingState());
+    const frame = window.requestAnimationFrame(() => {
+      setState(readOnboardingState());
+    });
+    return () => window.cancelAnimationFrame(frame);
   }, []);
 
   const context = state?.healthContext;

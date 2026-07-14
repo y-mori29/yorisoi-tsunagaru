@@ -11,6 +11,7 @@ import {
   getDiseaseGuideTopics,
   getFreeTextDiseaseGuideTopics,
   getTopicsByKind,
+  searchExplorePosts,
   searchDiseases,
   searchTopics,
 } from "@/lib/mock/explore";
@@ -36,6 +37,7 @@ const groupIcons: Record<ExploreTopicKind, "heart" | "leaf" | "flower"> = {
 
 export default function FindPage() {
   const [query, setQuery] = useState("");
+  const [visibleSearchCount, setVisibleSearchCount] = useState(12);
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [expanded, setExpanded] = useState<Record<ExploreTopicKind, boolean>>({
     condition: false,
@@ -45,6 +47,7 @@ export default function FindPage() {
 
   const searched = useMemo(() => searchTopics(query), [query]);
   const diseaseSearch = useMemo(() => searchDiseases(query), [query]);
+  const searchedPosts = useMemo(() => searchExplorePosts(query), [query]);
   const hasQuery = query.trim().length > 0;
   const nonDiseaseResults = searched.filter((topic) => topic.kind !== "condition");
   const selectedPosts = useMemo(() => {
@@ -92,7 +95,10 @@ export default function FindPage() {
           <Icon name="search" size={18} />
           <input
             value={query}
-            onChange={(event) => setQuery(event.target.value)}
+            onChange={(event) => {
+              setQuery(event.target.value);
+              setVisibleSearchCount(12);
+            }}
             placeholder="病気・症状・悩みを入力"
           />
         </label>
@@ -141,7 +147,18 @@ export default function FindPage() {
           })
         )}
 
-        <FindVoicePreview selectedTopics={selectedTopics} posts={selectedPosts} onClear={() => setSelectedTopics([])} />
+        <FindVoicePreview
+          query={hasQuery ? query : undefined}
+          selectedTopics={hasQuery ? [] : selectedTopics}
+          posts={hasQuery ? searchedPosts : selectedPosts}
+          visibleCount={hasQuery ? visibleSearchCount : 4}
+          onLoadMore={
+            hasQuery && visibleSearchCount < searchedPosts.length
+              ? () => setVisibleSearchCount((current) => current + 12)
+              : undefined
+          }
+          onClear={() => setSelectedTopics([])}
+        />
       </main>
 
       <BottomNav active="stroll" />
@@ -301,23 +318,39 @@ function TopicCloud({
 }
 
 function FindVoicePreview({
+  query,
   selectedTopics,
   posts,
+  visibleCount,
+  onLoadMore,
   onClear,
 }: {
+  query?: string;
   selectedTopics: string[];
   posts: ExplorePost[];
+  visibleCount: number;
+  onLoadMore?: () => void;
   onClear: () => void;
 }) {
-  const shown = posts.slice(0, 4);
+  const shown = posts.slice(0, visibleCount);
+  const trimmedQuery = query?.trim();
+  const hasSearch = Boolean(trimmedQuery);
 
   return (
     <section className="find-voice-preview" aria-label="近い声">
       <div className="find-voice-preview__head">
         <div>
-          <p>{selectedTopics.length > 0 ? "選んだ内容に近い声" : "近い声が見つかりました"}</p>
+          <p>
+            {hasSearch
+              ? `「${trimmedQuery}」に近い声 ${posts.length}件`
+              : selectedTopics.length > 0
+                ? "選んだ内容に近い声"
+                : "近い声が見つかりました"}
+          </p>
           <span>
-            {selectedTopics.length > 0
+            {hasSearch
+              ? "病名・症状・暮らしの悩み・体験談の本文から探しています。"
+              : selectedTopics.length > 0
               ? selectedTopics.join("・")
               : "まずは読むだけでも大丈夫です。気になるテーマを押すと絞り込めます。"}
           </span>
@@ -329,34 +362,50 @@ function FindVoicePreview({
         )}
       </div>
 
-      <div className="find-voice-preview__list">
-        {shown.map((post) => (
-          <article key={post.id} className="find-voice-card">
-            <Link href="/home#feed" aria-label={`${post.topic}の近い声を読む`}>
-              <header>
-                <span className={`explore-topic-pill explore-topic-pill--${post.topicTone}`}>{post.topic}</span>
-                <small>{post.timeLabel}</small>
-              </header>
-              <p>{post.body}</p>
-              <footer>
-                <span>
-                  <Icon name="understand" size={13} />
-                  {post.viewCount ?? "0"}
-                </span>
-                <span>
-                  読む
-                  <Icon name="chevronRight" size={13} />
-                </span>
-              </footer>
-            </Link>
-          </article>
-        ))}
-      </div>
+      {shown.length > 0 ? (
+        <div className="find-voice-preview__list">
+          {shown.map((post) => {
+            const href = post.id.startsWith("uchiake-") ? `/voice/${post.id}` : "/home#feed";
+            return (
+              <article key={post.id} className="find-voice-card">
+                <Link href={href} aria-label={`${post.topic}の近い声を読む`}>
+                  <header>
+                    <span className={`explore-topic-pill explore-topic-pill--${post.topicTone}`}>{post.topic}</span>
+                    <small>{post.timeLabel}</small>
+                  </header>
+                  <p>{post.body}</p>
+                  <footer>
+                    <span>
+                      <Icon name="understand" size={13} />
+                      {post.viewCount ?? "0"}
+                    </span>
+                    <span>
+                      読む
+                      <Icon name="chevronRight" size={13} />
+                    </span>
+                  </footer>
+                </Link>
+              </article>
+            );
+          })}
+        </div>
+      ) : (
+        <p className="find-empty">
+          近い声がまだ見つかりませんでした。言葉を短くするか、症状や暮らしの悩みでも探せます。
+        </p>
+      )}
 
-      <Link href="/home#feed" className="find-voice-preview__more">
-        もっと近い声を読む
-        <Icon name="chevronRight" size={15} />
-      </Link>
+      {onLoadMore ? (
+        <button type="button" className="find-voice-preview__more" onClick={onLoadMore}>
+          さらに声を読む
+          <Icon name="chevronDown" size={15} />
+        </button>
+      ) : !hasSearch ? (
+        <Link href="/home#feed" className="find-voice-preview__more">
+          もっと近い声を読む
+          <Icon name="chevronRight" size={15} />
+        </Link>
+      ) : null}
     </section>
   );
 }

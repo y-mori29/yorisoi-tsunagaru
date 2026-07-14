@@ -9,8 +9,11 @@ export function useStoredHealthContext() {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    setHealthContext(readOnboardingState().healthContext);
-    setLoaded(true);
+    const frame = window.requestAnimationFrame(() => {
+      setHealthContext(readOnboardingState().healthContext);
+      setLoaded(true);
+    });
+    return () => window.cancelAnimationFrame(frame);
   }, []);
 
   return { healthContext, loaded };

@@ -1,7 +1,6 @@
 "use client";
 
 import { use, useMemo } from "react";
-import Link from "next/link";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { BackButton } from "@/components/ui/BackButton";
 import { VoiceCard } from "@/components/ui/VoiceCard";

@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useOnboarding } from "@/lib/onboarding/context";
 import { OnboardingShell } from "@/components/screens/onboarding/OnboardingShell";
@@ -67,7 +67,7 @@ function ConditionContent() {
     ? diseaseSearch.matches.slice(0, 8)
     : diseaseCatalog.filter((disease) => disease.featured).slice(0, 10);
 
-  const syncContext = (nextContext: MemberHealthContext) => {
+  const syncContext = useCallback((nextContext: MemberHealthContext) => {
     const touched = touchHealthContext(nextContext);
     const conditionIds = [
       touched.primaryDisease?.selectedDiseaseId ?? touched.primaryDisease?.rawInput,
@@ -81,36 +81,7 @@ function ConditionContent() {
       conditions: conditionIds,
       conditionDeclined: false,
     });
-  };
-
-  useEffect(() => {
-    if (appliedParams.current) return;
-    appliedParams.current = true;
-
-    const diseaseId = searchParams.get("disease");
-    const diseaseName = searchParams.get("diseaseName");
-    const status = searchParams.get("status");
-
-    if (status === "pending") {
-      selectDisease(createPendingDiseaseSelection());
-      return;
-    }
-
-    if (diseaseId) {
-      const disease = diseaseCatalog.find((item) => item.id === diseaseId);
-      if (disease) {
-        selectDisease(createCatalogDiseaseSelection(disease));
-        return;
-      }
-    }
-
-    if (diseaseName) {
-      const decoded = diseaseName.trim();
-      if (decoded) {
-        selectDisease(createFreeTextDiseaseSelection(decoded));
-      }
-    }
-  }, [searchParams]);
+  }, [update]);
 
   const setDiagnosisStatus = (diagnosisStatus: MemberHealthContext["diagnosisStatus"]) => {
     syncContext({
@@ -124,14 +95,42 @@ function ConditionContent() {
     });
   };
 
-  const selectDisease = (selection: PatientDiseaseSelection) => {
+  const selectDisease = useCallback((selection: PatientDiseaseSelection) => {
     syncContext({
       ...context,
       primaryDisease: selection,
       diagnosisStatus: selection.diagnosisStatus,
     });
     setQuery("");
-  };
+  }, [context, syncContext]);
+
+  useEffect(() => {
+    if (appliedParams.current) return;
+    appliedParams.current = true;
+
+    const diseaseId = searchParams.get("disease");
+    const diseaseName = searchParams.get("diseaseName");
+    const status = searchParams.get("status");
+    let selection: PatientDiseaseSelection | null = null;
+
+    if (status === "pending") {
+      selection = createPendingDiseaseSelection();
+    } else if (diseaseId) {
+      const disease = diseaseCatalog.find((item) => item.id === diseaseId);
+      if (disease) {
+        selection = createCatalogDiseaseSelection(disease);
+      }
+    } else if (diseaseName) {
+      const decoded = diseaseName.trim();
+      if (decoded) {
+        selection = createFreeTextDiseaseSelection(decoded);
+      }
+    }
+
+    if (!selection) return;
+    const frame = window.requestAnimationFrame(() => selectDisease(selection));
+    return () => window.cancelAnimationFrame(frame);
+  }, [searchParams, selectDisease]);
 
   const clearDisease = () => {
     syncContext({

@@ -121,7 +121,7 @@ function PostComposer() {
   const [writeKind, setWriteKind] = useState<WriteKind>("story");
   const [selectedFeeling, setSelectedFeeling] = useState<string | null>(null);
   const [visibility, setVisibility] = useState<Visibility>(roomId ? "room" : "public");
-  const [selectedRoomId, setSelectedRoomId] = useState(roomId ?? "room-before-diagnosis");
+  const [selectedRoomId, setSelectedRoomId] = useState(roomId ?? "");
   const [body, setBody] = useState("");
   const [placed, setPlaced] = useState(false);
   const [previewAuthor, setPreviewAuthor] = useState<{
@@ -135,7 +135,6 @@ function PostComposer() {
   });
 
   const allRooms = use(rooms);
-  const selectedRoom = allRooms.find((room) => room.id === selectedRoomId) ?? allRooms[0];
   const writeConfig = WRITE_KINDS.find((item) => item.value === writeKind) ?? WRITE_KINDS[0];
   const availableVisibilities = VISIBILITIES.filter((item) => writeConfig.visibilities.includes(item.value));
   const contextLabels = healthRecommendation.topicLabels.slice(0, 5);
@@ -149,6 +148,9 @@ function PostComposer() {
       .filter(Boolean)
       .slice(0, 6) as typeof allRooms;
   }, [allRooms, healthRecommendation.roomIds]);
+  const resolvedSelectedRoomId =
+    roomId || selectedRoomId || (healthContextLoaded ? suggestedRooms[0]?.id : "") || "room-before-diagnosis";
+  const selectedRoom = allRooms.find((room) => room.id === resolvedSelectedRoomId) ?? allRooms[0];
   const feelingChips = healthRecommendation.feelingChips.length > 0 ? healthRecommendation.feelingChips : FEELING_CHIPS;
   const placeholder = selectedFeeling
     ? `${selectedFeeling}のことを、少しだけ置いてみる。\n\n${writeConfig.placeholder}`
@@ -161,14 +163,17 @@ function PostComposer() {
   });
 
   useEffect(() => {
-    const onboarding = readOnboardingState();
-    const session = getCurrentSession();
-    const displayName = onboarding.profile.displayName?.trim() || session?.name?.trim();
-    setPreviewAuthor({
-      name: displayName && displayName !== "ななし" ? displayName : "あなた（ニックネーム）",
-      animal: onboarding.profile.animal ?? "rabbit",
-      avatarTone: (onboarding.profile.avatarTone as AvatarTone | undefined) ?? "moss",
+    const frame = window.requestAnimationFrame(() => {
+      const onboarding = readOnboardingState();
+      const session = getCurrentSession();
+      const displayName = onboarding.profile.displayName?.trim() || session?.name?.trim();
+      setPreviewAuthor({
+        name: displayName && displayName !== "ななし" ? displayName : "あなた（ニックネーム）",
+        animal: onboarding.profile.animal ?? "rabbit",
+        avatarTone: (onboarding.profile.avatarTone as AvatarTone | undefined) ?? "moss",
+      });
     });
+    return () => window.cancelAnimationFrame(frame);
   }, []);
 
   useEffect(() => {
@@ -177,16 +182,6 @@ function PostComposer() {
     const gate = signInGateHref(next);
     if (gate) router.replace(gate);
   }, [pathname, router, searchParams]);
-
-  useEffect(() => {
-    if (writeConfig.visibilities.includes(visibility)) return;
-    setVisibility(writeConfig.defaultVisibility);
-  }, [visibility, writeConfig]);
-
-  useEffect(() => {
-    if (roomId || !healthContextLoaded || suggestedRooms.length === 0) return;
-    setSelectedRoomId(suggestedRooms[0].id);
-  }, [healthContextLoaded, roomId, suggestedRooms]);
 
   const selectWriteKind = (next: WriteKind) => {
     const nextConfig = WRITE_KINDS.find((item) => item.value === next) ?? WRITE_KINDS[0];
@@ -354,7 +349,7 @@ function PostComposer() {
                 <button
                   key={room.id}
                   type="button"
-                  className={selectedRoomId === room.id ? "is-active" : ""}
+                  className={resolvedSelectedRoomId === room.id ? "is-active" : ""}
                   onClick={() => setSelectedRoomId(room.id)}
                 >
                   {room.name}

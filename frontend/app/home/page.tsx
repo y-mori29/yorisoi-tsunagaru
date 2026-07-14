@@ -41,7 +41,10 @@ export default function HomePage() {
   // SSRとの hydration 不一致を避けるため、セッション判定はマウント後に行う
   const [isSignedIn, setIsSignedIn] = useState(false);
   useEffect(() => {
-    setIsSignedIn(Boolean(getCurrentSession()));
+    const frame = window.requestAnimationFrame(() => {
+      setIsSignedIn(Boolean(getCurrentSession()));
+    });
+    return () => window.cancelAnimationFrame(frame);
   }, []);
   const { healthContext } = useStoredHealthContext();
   const healthRecommendation = useMemo(() => getHealthRecommendation(healthContext), [healthContext]);

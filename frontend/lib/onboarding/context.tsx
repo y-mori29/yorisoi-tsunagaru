@@ -19,7 +19,10 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<OnboardingState>(INITIAL_STATE);
 
   useEffect(() => {
-    setState(readOnboardingState());
+    const frame = window.requestAnimationFrame(() => {
+      setState(readOnboardingState());
+    });
+    return () => window.cancelAnimationFrame(frame);
   }, []);
 
   const update = (patch: Partial<OnboardingState>) => {

@@ -74,6 +74,8 @@ export type ExplorePost = {
   reactions: Array<{ label: string; count?: number }>;
   viewCount?: string;
   saved?: boolean;
+  /** 検索専用。病名・症状・悩みをまとめた表示外テキスト。 */
+  searchText?: string;
 };
 
 const animalSrc: Record<AnimalName, string> = {
@@ -376,6 +378,7 @@ const uchiakePosts: Array<ExplorePost & { minutesAgo: number }> = (uchiakeRaw as
     timeLabel: post.timeLabel,
     minutesAgo: post.minutesAgo,
     body: post.body,
+    searchText: [post.primaryDisease, ...post.symptoms, ...post.topics].filter(Boolean).join(" "),
     ...resolveUchiakeRoom(post),
     reactions: defaultReactions,
     viewCount: getMockViewCount(post.id, index),
@@ -404,23 +407,66 @@ const seedPosts: Array<ExplorePost & { minutesAgo: number }> = postSeeds.map((po
 
 export const explorePosts: ExplorePost[] = [...seedPosts, ...uchiakePosts]
   .sort((a, b) => a.minutesAgo - b.minutesAgo)
-  .map(({ minutesAgo: _minutesAgo, ...post }) => post);
+  .map(({ minutesAgo, ...post }) => {
+    void minutesAgo;
+    return post;
+  });
 
 export function getTopicsByKind(kind: ExploreTopicKind) {
   return exploreTopics.filter((topic) => topic.kind === kind);
 }
 
 export function searchTopics(query: string) {
-  const normalized = query.trim().toLowerCase();
+  const normalized = normalizeSearchText(query);
   if (!normalized) return exploreTopics;
   return exploreTopics.filter((topic) => {
-    const haystack = [topic.label, ...(topic.aliases ?? [])].join(" ").toLowerCase();
+    const haystack = normalizeSearchText([topic.label, ...(topic.aliases ?? [])].join(" "));
     return haystack.includes(normalized);
   });
 }
 
 function normalizeSearchText(value: string) {
-  return value.trim().toLowerCase().replace(/\s+/g, "");
+  return value.normalize("NFKC").trim().toLocaleLowerCase("ja-JP").replace(/\s+/g, "");
+}
+
+function searchTerms(query: string) {
+  return query
+    .normalize("NFKC")
+    .trim()
+    .toLocaleLowerCase("ja-JP")
+    .split(/\s+/)
+    .map(normalizeSearchText)
+    .filter(Boolean);
+}
+
+/**
+ * うちあけ体験談を含む全投稿を、病名・症状・悩み・本文から検索する。
+ * 複数語はAND検索。主題一致を優先し、同点ならフィードの新しい順を保つ。
+ */
+export function searchExplorePosts(query: string): ExplorePost[] {
+  const terms = searchTerms(query);
+  if (terms.length === 0) return [];
+
+  return explorePosts
+    .map((post, index) => {
+      const diseaseAliases = diseaseCatalog.find((disease) => disease.displayName === post.topic)?.aliases ?? [];
+      const topicText = normalizeSearchText([post.topic, ...diseaseAliases].join(" "));
+      const detailText = normalizeSearchText(post.searchText ?? "");
+      const bodyText = normalizeSearchText(post.body);
+      const allText = `${topicText}${detailText}${bodyText}`;
+      if (!terms.every((term) => allText.includes(term))) return null;
+
+      const score = terms.reduce((total, term) => {
+        if (topicText === term) return total + 120;
+        if (topicText.includes(term)) return total + 70;
+        if (detailText.includes(term)) return total + 35;
+        return total + 10;
+      }, 0);
+      return { post, index, score };
+    })
+    .filter((entry): entry is { post: ExplorePost; index: number; score: number } => Boolean(entry))
+    .sort((a, b) => b.score - a.score || a.index - b.index)
+    .map((entry) => entry.post);
 }
 
 function diseaseSearchWords(disease: DiseaseCatalogEntry) {

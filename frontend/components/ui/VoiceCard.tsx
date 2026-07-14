@@ -125,6 +125,7 @@ export function VoiceCard({
 
       {photoSrc && (
         <div className="voice-card__image">
+          {/* eslint-disable-next-line @next/next/no-img-element -- 投稿画像は任意URLを扱うため通常imgを使う */}
           <img src={photoSrc} alt={photoAlt} />
         </div>
       )}

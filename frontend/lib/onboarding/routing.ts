@@ -13,6 +13,7 @@ export type Step = (typeof ALL_STEPS)[number];
  * purposes 引数はシグネチャ互換のため残す（未使用）。
  */
 export function buildPath(_purposes?: PurposeId[]): Step[] {
+  void _purposes;
   return [...ALL_STEPS];
 }
 
@@ -22,6 +23,7 @@ export function buildPath(_purposes?: PurposeId[]): Step[] {
  * purposes 引数はシグネチャ互換のため残す（未使用）。
  */
 export function nextStep(current: Step, _purposes?: PurposeId[]): string {
+  void _purposes;
   const path = buildPath();
   const idx = path.indexOf(current);
   if (idx < 0 || idx === path.length - 1) return "/home";
@@ -33,6 +35,7 @@ export function nextStep(current: Step, _purposes?: PurposeId[]): string {
  * purposes 引数はシグネチャ互換のため残す（未使用）。
  */
 export function progressRatio(current: Step, _purposes?: PurposeId[]): number {
+  void _purposes;
   const path = buildPath();
   const idx = path.indexOf(current);
   if (idx < 0) return 0;

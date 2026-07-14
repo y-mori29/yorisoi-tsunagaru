@@ -33,6 +33,7 @@ export function Avatar({
   return (
     <span className={classes}>
       {src ? (
+        // eslint-disable-next-line @next/next/no-img-element -- 動的アバターは既存CSSの円形クロップを維持する
         <img src={src} alt={alt} />
       ) : animal ? (
         <AnimalAvatar animal={animal} />
