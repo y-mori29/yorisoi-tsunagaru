@@ -31,7 +31,7 @@ export function MessageComposer({ value, onChange, onSend }: MessageComposerProp
         className="chat-composer__textarea"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder="そっと、ことばを 書く"
+        placeholder="メッセージを書く"
         rows={1}
         aria-label="メッセージを入力"
       />

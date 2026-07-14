@@ -1,4 +1,4 @@
-# よりそい つながる Googleログイン残設定
+# よりそい つながる Googleログイン設定記録
 
 作成日: 2026-06-23
 対象: `yorisoi-dev-477515` / Cloud Run `tsunagaru-frontend`
@@ -14,10 +14,12 @@
   - `https://tsunagaru-frontend-450637239907.asia-northeast1.run.app`
 - Firebase Auth domain:
   - `yorisoi-dev-477515.firebaseapp.com`
+- 2026-07-15、Firebase CLIのAuth設定デプロイでGoogleプロバイダーを有効化済み。
+- Cloud Run公開画面からGoogleログインし、投稿下書きを保持したまま `/post?resume=publish` へ戻るところまで確認済み。
 
-## 未完了
+## 解消した問題
 
-Googleプロバイダーの有効化が未完了。
+当初はGoogleプロバイダーが未作成で、公開画面に「このログイン方法がまだ有効化されていません。」と表示されていた。
 
 REST API で `projects.defaultSupportedIdpConfigs/google.com` を作成しようとしたところ、OAuthクライアントが未設定のため、次のエラーで止まった。
 
@@ -25,9 +27,16 @@ REST API で `projects.defaultSupportedIdpConfigs/google.com` を作成しよう
 INVALID_CONFIG : client_id cannot be empty.
 ```
 
-Identity Platform の `DefaultSupportedIdpConfig` は `clientId` と `clientSecret` を持つため、Googleログインを有効化するには Google OAuth の Web クライアントID/シークレットが必要。
+Firebase CLI 15.22.3 のAuthプロバイダー設定を使うことで、OAuthクライアントの自動作成を含めて有効化できた。秘密情報はリポジトリへ保存していない。
 
-## Consoleで作るもの
+確認結果:
+
+- `google.com` provider: enabled
+- OAuth client: configured
+- Cloud Run本番ドメイン: authorized
+- `localhost` / `127.0.0.1`: authorized
+
+## 当時検討した手動設定（現在は不要）
 
 Google Cloud Console の `yorisoi-dev-477515` で、OAuth同意画面と Web OAuth クライアントを作成する。
 
@@ -61,7 +70,7 @@ https://yorisoi-dev-477515.firebaseapp.com
 https://yorisoi-dev-477515.firebaseapp.com/__/auth/handler
 ```
 
-## Provider登録コマンド案
+## 当時のProvider登録コマンド案（現在は不要）
 
 OAuthクライアント作成後、`clientId` と `clientSecret` をローカルの安全な場所に置き、次のように Identity Platform へ登録する。
 

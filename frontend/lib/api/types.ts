@@ -115,8 +115,8 @@ export type Question = {
 /* ============================================================
  * DM / メッセージ系（Phase 6A 〜）
  * ------------------------------------------------------------
- * 「お便り」（24h で消える Notification）とは別系統で、
- * 永続的に残るスレッド会話。GRAVITY 画像 11 の構造を踏襲。
+ * 「お便り」の本体となる、永続的に残る1対1のスレッド会話。
+ * 反応や運営通知は Notification として別タブに表示する。
  * ============================================================ */
 
 export type ConversationCategory = "friend" | "group" | "official";
@@ -153,7 +153,7 @@ export type Conversation = {
   lastMessage: string;
   lastMessageAt: string; // ISO
   timeLabel: string;
-  /** 未読数。0 でもバッジは出さない（数字を強調しない方針） */
+  /** 未読数。0 のときはバッジを出さない */
   unreadCount: number;
   category: ConversationCategory;
   /** 流れ星から始まった会話か */

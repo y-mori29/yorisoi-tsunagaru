@@ -56,6 +56,7 @@ export function PostComposer() {
   const recommendation = useMemo(() => getHealthRecommendation(healthContext), [healthContext]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const previewRef = useRef<HTMLElement>(null);
 
   const [body, setBody] = useState("");
   const [isQuestion, setIsQuestion] = useState(false);
@@ -64,6 +65,7 @@ export function PostComposer() {
   const [image, setImage] = useState<DraftImage | null>(null);
   const [hintsOpen, setHintsOpen] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(Boolean(roomId));
+  const [previewOpen, setPreviewOpen] = useState(false);
   const [draftSaved, setDraftSaved] = useState(false);
   const [draftError, setDraftError] = useState<string | null>(null);
   const [placed, setPlaced] = useState(false);
@@ -151,6 +153,13 @@ export function PostComposer() {
   const submit = () => {
     if (!body.trim()) return;
 
+    if (!previewOpen) {
+      setPreviewOpen(true);
+      setDetailsOpen(false);
+      window.setTimeout(() => previewRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+      return;
+    }
+
     if (!isSignedIn) {
       if (!persistDraft()) {
         setDraftError("登録画面へ進む前に下書きを保存できませんでした。写真を外して、もう一度お試しください。");
@@ -179,7 +188,7 @@ export function PostComposer() {
     <main className="explore-shell simple-post-shell">
       <header className="find-header simple-post-header">
         <BackButton fallbackHref={roomId ? `/rooms/${roomId}` : "/home"} />
-        <h1>声を投稿する</h1>
+        <h1>声を書く</h1>
         <button type="button" className="simple-post-draft" onClick={saveDraft}>
           {draftSaved ? "保存しました" : "下書き保存"}
         </button>
@@ -195,9 +204,8 @@ export function PostComposer() {
         <section className="guest-post-guide" id="guest-post-guide" aria-label="登録前に試せること">
           <span className="guest-post-guide__icon"><Icon name="shield" size={18} /></span>
           <div>
-            <p>登録なしで、公開前まで試せます</p>
-            <span>本文を書く → 届け先を選ぶ → ほかの人からの見え方を確認</span>
-            <small>入力内容はこの端末に保存し、公開へ進むときだけ登録をお願いしています。</small>
+            <p>登録なしで、プレビューまで使えます</p>
+            <span>公開するときだけ、登録をお願いします。</span>
             {draftError && <em role="alert">{draftError}</em>}
           </div>
         </section>
@@ -309,23 +317,40 @@ export function PostComposer() {
         </section>
       )}
 
-      <PostPreview
-        author={author}
-        body={body}
-        image={image}
-        isQuestion={isQuestion}
-        contextLabels={contextLabels}
-        visibilityLine={destination.visibilityLine}
-        lookbackLine={destination.lookbackLine}
-      />
+      <button
+        type="button"
+        className="post-preview-toggle"
+        onClick={() => setPreviewOpen((current) => !current)}
+        aria-expanded={previewOpen}
+      >
+        <span>
+          <Icon name="whisper" size={17} />
+          {previewOpen ? "プレビューを閉じる" : "ほかの人からの見え方を確認"}
+        </span>
+        <Icon name={previewOpen ? "chevronDown" : "chevronRight"} size={15} />
+      </button>
 
-      <section className="post-reassurance" aria-label="安心の説明">
-        <Icon name="shield" size={18} />
-        <div>
-          <p>医療判断ではなく、体験談や声として残ります</p>
-          <span>治療の判断や緊急相談は、医療機関に確認してください。</span>
-        </div>
-      </section>
+      {previewOpen && (
+        <section ref={previewRef} className="post-preview-wrap">
+          <PostPreview
+            author={author}
+            body={body}
+            image={image}
+            isQuestion={isQuestion}
+            contextLabels={contextLabels}
+            visibilityLine={destination.visibilityLine}
+            lookbackLine={destination.lookbackLine}
+          />
+
+          <section className="post-reassurance" aria-label="安心の説明">
+            <Icon name="shield" size={18} />
+            <div>
+              <p>医療判断ではなく、体験談や声として残ります</p>
+              <span>治療の判断や緊急相談は、医療機関に確認してください。</span>
+            </div>
+          </section>
+        </section>
+      )}
 
       {resumedAfterRegistration && !placed && (
         <section className="post-registration-ready" aria-label="登録完了">
@@ -356,9 +381,11 @@ export function PostComposer() {
               disabled={!body.trim()}
               aria-describedby={!isSignedIn ? "guest-post-guide" : undefined}
             >
-              {!isSignedIn
-                ? visibility === "quiet" ? "登録して保存へ" : "登録して公開へ"
-                : visibility === "quiet" ? "自分だけに保存" : "投稿する"}
+              {!previewOpen
+                ? "プレビューを確認"
+                : !isSignedIn
+                  ? visibility === "quiet" ? "登録して保存へ" : "登録して公開へ"
+                  : visibility === "quiet" ? "自分だけに保存" : "投稿する"}
             </button>
           </>
         )}

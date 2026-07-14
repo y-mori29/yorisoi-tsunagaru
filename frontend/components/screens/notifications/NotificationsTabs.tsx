@@ -3,43 +3,36 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, type ReactNode } from "react";
 
-type TabKey = "letters" | "messages";
+type TabKey = "messages" | "notices";
 
 type NotificationsTabsProps = {
-  /** 「お便り」タブの中身（既存の 24h 通知リスト） */
-  letters: ReactNode;
-  /** 「やりとり」タブの中身（永続 DM スレッド一覧） */
+  /** 「メッセージ」タブの中身（1対1の会話一覧） */
   messages: ReactNode;
-  /** 「やりとり」タブに未読がある場合に小さなドットを出す */
+  /** 「お知らせ」タブの中身（反応・運営通知） */
+  notices: ReactNode;
+  /** 「メッセージ」タブに未読がある場合に小さなドットを出す */
   hasUnreadMessages?: boolean;
 };
 
 /**
  * /notifications の上部タブ切替。
  *
- * 「お便り（24h）」と「やりとり（永続 DM）」の 2 タブ。
- *
- * タブ選択状態は **URL クエリパラメータ `?tab=letters|messages`** で持つ。
- * これにより：
- *  - メッセージ詳細から戻ったとき、やりとりタブが選ばれた状態で表示される
- *  - 直リンク（/notifications?tab=messages）でも特定タブから開始できる
- *  - useState ベースの揺り戻し（タブが letters に戻る）を防ぐ
- *
- * クリック時は router.replace() を使い、履歴を汚さない。
+ * 「メッセージ」を初期表示にし、「お知らせ」は補助タブとして扱う。
+ * URL は `?tab=notices` のときだけ補助タブを選択する。
  */
 function NotificationsTabsInner({
-  letters,
   messages,
+  notices,
   hasUnreadMessages = false,
 }: NotificationsTabsProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const tabParam = searchParams.get("tab");
-  const tab: TabKey = tabParam === "messages" ? "messages" : "letters";
+  const tab: TabKey = tabParam === "notices" ? "notices" : "messages";
 
   const switchTo = (next: TabKey) => {
     const q = new URLSearchParams(searchParams.toString());
-    if (next === "letters") {
+    if (next === "messages") {
       q.delete("tab");
     } else {
       q.set("tab", next);
@@ -56,26 +49,26 @@ function NotificationsTabsInner({
         <button
           type="button"
           role="tab"
-          aria-selected={tab === "letters"}
-          className={`noti-tabs__btn ${tab === "letters" ? "noti-tabs__btn--active" : ""}`}
-          onClick={() => switchTo("letters")}
-        >
-          お便り
-        </button>
-        <button
-          type="button"
-          role="tab"
           aria-selected={tab === "messages"}
           className={`noti-tabs__btn ${tab === "messages" ? "noti-tabs__btn--active" : ""}`}
           onClick={() => switchTo("messages")}
         >
-          やりとり
+          メッセージ
           {hasUnreadMessages && <span className="noti-tabs__dot" aria-label="未読あり" />}
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={tab === "notices"}
+          className={`noti-tabs__btn ${tab === "notices" ? "noti-tabs__btn--active" : ""}`}
+          onClick={() => switchTo("notices")}
+        >
+          お知らせ
         </button>
       </div>
 
       <div className="noti-tabs__panel" role="tabpanel">
-        {tab === "letters" ? letters : messages}
+        {tab === "messages" ? messages : notices}
       </div>
     </>
   );
@@ -87,7 +80,7 @@ function NotificationsTabsInner({
  */
 export function NotificationsTabs(props: NotificationsTabsProps) {
   return (
-    <Suspense fallback={<div className="noti-tabs__panel">{props.letters}</div>}>
+    <Suspense fallback={<div className="noti-tabs__panel">{props.messages}</div>}>
       <NotificationsTabsInner {...props} />
     </Suspense>
   );

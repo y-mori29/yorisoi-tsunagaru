@@ -1,6 +1,7 @@
 "use client";
 
 import type { CSSProperties } from "react";
+import { Icon } from "@/components/ui/Icon";
 import type { ReplySuggestion } from "@/lib/api/types";
 
 type ReplySuggestionBarProps = {
@@ -11,9 +12,9 @@ type ReplySuggestionBarProps = {
 };
 
 const TONE_LABEL: Record<ReplySuggestion["tone"], string> = {
-  empathy: "そっと 寄り添う",
-  question: "聞いて みる",
-  thanks: "ありがとう を 返す",
+  empathy: "そっと寄り添う",
+  question: "聞いてみる",
+  thanks: "ありがとうを返す",
 };
 
 const TONE_BORDER: Record<ReplySuggestion["tone"], string> = {
@@ -35,6 +36,9 @@ const containerStyle: CSSProperties = {
   borderTop: "1px dashed var(--color-line-soft)",
 };
 const titleStyle: CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: 5,
   font: "400 10px/1.4 var(--font-jp)",
   color: "var(--color-plum-600)",
   letterSpacing: "0.08em",
@@ -105,8 +109,8 @@ export function ReplySuggestionBar({
     return (
       <div style={containerStyle} aria-label="返信の候補（生成中）">
         <p style={titleStyle}>
-          <span aria-hidden="true">✦ </span>
-          返信の 候補を、考えています…
+          <Icon name="sparkle" size={13} />
+          返信の候補を考えています…
         </p>
       </div>
     );
@@ -116,8 +120,8 @@ export function ReplySuggestionBar({
     return (
       <div style={containerStyle}>
         <p style={titleStyle}>
-          <span aria-hidden="true">✦ </span>
-          返信の 候補
+          <Icon name="sparkle" size={13} />
+          返信の候補
         </p>
         <p style={errorStyle}>{error}</p>
       </div>
@@ -131,8 +135,8 @@ export function ReplySuggestionBar({
   return (
     <div style={containerStyle} aria-label="返信の候補">
       <p style={titleStyle}>
-        <span aria-hidden="true">✦ </span>
-        返信の 候補（タップで 入力欄へ）
+        <Icon name="sparkle" size={13} />
+        返信の候補（タップで入力欄へ）
       </p>
       <div style={listStyle}>
         {suggestions.map((s) => (

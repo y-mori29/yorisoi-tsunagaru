@@ -2501,6 +2501,45 @@ input, textarea {
   text-align: center;
   white-space: pre-line;
 }
+.mail-main {
+  padding-top: 10px;
+}
+.mail-intro {
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border: 1px solid rgba(117, 127, 85, 0.22);
+  border-radius: 16px;
+  background: rgba(239, 241, 230, 0.62);
+}
+.mail-intro strong,
+.mail-intro span {
+  display: block;
+}
+.mail-intro strong {
+  color: var(--color-ink-900);
+  font: 700 12px/1.5 var(--font-jp);
+}
+.mail-intro span {
+  margin-top: 3px;
+  color: var(--color-ink-500);
+  font: 500 10.5px/1.55 var(--font-jp);
+}
+.mail-list-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 16px 2px 9px;
+}
+.mail-list-heading h2 {
+  margin: 0;
+  color: var(--color-ink-900);
+  font: 700 14px/1.4 var(--font-jp);
+}
+.mail-list-heading span {
+  color: var(--color-ink-400, var(--color-ink-500));
+  font: 500 10px/1.4 var(--font-jp);
+}
 .noti-section {
   margin-bottom: 24px;
 }
@@ -2561,27 +2600,31 @@ input, textarea {
 
 /* タブ */
 .noti-tabs {
-  display: flex;
-  gap: 4px;
-  border-bottom: 1px solid var(--color-line-soft);
-  margin-bottom: 18px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3px;
+  margin-bottom: 4px;
+  padding: 3px;
+  border: 1px solid rgba(214, 200, 178, 0.66);
+  border-radius: 13px;
+  background: rgba(237, 230, 217, 0.62);
 }
 .noti-tabs__btn {
   position: relative;
   background: transparent;
   border: none;
-  padding: 10px 14px 12px;
-  font: 400 13px/1 var(--font-jp);
+  min-height: 38px;
+  padding: 0 12px;
+  border-radius: 10px;
+  font: 600 12px/1 var(--font-jp);
   color: var(--color-ink-500);
   letter-spacing: 0.08em;
   cursor: pointer;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
 }
 .noti-tabs__btn--active {
   color: var(--color-ink-900);
-  font-weight: 500;
-  border-bottom-color: var(--color-terra-500);
+  background: rgba(255, 253, 248, 0.92);
+  box-shadow: 0 2px 8px rgba(74, 56, 38, 0.08);
 }
 .noti-tabs__dot {
   display: inline-block;
@@ -2592,23 +2635,30 @@ input, textarea {
   margin-left: 6px;
   vertical-align: middle;
 }
-.noti-tabs__panel {
-  /* タブパネル自体には余白を出さず、内側のコンポーネントに任せる */
+.noti-tabs__panel { padding-top: 4px; }
+
+.conversation-list {
+  overflow: hidden;
+  border: 1px solid rgba(214, 200, 178, 0.74);
+  border-radius: 17px;
+  background: rgba(255, 253, 248, 0.84);
+  box-shadow: 0 8px 24px rgba(74, 56, 38, 0.045);
 }
 
-/* やりとり（DM）一覧行 — GRAVITY 画像 11 風 */
+/* 1対1メッセージ一覧 */
 .conv-row {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 12px;
-  padding: 12px;
-  background: var(--color-bg-card);
-  border: 1px solid var(--color-line-soft);
-  border-radius: 14px;
+  min-height: 78px;
+  padding: 12px 13px;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid rgba(214, 200, 178, 0.55);
   text-decoration: none;
   color: inherit;
-  position: relative;
 }
+.conv-row:last-child { border-bottom: 0; }
 .conv-row__body {
   flex: 1;
   min-width: 0;
@@ -2625,16 +2675,17 @@ input, textarea {
   color: var(--color-ink-900);
   letter-spacing: 0.04em;
 }
-.conv-row__star {
-  margin-left: 6px;
-  color: var(--color-plum-500, var(--color-plum-600));
-  font-size: 11px;
-}
 .conv-row__time {
   font: 400 10px/1 var(--font-num);
   color: var(--color-ink-300);
   white-space: nowrap;
   letter-spacing: 0.04em;
+}
+.conv-row__context {
+  margin: 0 0 3px;
+  color: var(--color-moss-700);
+  font: 600 9.5px/1.35 var(--font-jp);
+  letter-spacing: 0.03em;
 }
 .conv-row__preview {
   font: 400 12px/1.55 var(--font-jp);
@@ -2648,13 +2699,16 @@ input, textarea {
   -webkit-box-orient: vertical;
 }
 .conv-row__unread {
-  position: absolute;
-  top: 14px;
-  right: 12px;
-  width: 8px;
-  height: 8px;
+  min-width: 21px;
+  height: 21px;
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  padding: 0 6px;
   border-radius: 999px;
   background: var(--color-terra-500);
+  color: var(--color-card);
+  font: 700 10px/1 var(--font-num);
 }
 
 /* ============================================================
@@ -6226,7 +6280,7 @@ input, textarea {
 
 .post-simple-shell,
 .simple-post-shell {
-  padding-bottom: 132px;
+  padding-bottom: 112px;
 }
 
 .post-simple-loading {
@@ -6279,9 +6333,9 @@ input, textarea {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   align-items: start;
-  gap: 10px;
-  margin-top: 13px;
-  padding: 13px 14px;
+  gap: 9px;
+  margin-top: 11px;
+  padding: 10px 12px;
   border: 1px solid rgba(117, 127, 85, 0.28);
   border-radius: 16px;
   background: rgba(239, 241, 230, 0.72);
@@ -6289,8 +6343,8 @@ input, textarea {
 }
 
 .guest-post-guide__icon {
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   display: grid;
   place-items: center;
   border-radius: 999px;
@@ -6345,7 +6399,7 @@ input, textarea {
 
 .simple-post-editor textarea {
   width: 100%;
-  min-height: 190px;
+  min-height: 150px;
   resize: vertical;
   border: 0;
   outline: 0;
@@ -6593,6 +6647,33 @@ input, textarea {
 .simple-post-shell .post-preview-section,
 .simple-post-shell .post-reassurance {
   margin-top: 14px;
+}
+
+.post-preview-toggle {
+  width: 100%;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+  padding: 0 14px;
+  border: 1px solid rgba(214, 200, 178, 0.76);
+  border-radius: 15px;
+  background: rgba(255, 253, 248, 0.78);
+  color: var(--color-moss-700);
+  font: 700 11.5px/1.4 var(--font-jp);
+  text-align: left;
+}
+
+.post-preview-toggle > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.post-preview-wrap {
+  scroll-margin-top: 76px;
 }
 
 .post-preview-card__kind {

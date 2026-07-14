@@ -7,11 +7,7 @@ type ConversationRowProps = {
 };
 
 /**
- * /notifications の「やりとり」タブの 1 行。
- * GRAVITY 画像 11 の構造：アバター + 名前 + プレビュー + 時間 + 赤バッジ。
- *
- * ただし「よりそい」では未読数の数字は出さず、赤いドットだけで「あり/なし」を示す。
- * 流れ星から始まった会話には小さな ✦ マークを名前の横に出す。
+ * /notifications の1対1メッセージ一覧の1行。
  */
 export function ConversationRow({ conversation }: ConversationRowProps) {
   return (
@@ -27,18 +23,20 @@ export function ConversationRow({ conversation }: ConversationRowProps) {
         <div className="conv-row__head">
           <span className="conv-row__name">
             {conversation.partner.name}
-            {conversation.startedFromStar && (
-              <span className="conv-row__star" aria-label="流れ星から">
-                ✦
-              </span>
-            )}
           </span>
           <span className="conv-row__time">{conversation.timeLabel}</span>
         </div>
+        {(conversation.partner.roomName || conversation.startedFromStar) && (
+          <p className="conv-row__context">
+            {conversation.partner.roomName || "投稿から始まった会話"}
+          </p>
+        )}
         <p className="conv-row__preview">{conversation.lastMessage}</p>
       </div>
       {conversation.unreadCount > 0 && (
-        <span className="conv-row__unread" aria-label="未読あり" />
+        <span className="conv-row__unread" aria-label={`未読${conversation.unreadCount}件`}>
+          {conversation.unreadCount}
+        </span>
       )}
     </Link>
   );

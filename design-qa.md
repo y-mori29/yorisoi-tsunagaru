@@ -1,51 +1,66 @@
-# よりそい つながる コミュニティ版 デザインQA
+# よりそい コミュニティ版 投稿・お便り デザインQA
 
-source visual truth path: `C:\Users\green\.codex\generated_images\019ee975-c3f7-7aa0-81af-5066631a107d\ig_040de0b51b75bb74016a37c27bb99c819184f647146a13678c.png`
-implementation screenshot path: `C:\Users\green\Projects\.tmp\tsunagaru-reference-restore\home-4.png`, `C:\Users\green\Projects\.tmp\tsunagaru-reference-restore\find.png`
-viewport: `430x932`
-state: 未ログイン、公開閲覧、ホーム最新タブ、探す初期表示
+source visual truth path:
+
+- 投稿の問題画面: `C:\Users\green\AppData\Local\Temp\codex-clipboard-6ff3811a-cb64-47d7-8b77-5d849fa3163c.png`
+- DM一覧の構造参照: `C:\Users\green\Projects\medicanvas\yorisoi-tsunagaru\archive\docs\ref\11_GRAVITYメッセージ画面.png`
+- 比較画像: `C:\Users\green\Projects\.tmp\tsunagaru-qa\post-before-after.png`, `C:\Users\green\Projects\.tmp\tsunagaru-qa\mail-reference-after.png`
+
+implementation screenshot path:
+
+- `C:\Users\green\Projects\.tmp\tsunagaru-qa\post-production.png`
+- `C:\Users\green\Projects\.tmp\tsunagaru-qa\mail-production.png`
+
+viewport: `1920x992`（中央のアプリ領域は幅430px）
+
+state: Cloud Run公開版、投稿は未登録初期状態、お便りはメッセージタブ初期状態
 
 ## full-view comparison evidence
 
-- ホームは参照画像右の構成に合わせ、ヘッダー、タブ、投稿欄、タイムラインカード、下部ナビの順で表示されている。
-- 探すは参照画像中央の構成に合わせ、戻る、タイトル、大きな説明、検索欄、病気・症状・暮らしの悩みの大量タグが縦に続く。
-- 参照画像のスマホフレームは実装には含めていない。実アプリ画面として、同じモバイル幅の内容領域で比較した。
+- 投稿画面は、旧画面で説明カードと常時表示プレビューが縦方向を占有していた。修正版は本文入力を主役にし、登録案内を2行へ圧縮、プレビューを確認操作後に展開する構成へ変更した。
+- お便り画面は、参照画像の「相手・最新メッセージ・時刻・未読数を一覧から判断できる」構造を、よりそいの紙背景・水彩アバター・静かな配色で再構成した。
+- 通知はDM一覧から切り離し、「お知らせ」補助タブへ移動した。初期表示は常に1対1のメッセージ一覧である。
 
 ## focused region comparison evidence
 
-- アバター領域を重点確認した。縦長の個別アバター素材では丸抜き時に顔がずれていたため、投稿カードと投稿欄は正方形の動物素材に切り替えた。
-- 投稿カード領域を重点確認した。投稿者名、タグ、時間、本文、部屋リンク、保存、共感・応援・ありがとうの順が参照案と同じ情報密度になっている。
-- 探すのタグ領域を重点確認した。参照案と同じく、病気は緑・紫・薄茶のタグが多く並び、症状・悩みへ続く構成になっている。
+- 投稿上部を重点確認し、登録前説明が本文入力より強く見えないこと、タイトル・説明・入力欄の順序が自然なことを確認した。
+- 投稿下部を重点確認し、届け先、プレビュー操作、固定CTAが重ならず、初期表示の一画面内で役割を判断できることを確認した。
+- お便り一覧を重点確認し、4件の会話で名前・疾患/テーマ・本文プレビュー・時刻・未読数が視線順に並ぶことを確認した。
+- 独自画像の差し替えはないため、画像の詳細比較はアバターの丸抜き・鮮明さ・背景とのなじみだけを確認した。
 
 ## findings
 
-P0/P1/P2 の未解決項目はなし。
+P0/P1/P2の未解決項目はなし。
 
 ## required fidelity surfaces
 
-- Fonts and typography: 既存の和文フォント指定を維持。参照案と同じく、ブランド名と見出しはゆったり、カード本文は読みやすい本文サイズにしている。
-- Spacing and layout rhythm: ホームの投稿欄、カード、アクションボタンの間隔は参照案に近い密度へ調整。探す画面はタグ群の余白を保ち、情報量が多くても詰まりすぎない。
-- Colors and visual tokens: 既存の `terra`、`moss`、`plum`、`gold` を利用し、参照案の淡い紙背景、くすみグリーン、薄い紫、薄茶のバランスに寄せた。
-- Image quality and asset fidelity: 背景とアバターは既存の水彩系画像素材を使用。投稿カードの丸アバターは切り抜き崩れを避けるため、正方形素材へ変更した。
-- Copy and content: ホーム、探す、タイムライン、反応、登録誘導の表示文言を文字化けなしの日本語へ修正。投稿データも患者体験談らしい短文に差し替えた。
+- Fonts and typography: 既存の和文フォントと階層を維持。投稿本文を最も読みやすい15px、お便りの名前・本文・補助情報を段階的に小さくし、長文は1行で省略される。
+- Spacing and layout rhythm: 投稿の説明カードとテキスト欄を圧縮し、届け先とプレビュー操作の間隔を12px前後で統一。会話一覧は個別カードの連続ではなく、1つの一覧面と区切り線でDMらしい密度にした。
+- Colors and visual tokens: `moss`、`terra`、紙背景、既存の線色のみを使用。未読数だけをterraで明確にし、その他は低コントラストの落ち着いた階層にした。
+- Image quality and asset fidelity: 既存の水彩動物アバターを再利用し、文字記号や仮画像への置き換えはしていない。返信候補の装飾記号は既存SVGアイコンへ置き換えた。
+- Copy and content: 「24時間で消えるお便り」を初期画面から撤去し、「1対1で、ゆっくり話せる場所」と明示。投稿は「登録なしでプレビューまで」「公開時だけ登録」に整理した。
 
 ## patches made since previous QA pass
 
-- `/home` を参照案右画面に寄せ、未ログインでも投稿欄の入口と豊富なタイムラインが見える構成へ変更。
-- `/find` を参照案中央画面に寄せ、病気・症状・暮らしの悩みを大量タグで探せる構成へ変更。
-- `lib/mock/explore.ts` の病気・症状・悩み・投稿データを日本語で再作成。
-- 下部ナビの表示名を正常な日本語に修正。
-- アバターの切り抜き違和感を減らすため、投稿カード用素材を正方形素材に切り替え。
+- お便りの初期タブをメッセージ一覧へ変更。
+- 「お便り / やりとり」を「メッセージ / お知らせ」へ整理。
+- 会話一覧をDM向けの連続リスト、時刻、文脈、未読数表示へ再設計。
+- 個別会話への遷移と戻り先を実画面で確認。
+- 投稿の登録前説明を圧縮し、プレビューを折りたたみ式へ変更。
+- 投稿CTAを「プレビューを確認」から「登録して公開へ」へ段階的に変化させた。
+- Firebase AuthenticationのGoogleプロバイダーを有効化し、公開画面でGoogleログイン完了と下書き復元を確認。
 
 ## validation
 
-- `tsc --noEmit`: passed
-- `eslint app components lib`: passed with 2 existing warnings for `<img>` in `Avatar.tsx` and `VoiceCard.tsx`
-- `next build`: passed
+- TypeScript `tsc --noEmit`: passed
+- ESLint `app components lib`: passed
+- Next.js production build: passed
+- Chrome: 投稿入力→プレビュー→登録→Googleログイン→投稿画面復帰 passed
+- Chrome: お便り一覧→個別会話 passed
+- Cloud Run revision: `tsunagaru-frontend-00015-227`、100%配信
 
 ## follow-up polish
 
-- 参照画像のiPhoneフレームまで含むプレゼン用モックは別途生成・配置するとさらに見栄えが上がる。
-- 右上プロフィール画像だけは個別アバター素材を使っているため、最終的には小円専用に切り出したアセットを用意するとさらに安定する。
+- 実バックエンド接続時に、会話の未読既読更新と送信後の永続化を同じ見た目のまま接続する。
 
 final result: passed

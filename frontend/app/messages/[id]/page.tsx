@@ -89,7 +89,7 @@ export default function MessageThreadPage({ params }: { params: Promise<{ id: st
       <>
         <AppHeader
           title="やりとり"
-          left={<BackButton fallbackHref="/notifications?tab=messages" />}
+          left={<BackButton fallbackHref="/notifications" />}
         />
         <main className="app-main">
           <p
@@ -127,7 +127,7 @@ export default function MessageThreadPage({ params }: { params: Promise<{ id: st
             </span>
           </span>
         }
-        left={<BackButton fallbackHref="/notifications?tab=messages" />}
+        left={<BackButton fallbackHref="/notifications" />}
       />
 
       <main className="chat-thread">
