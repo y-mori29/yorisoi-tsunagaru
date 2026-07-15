@@ -1,14 +1,74 @@
 # よりそい つながる
 
-メディキャンバス案件の新規プロダクト。「**ただ、いていい**」場をつくる、病気を抱える方のための静かなコミュニティアプリ。
+病気や症状のことを身近な人には話しにくいとき、自分に近い体験を読み、気持ちを残し、必要なときだけつながれるコミュニティアプリです。
 
-> 既存の `medicanvas/yorisoi/patient/yorisoi-phr/` とは別プロダクト。コードベース・GitHub リポジトリも分けています。
+SNSの盛り上がりを目的にするのではなく、同じ病名・症状・治療・暮らしの悩みを持つ人の声から、「自分だけではない」と思えるきっかけをつくります。読むだけでも利用でき、投稿や交流は自分のペースで始められます。
 
----
+- 公開画面: <https://tsunagaru-frontend-450637239907.asia-northeast1.run.app>
+- フロントエンド: Next.js 16 / React 19 / TypeScript
+- 実行基盤: Google Cloud Run
+- 認証: Firebase Authentication（メールアドレス・Googleアカウント）
 
-## クイックスタート（他の方が動かす場合）
+> このサービスは、診断・治療の判断や緊急相談を行うものではありません。投稿は個人の体験や気持ちとして扱います。
 
-前提：**Node.js 22 系**、**pnpm 10 系** が入っていること。
+## 現在の体験
+
+### 登録しなくてもできること
+
+- ホームの「新着」「近い声」から体験談を読む
+- 病気・症状・暮らしや不安から近い声を探す
+- テーマごとに、同じ状況の体験談を読む
+- 投稿本文を書く
+- 届け先と公開範囲を選ぶ
+- 他の人からの見え方をプレビューする
+
+### 登録後にできること
+
+- 声を公開する、または自分だけに保存する
+- 投稿へ反応する、あとで読むために保存する
+- 1対1の「お便り」でゆっくり話す
+- マイページで自分の投稿や設定を見直す
+
+公開直前までは登録なしで試せます。投稿の本文・届け先・プレビュー内容はブラウザに下書きとして残り、登録後に投稿画面へ戻れます。
+
+## 体験談データ
+
+許諾済みの「うちあけ」体験談1,930件を、ホーム、検索、テーマ、投稿詳細で利用しています。
+
+- データ: `frontend/lib/data/uchiake-posts.json`、`frontend/lib/data/uchiake-stories.json`
+- ホームの「新着」は、最近の180件を訪問ごとに入れ替える
+- 最初に表示する12件は、同じ投稿者やテーマに偏りすぎないよう調整する
+- 病名だけでなく、症状、治療、仕事、家族、通院前などから検索できる
+
+体験談は「人が多く見える演出」ではなく、自分に近い経験が存在することを知るための情報として扱います。
+
+## 主な画面
+
+| ルート | 役割 | 登録前 |
+|---|---|---|
+| `/` | `/home` へ移動 | 可 |
+| `/home` | 新着・近い声を読む | 可 |
+| `/find` | 病気・症状・暮らしや不安から探す | 可 |
+| `/rooms` | テーマ一覧 | 可 |
+| `/rooms/[id]` | テーマごとの体験談 | 可 |
+| `/voice/[id]` | 体験談の詳細 | 可 |
+| `/post` | 書く・届け先選択・プレビュー | プレビューまで可 |
+| `/auth/register` | メール・Googleアカウントで登録 | 可 |
+| `/auth/login` | ログイン | 可 |
+| `/notifications` | 1対1のお便りとお知らせ | 登録後の利用を想定 |
+| `/messages/[id]` | お便りの会話 | 登録後の利用を想定 |
+| `/me` | 投稿・保存・安心設定の入口 | 登録後 |
+| `/settings` | 公開範囲や通知などの設定 | 登録後 |
+| `/onboarding` | 近い声を届けるための任意設定 | 可 |
+
+`/home-v2`、`/record`、`/look-back`、`/share` などは、記録機能との接続を検討する並行ルートです。現在のコミュニティ入口は `/home` を本線としています。
+
+## ローカル起動
+
+前提:
+
+- Node.js 22系
+- pnpm 10.13.1
 
 ```bash
 git clone https://github.com/y-mori29/yorisoi-tsunagaru.git
@@ -17,80 +77,74 @@ pnpm install
 pnpm dev
 ```
 
-→ ブラウザで `http://localhost:3000` を開く。
-モバイル幅（max-width 480px）想定なので、Chrome DevTools の **iPhone 14 Pro モード** で見るのが推奨です。
+ブラウザで <http://localhost:3000> を開きます。画面は最大幅480pxのモバイル表示を基準にしているため、Chrome DevToolsなどでスマートフォン幅を確認してください。
 
-### 確認できる画面（10 ルート）
+### 確認コマンド
 
-| Route | 画面 |
-|---|---|
-| `/onboarding` | ようこそ → 目的選択 → 病気/症状 → 暮らしのリズム → 考え方の癖 → 姿（アバター）→ 準備完了（全 7 ステップ）|
-| `/home` | ホーム（「今日のひとこと」+ タイムライン）|
-| `/post` | ことばを置く（公開範囲・ルーム選択あり）|
-| `/find` | お隣さがし（3 つの質問に答えて候補表示）|
-| `/stroll` | めぐる（今日 散歩中の お隣さん）|
-| `/voice/[id]` | そっと届く声（手紙形式・例: `/voice/nt-001`）|
-| `/notifications` | お便り（1対1メッセージ）+ お知らせ |
-| `/me` | プロフィール（姿・タグ・暮らしの傾向・置いたことば）|
-| `/settings` | 設定（おまもりのしくみ・通知・記録 など）|
-| `/` | `/onboarding` と同じ（welcome）|
+```bash
+cd frontend
+pnpm lint
+pnpm build
+```
 
----
+## 認証と環境変数
+
+Cloud RunではFirebase Authenticationを利用し、メールアドレスとGoogleアカウントで登録・ログインできます。
+
+ローカルでは `secure/.env` を自動で読み込みます。Firebase設定がない場合は、画面確認用のローカル認証へフォールバックします。機密情報は `secure/` または環境変数で管理し、リポジトリへコミットしません。
+
+主な環境変数:
+
+- `FIREBASE_API_KEY`
+- `FIREBASE_PROJECT_ID`
+- `FIREBASE_AUTH_DOMAIN`
+- `FIREBASE_APP_ID`（任意）
+- `FIREBASE_MESSAGING_SENDER_ID`（任意）
+- `FIREBASE_STORAGE_BUCKET`（任意）
+- `GEMINI_API_KEY`（返信・リアクション・コメント候補を使う場合）
+
+## 現在のデータ実装と制約
+
+- Firebaseはアカウント登録とログインに使用しています。
+- うちあけ体験談は、リポジトリ内のJSONデータから表示します。
+- 投稿下書き、オンボーディング設定、一部のセッション情報はブラウザの `localStorage` に保存します。
+- 新規投稿、保存、会話、通知、プロフィールの永続化は、現在もモックまたはブラウザ内の状態を含みます。
+- 返信・リアクション・コメント候補のAPIは、`GEMINI_API_KEY` がある環境でGoogle GenAIを利用します。
+
+本番運用向けの投稿・会話データベース、通報・モデレーション、監査、削除フローは今後の実装範囲です。
 
 ## リポジトリ構成
 
-```
+```text
 yorisoi-tsunagaru/
-├── frontend/        ← 本実装（Next.js 16 + React 19 + TS + Tailwind v4）
-│                       他の方が動かすのは ここだけ で OK
-├── archive/         ← 設計・モック・画像生成プロンプトなど 経緯資料
-│   ├── docs/        ← コンセプト・デザインシステム・MTG議事録・トーン規範
-│   ├── mockups/     ← v1/v2 の HTML モック（実装の参考）
-│   ├── prompts/     ← 画像生成プロンプトと出力（output_v02/ が 9 画面の視覚スペック）
-│   ├── assets/      ← 初期のマスコット・ヒーロー画像
-│   ├── frontend-codex-prompts/    ← frontend 用に生成した動物アバター・ヒーロー線画のプロンプト
-│   └── frontend-reference-images/ ← output_v02 を frontend に焼き直す際の参照画像
-└── README.md        ← このファイル
+├── frontend/   Next.jsの本実装、Cloud Run用Dockerfile
+├── docs/       現行の要件、画面整理、認証記録、デザイン資料
+├── tools/      うちあけ体験談の抽出・整形パイプライン
+├── prompts/    画像・UI素材の制作プロンプト
+├── archive/    過去のモック、設計、検討経緯
+├── secure/     ローカルの機密設定（Git対象外）
+└── README.md
 ```
 
-`archive/` 配下は **過去の検討経緯** であり、現在の実装は `frontend/` だけで完結します。
-frontend の詳細（ディレクトリ構成・設計トークン・トーン規範）は [`frontend/README.md`](frontend/README.md) を参照。
-
----
-
-## コンセプト
-
-- **コミュニティ × 患者記録のハイブリッド**：グラビティ風の優しい SNS で気軽につながりながら、診察・薬・体調が「気づけば残っている」状態をつくる
-- **「ただ、いていい」**：入り口で症状を語らせない／患者を「しんどい人」とラベリングしない／カウンセラー型の迎え方
-- **ゆっくり続けられるお便り**：1対1の会話を自分のペースで続け、反応や運営通知は別タブで確認する
-- **動物アバターと手書き線画**：MUJI／暮しの手帖トーン、セピア線画＋水彩のにじみ
-
-設計の背景は `archive/docs/concept.md`・`archive/docs/value-proposition.md`・`archive/docs/tone-reset-2026-05-17.md` を参照。
-
----
+実装の中心は `frontend/` です。`archive/` は過去の検討経緯であり、現行仕様の正本ではありません。
 
 ## 技術スタック
 
 | 項目 | 採用 |
 |---|---|
-| フレームワーク | Next.js 16.2.6（App Router・Turbopack） |
-| UI | React 19.2 + TypeScript 5.9（strict） |
-| スタイル | Tailwind CSS v4（`@theme` ベース）+ CSS 変数 |
-| 状態管理 | React Context（オンボーディングのみ） |
-| フォント | システムフォント（Yu Gothic / Yu Mincho）— Web フォント未使用 |
-| アイコン | インライン SVG 辞書（`lib/icons.ts`） |
-| パッケージ管理 | pnpm 10 |
-| API | モック実装のみ（`lib/mock/` 配下）— 将来 REST/GraphQL に差し替え可能な型契約 |
+| フレームワーク | Next.js 16.2.6（App Router・standalone出力） |
+| UI | React 19.2.4 / TypeScript 5（strict） |
+| スタイル | Tailwind CSS v4 + CSS変数 |
+| 認証 | Firebase Authentication |
+| AI補助 | Google GenAI（サーバー側API） |
+| データ | うちあけJSON + モックデータ + localStorage |
+| パッケージ管理 | pnpm 10.13.1 |
+| 実行環境 | Node.js 22 / Google Cloud Run |
 
----
+## 関連ドキュメント
 
-## 注意事項
-
-- 投稿・会話データはモック（`lib/mock/`）で、実患者データは含みません
-- アカウント登録とログインには Firebase Authentication を利用しています
-- 動物アバター・ヒーロー線画は Codex CLI（GPT-Image-2）で生成した素材
-- 商用利用・転載・二次配布は行わないでください
-
----
-
-担当: 森 祐哉（@y-mori29）／ medicanvas
+- `docs/community-product-restructure-principles-20260623.md` — コミュニティ再設計の原則
+- `docs/community-topic-data-design-20260623.md` — 病気・症状・悩み・テーマのデータ設計
+- `docs/community-screen-feature-map-20260623.md` — 画面と機能の整理
+- `docs/tsunagaru-google-auth-setup-20260623.md` — Firebase / Googleログインの設定記録
+- `tools/uchiake-pipeline/EXTRACTION_SPEC.md` — うちあけ体験談の抽出仕様
